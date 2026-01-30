@@ -21,7 +21,7 @@ body {
 
 /* Header */
 header {
-  background: linear-gradient(135deg, #4a90d9 0%, #357abd 100%);
+  background: linear-gradient(135deg, #79CFF9 0%, #055A84 100%);
   color: white;
   padding: 40px 20px;
   text-align: center;
@@ -118,6 +118,20 @@ li {
 .feature-box h3 {
   margin-top: 0;
   color: #4a90d9;
+}
+
+/* Contact Email - 본문 텍스트와 자연스럽게 어울리도록 */
+#contact .contact-email {
+  color: #555;
+  text-decoration: none;
+  font-weight: normal;
+  border-bottom: 1px dotted #888;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+#contact .contact-email:hover {
+  color: #2c3e50;
+  border-bottom-color: #2c3e50;
 }
 
 /* Footer */
