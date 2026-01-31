@@ -7,8 +7,8 @@
 
   function renderSajuTable(container, saju, options) {
     const noSection = options && options.noSection;
-    const labels = ['년', '월', '일', '시'];
-    const pillars = [saju.year, saju.month, saju.day, saju.hour];
+    const labels = ['시', '일', '월', '년'];
+    const pillars = [saju.hour, saju.day, saju.month, saju.year];
 
     const tableHtml = `
         <div class="saju-table-wrap">

@@ -61,8 +61,8 @@
   }
 
   function buildSalseongList(saju) {
-    const labels = ['년', '월', '일', '시'];
-    const pillars = [saju.year, saju.month, saju.day, saju.hour];
+    const labels = ['시', '일', '월', '년'];
+    const pillars = [saju.hour, saju.day, saju.month, saju.year];
     const list = [];
     for (let i = 0; i < 4; i++) {
       const p = pillars[i];
