@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="재미있는 웹 실험 공간 - 사주풀이, 편의 도구, 실험 프로젝트를 한곳에서">
+  <title>2uon | 웹 실험실</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="hub-page">
+  <!-- ============================================
+       Hero 영역: 사이트 소개 및 첫인상
+       문구 변경 시 .hub-hero__title, .hub-hero__desc 만 수정하면 됨
+       ============================================ -->
+  <header class="hub-hero">
+    <div class="hub-hero__inner">
+      <h1 class="hub-hero__title">재미있는 웹 실험 공간</h1>
+      <p class="hub-hero__desc">작은 도구와 실험 프로젝트를 모아두는 허브입니다. 사주풀이, 편의 도구, 미니 웹앱을 한눈에 탐색해 보세요.</p>
+    </div>
+  </header>
+
+  <main class="hub-main">
+    <!-- 항목 검색: hub-main 상단, 제목·설명 기준 실시간 필터 (새 카드 추가 시 자동 반영) -->
+    <div class="hub-search">
+      <input type="search" id="hub-search-input" class="hub-search__input" placeholder="제목, 설명, 태그로 검색 (예: 운세, #AI)..." autocomplete="off" aria-label="기능 항목·태그 검색">
+    </div>
+    <!-- 검색 결과 없음 메시지 (검색어 입력 시에만 표시) -->
+    <p class="hub-search-empty" id="hub-search-empty" role="status" aria-live="polite" hidden>검색 결과가 없습니다.</p>
+    <!-- 태그 필터 표시: 태그 선택 시 같은 태그만 모아서 표시 -->
+    <p class="hub-tag-filter" id="hub-tag-filter" role="status" aria-live="polite" hidden></p>
+
+    <!-- ============================================
+         기능 카테고리 섹션 (웹, 위젯 등)
+         새 카테고리 추가: .hub-section 복사 후
+         .hub-section__title, .hub-cards 영역만 수정
+         카드에 .hub-card__tags 로 태그 추가 시 검색에도 반영됨
+         ============================================ -->
+
+    <!-- 카테고리: 웹 -->
+    <section class="hub-section" id="category-web" aria-labelledby="heading-web">
+      <h2 class="hub-section__title" id="heading-web">웹</h2>
+      <div class="hub-cards">
+        <article class="hub-card hub-card--featured">
+          <h3 class="hub-card__title">사주풀이</h3>
+          <p class="hub-card__tags" aria-label="태그">
+            <button type="button" class="hub-card__tag" data-tag="운세">#운세</button>
+            <button type="button" class="hub-card__tag" data-tag="AI">#AI</button>
+          </p>
+          <p class="hub-card__desc">생년월일시를 입력하면 사주팔자를 보고 간단한 해석을 제공합니다.</p>
+          <a href="saju/" class="hub-card__link" aria-label="사주풀이 페이지로 이동">이동하기</a>
+        </article>
+        <article class="hub-card hub-card--placeholder">
+          <h3 class="hub-card__title">이미지 변환</h3>
+          <p class="hub-card__tags" aria-label="태그">
+            <button type="button" class="hub-card__tag" data-tag="이미지">#이미지</button>
+            <button type="button" class="hub-card__tag" data-tag="편의도구">#편의도구</button>
+          </p>
+          <p class="hub-card__desc">준비 중입니다.</p>
+          <span class="hub-card__link hub-card__link--disabled" aria-disabled="true">준비 중</span>
+        </article>
+        <article class="hub-card hub-card--placeholder">
+          <h3 class="hub-card__title">텍스트 툴</h3>
+          <p class="hub-card__tags" aria-label="태그">
+            <button type="button" class="hub-card__tag" data-tag="텍스트">#텍스트</button>
+            <button type="button" class="hub-card__tag" data-tag="편의도구">#편의도구</button>
+          </p>
+          <p class="hub-card__desc">준비 중입니다.</p>
+          <span class="hub-card__link hub-card__link--disabled" aria-disabled="true">준비 중</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- 카테고리: 위젯 -->
+    <section class="hub-section" id="category-widget" aria-labelledby="heading-widget">
+      <h2 class="hub-section__title" id="heading-widget">위젯</h2>
+      <div class="hub-cards">
+        <article class="hub-card">
+          <h3 class="hub-card__title">캘린더</h3>
+          <p class="hub-card__tags" aria-label="태그">
+            <button type="button" class="hub-card__tag" data-tag="캘린더">#캘린더</button>
+            <button type="button" class="hub-card__tag" data-tag="위젯">#위젯</button>
+          </p>
+          <p class="hub-card__desc">간단한 캘린더 뷰어입니다.</p>
+          <a href="calendar/" class="hub-card__link" aria-label="캘린더 페이지로 이동">이동하기</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="hub-footer">
+    <p class="hub-footer__text">GitHub Pages · 정적 사이트 허브</p>
+  </footer>
+
+  <script>
+    // 항목 검색 + 태그 필터: 검색어·선택 태그에 따라 카드 표시 (태그 클릭 시 같은 태그만 모아서 표시)
+    (function () {
+      var input = document.getElementById('hub-search-input');
+      var emptyEl = document.getElementById('hub-search-empty');
+      var tagFilterEl = document.getElementById('hub-tag-filter');
+      var cards = document.querySelectorAll('.hub-card');
+      var sections = document.querySelectorAll('.hub-section');
+      var currentTag = null;
+
+      function getCardText(card) {
+        var title = card.querySelector('.hub-card__title');
+        var desc = card.querySelector('.hub-card__desc');
+        var tagsEl = card.querySelector('.hub-card__tags');
+        return ((title && title.textContent) || '') + ' ' + ((desc && desc.textContent) || '') + ' ' + ((tagsEl && tagsEl.textContent) || '');
+      }
+
+      function getCardTagNames(card) {
+        var tagsEl = card.querySelector('.hub-card__tags');
+        if (!tagsEl) return [];
+        var buttons = tagsEl.querySelectorAll('.hub-card__tag[data-tag]');
+        var names = [];
+        buttons.forEach(function (btn) { names.push(btn.getAttribute('data-tag')); });
+        return names;
+      }
+
+      function getAllTagNames() {
+        var set = {};
+        document.querySelectorAll('.hub-card__tag[data-tag]').forEach(function (btn) {
+          set[btn.getAttribute('data-tag')] = true;
+        });
+        return Object.keys(set);
+      }
+
+      function getEffectiveTag(q, tagNames) {
+        if (!q) return currentTag;
+        var qTag = q.charAt(0) === '#' ? q.slice(1) : q;
+        for (var i = 0; i < tagNames.length; i++) {
+          if (tagNames[i].toLowerCase() === qTag.toLowerCase()) return tagNames[i];
+        }
+        return currentTag;
+      }
+
+      function filter() {
+        var q = (input.value || '').trim();
+        var qLower = q.toLowerCase();
+        var hasQuery = q.length > 0;
+        var tagNames = getAllTagNames();
+        var effectiveTag = getEffectiveTag(q, tagNames);
+        var hasTag = effectiveTag !== null;
+        var searchIsTag = hasQuery && hasTag && (qLower === effectiveTag.toLowerCase() || qLower === '#' + effectiveTag.toLowerCase());
+        var visibleCount = 0;
+
+        cards.forEach(function (card) {
+          var text = getCardText(card).toLowerCase();
+          var cardTagNames = getCardTagNames(card);
+          var searchMatch = !hasQuery || searchIsTag || text.indexOf(qLower) !== -1;
+          var tagMatch = !hasTag || cardTagNames.indexOf(effectiveTag) !== -1;
+          var match = searchMatch && tagMatch;
+          card.classList.toggle('hub-card--hidden', !match);
+          if (match) visibleCount++;
+        });
+
+        sections.forEach(function (section) {
+          var sectionCards = section.querySelectorAll('.hub-card');
+          var sectionVisible = Array.from(sectionCards).some(function (c) { return !c.classList.contains('hub-card--hidden'); });
+          section.classList.toggle('hub-section--no-results', (hasQuery || hasTag) && !sectionVisible);
+        });
+
+        if (emptyEl) {
+          emptyEl.hidden = !hasQuery || visibleCount > 0;
+        }
+
+        if (tagFilterEl) {
+          if (hasTag) {
+            tagFilterEl.hidden = false;
+            tagFilterEl.innerHTML = '태그: <span class="hub-tag-filter__tag">#' + effectiveTag + '</span> <button type="button" class="hub-tag-filter__clear" id="hub-tag-filter-clear">전체 보기</button>';
+            var clearBtn = document.getElementById('hub-tag-filter-clear');
+            if (clearBtn) clearBtn.addEventListener('click', clearTagFilter);
+          } else {
+            tagFilterEl.hidden = true;
+            tagFilterEl.innerHTML = '';
+          }
+        }
+      }
+
+      function clearTagFilter() {
+        currentTag = null;
+        if (input) input.value = '';
+        filter();
+      }
+
+      function applyTagFilter(tagName) {
+        currentTag = currentTag === tagName ? null : tagName;
+        filter();
+      }
+
+      document.querySelectorAll('.hub-card__tag').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var tag = btn.getAttribute('data-tag');
+          if (tag) applyTagFilter(tag);
+        });
+      });
+
+      if (input) {
+        input.addEventListener('input', filter);
+        input.addEventListener('search', filter);
+      }
+    })();
+  </script>
+  <!--
+    확장 가이드 (JS 자동 로딩 시):
+    1. 카테고리 데이터를 JSON 등으로 관리하고
+    2. .hub-section 별로 .hub-cards 안에 .hub-card 를 동적 생성
+    3. 클래스 규칙: .hub-card (기본), .hub-card--featured (대표 강조), .hub-card--placeholder (비활성)
+    4. 새 폴더 추가 시 index.html 에서 해당 섹션의 .hub-cards 안에
+       <article class="hub-card"> ... <a href="폴더명/">이동하기</a> </article> 복사 후 수정
+    5. 검색: .hub-card__title, .hub-card__desc, .hub-card__tags 텍스트만 있으면 자동 필터됨
+  -->
+</body>
+</html>

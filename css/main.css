@@ -1,0 +1,370 @@
+/**
+ * Hub 페이지 공통 스타일 (index.html)
+ * - 확장: 새 카드/카테고리는 동일 클래스로 추가하면 스타일 자동 적용
+ * - 카드 추가 시 .hub-card, .hub-card__title, .hub-card__desc, .hub-card__link 구조 유지
+ */
+
+/* ============================================
+   CSS 변수: 색·간격 통일 (필요 시 여기만 수정)
+   ============================================ */
+:root {
+  --hub-bg: #f8f9fa;
+  --hub-surface: #ffffff;
+  --hub-text: #1a1a1a;
+  --hub-text-muted: #5a5a5a;
+  --hub-accent: #2563eb;
+  --hub-accent-hover: #1d4ed8;
+  --hub-featured-bg: #eff6ff;
+  --hub-featured-border: #93c5fd;
+  --hub-border: #e5e7eb;
+  --hub-radius: 10px;
+  --hub-radius-card: 12px;
+  --hub-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --hub-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --hub-space-xs: 0.5rem;
+  --hub-space-sm: 1rem;
+  --hub-space-md: 1.5rem;
+  --hub-space-lg: 2rem;
+  --hub-space-xl: 3rem;
+  --hub-max-width: 960px;
+}
+
+/* ============================================
+   기본 리셋 및 레이아웃
+   ============================================ */
+.hub-page {
+  margin: 0;
+  font-family: "Segoe UI", "Malgun Gothic", sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--hub-text);
+  background: var(--hub-bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hub-main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--hub-max-width);
+  margin: 0 auto;
+  padding: var(--hub-space-lg) var(--hub-space-md);
+  box-sizing: border-box;
+}
+
+/* ============================================
+   Hero 영역
+   ============================================ */
+.hub-hero {
+  background: var(--hub-surface);
+  border-bottom: 1px solid var(--hub-border);
+  padding: var(--hub-space-xl) var(--hub-space-md);
+}
+
+.hub-hero__inner {
+  max-width: var(--hub-max-width);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hub-hero__title {
+  margin: 0 0 var(--hub-space-sm);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  color: var(--hub-text);
+}
+
+.hub-hero__desc {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--hub-text-muted);
+  max-width: 36em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ============================================
+   항목 검색 (hub-main 내부, 구글 검색창 스타일)
+   ============================================ */
+.hub-search {
+  margin-bottom: var(--hub-space-lg);
+}
+
+.hub-search__label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--hub-text-muted);
+  margin-bottom: var(--hub-space-xs);
+}
+
+.hub-search__input {
+  width: 100%;
+  padding: var(--hub-space-sm) var(--hub-space-md);
+  font-size: 1rem;
+  border: 1px solid var(--hub-border);
+  border-radius: 24px;
+  background: var(--hub-surface);
+  color: var(--hub-text);
+  box-sizing: border-box;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.hub-search__input::placeholder {
+  color: var(--hub-text-muted);
+}
+
+.hub-search__input:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hub-search__input:focus {
+  outline: none;
+  border-color: var(--hub-accent);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12), 0 0 0 1px var(--hub-accent);
+}
+
+.hub-search-empty {
+  margin: calc(-1 * var(--hub-space-md)) 0 var(--hub-space-md);
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--hub-text-muted);
+}
+
+/* 태그 필터 바: 태그 선택 시 "태그: #운세 [전체 보기]" 표시 */
+.hub-tag-filter {
+  margin: calc(-1 * var(--hub-space-sm)) 0 var(--hub-space-md);
+  font-size: 0.9rem;
+  color: var(--hub-text-muted);
+}
+
+.hub-tag-filter__tag {
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  color: var(--hub-accent);
+  font-weight: 500;
+  background: var(--hub-featured-bg);
+  border: 1px solid var(--hub-featured-border);
+  border-radius: 999px;
+}
+
+.hub-tag-filter__clear {
+  margin-left: var(--hub-space-sm);
+  padding: 0.25em 0.65em;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: var(--hub-accent);
+  background: var(--hub-featured-bg);
+  border: 1px solid var(--hub-accent);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.hub-tag-filter__clear:hover {
+  background: var(--hub-accent);
+  color: var(--hub-surface);
+}
+
+/* 검색 시 숨김: 카드 */
+.hub-card--hidden {
+  display: none !important;
+}
+
+/* 검색 시 해당 카테고리에 매칭 항목이 없으면 섹션 숨김 */
+.hub-section--no-results {
+  display: none;
+}
+
+/* ============================================
+   카테고리 섹션
+   새 카테고리 추가 시 동일 .hub-section 블록 사용
+   ============================================ */
+.hub-section {
+  margin-bottom: var(--hub-space-xl);
+}
+
+.hub-section:last-of-type {
+  margin-bottom: var(--hub-space-lg);
+}
+
+.hub-section__title {
+  margin: 0 0 var(--hub-space-sm);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--hub-text);
+  padding-bottom: var(--hub-space-xs);
+  border-bottom: 2px solid var(--hub-accent);
+  display: inline-block;
+}
+
+.hub-section__note {
+  margin: 0 0 var(--hub-space-md);
+  font-size: 0.9rem;
+  color: var(--hub-text-muted);
+}
+
+/* 카드 그리드: 카드 개수 늘어나도 자동 줄바꿈 */
+.hub-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--hub-space-md);
+}
+
+/* ============================================
+   기능 카드 (공통)
+   새 카드 추가: .hub-card + .hub-card__title, __desc, __link 동일 구조
+   ============================================ */
+.hub-card {
+  background: var(--hub-surface);
+  border: 1px solid var(--hub-border);
+  border-radius: var(--hub-radius-card);
+  padding: var(--hub-space-md);
+  box-shadow: var(--hub-shadow);
+  transition: box-shadow 0.2s, border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.hub-card:hover {
+  box-shadow: var(--hub-shadow-hover);
+  border-color: var(--hub-accent);
+}
+
+.hub-card__title {
+  margin: 0 0 var(--hub-space-xs);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--hub-text);
+}
+
+/* 카드 태그 (#운세 #AI 등): 클릭 시 같은 태그만 모아서 표시, 검색에도 반영 */
+.hub-card__tags {
+  margin: 0 0 var(--hub-space-sm);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hub-space-xs);
+}
+
+.hub-card__tag {
+  padding: 0.25em 0.6em;
+  font-size: inherit;
+  font-family: inherit;
+  color: var(--hub-accent);
+  background: var(--hub-featured-bg);
+  border: 1px solid var(--hub-featured-border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.hub-card__tag:hover {
+  background: rgba(37, 99, 235, 0.15);
+  border-color: var(--hub-accent);
+}
+
+.hub-card__tag:focus {
+  outline: none;
+  border-color: var(--hub-accent);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.hub-card__desc {
+  margin: 0 0 var(--hub-space-sm);
+  font-size: 0.9rem;
+  color: var(--hub-text-muted);
+  flex: 1;
+}
+
+.hub-card__link {
+  display: inline-block;
+  padding: var(--hub-space-xs) var(--hub-space-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--hub-accent);
+  text-decoration: none;
+  border: 1px solid var(--hub-accent);
+  border-radius: var(--hub-radius);
+  transition: background 0.2s, color 0.2s;
+  align-self: flex-start;
+}
+
+.hub-card__link:hover {
+  background: var(--hub-accent);
+  color: var(--hub-surface);
+}
+
+/* 대표 기능 강조 (예: 사주풀이) */
+.hub-card--featured {
+  background: var(--hub-featured-bg);
+  border-color: var(--hub-featured-border);
+}
+
+.hub-card--featured .hub-card__link {
+  background: var(--hub-accent);
+  color: var(--hub-surface);
+  border-color: var(--hub-accent);
+}
+
+.hub-card--featured .hub-card__link:hover {
+  background: var(--hub-accent-hover);
+  border-color: var(--hub-accent-hover);
+}
+
+/* 준비 중 / 비활성 카드 */
+.hub-card--placeholder {
+  opacity: 0.85;
+}
+
+.hub-card__link--disabled {
+  color: var(--hub-text-muted);
+  border-color: var(--hub-border);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ============================================
+   푸터
+   ============================================ */
+.hub-footer {
+  padding: var(--hub-space-md);
+  text-align: center;
+  border-top: 1px solid var(--hub-border);
+  background: var(--hub-surface);
+}
+
+.hub-footer__text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--hub-text-muted);
+}
+
+/* ============================================
+   모바일 대응
+   ============================================ */
+@media (max-width: 640px) {
+  .hub-main {
+    padding: var(--hub-space-md) var(--hub-space-sm);
+  }
+
+  .hub-hero {
+    padding: var(--hub-space-lg) var(--hub-space-sm);
+  }
+
+  .hub-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+  카테고리 확장 방법:
+  1. index.html 에 <section class="hub-section" id="category-새이름"> 복사
+  2. .hub-section__title 내용 변경
+  3. .hub-cards 안에 <article class="hub-card"> ... </article> 복사 후 제목·설명·href 수정
+  4. 대표 기능이면 .hub-card 에 hub-card--featured 추가
+  5. 아직 미개발이면 .hub-card--placeholder, 버튼은 .hub-card__link--disabled 사용
+*/
