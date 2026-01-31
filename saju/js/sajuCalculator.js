@@ -21,9 +21,9 @@
     '수': { class: 'ohang-su', bg: 'bg-ohang-su' }
   };
 
-  // 1900-01-01 = 庚子日 (경자일) = 60갑자 36번째 (0-based: 35)
-  const BASE_JD = 2415021;
-  const BASE_DAY_INDEX = 36;
+  // 1900-03-01 = 癸酉日 (계유일) = 60갑자 10번째 (0-based: 9) - 일본 こよみのページ 기준
+  const BASE_JD = 2415079;
+  const BASE_DAY_INDEX = 9;
 
   function toJulianDay(year, month, day) {
     if (month <= 2) {
