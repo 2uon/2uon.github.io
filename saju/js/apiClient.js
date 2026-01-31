@@ -1,23 +1,22 @@
 /**
  * Gemini API 서버리스 엔드포인트 클라이언트
- * API Key는 프론트엔드에 포함하지 않고, 별도 서버리스 함수에서 환경변수로 사용
+ * 단일 요청으로 전체 사주 풀이 JSON 응답 수신
  */
 (function(global) {
   'use strict';
 
-  // 서버리스 API 베이스 URL (배포 시 해당 도메인으로 변경)
   const API_BASE = (function() {
     const meta = document.querySelector('meta[name="api-base"]');
     if (meta && meta.content) return meta.content.replace(/\/$/, '');
-    return ''; // 상대경로 사용 시 빈 문자열
+    return '';
   })();
 
-  async function callGemini(type, values) {
+  async function callGemini(values) {
     const url = API_BASE ? API_BASE + '/api/gemini' : 'api/gemini';
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: type, values: values })
+      body: JSON.stringify({ values: values })
     });
 
     if (!res.ok) {

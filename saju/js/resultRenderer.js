@@ -153,6 +153,43 @@
     container.appendChild(div);
   }
 
+  const FORTUNE_CARDS = [
+    { key: 'summary', title: '전체 성향 요약' },
+    { key: 'year', title: '올해 년운' },
+    { key: 'month', title: '이번 달 월운' },
+    { key: 'day', title: '오늘 일운' }
+  ];
+  const RELATION_CARDS = [
+    { key: 'family', title: '가족과의 관계' },
+    { key: 'friends', title: '친구와의 관계' },
+    { key: 'relatives', title: '친척과의 관계' }
+  ];
+  const ALL_KEYS = ['summary', 'year', 'month', 'day', 'family', 'friends', 'relatives'];
+  const STORAGE_PREFIX = 'saju_fortune_';
+
+  function getCacheKey(values) {
+    return STORAGE_PREFIX + [values.birthDate, values.birthHour, values.birthMin, values.gender].join('_');
+  }
+
+  function getCachedFortune(cacheKey) {
+    try {
+      var raw = sessionStorage.getItem(cacheKey);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return null;
+      var valid = ALL_KEYS.every(function(k) { return typeof parsed[k] === 'string'; });
+      return valid ? parsed : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function setCachedFortune(cacheKey, data) {
+    try {
+      sessionStorage.setItem(cacheKey, JSON.stringify(data));
+    } catch (e) { /* quota exceeded 등 무시 */ }
+  }
+
   function extractValues(saju) {
     return {
       gender: saju.gender,
@@ -166,14 +203,20 @@
     };
   }
 
-  async function fetchAndRender(apiClient, saju, type, cardEl) {
-    try {
-      const values = extractValues(saju);
-      const text = await apiClient.callGemini(type, values);
-      replaceSkeletonWithContent(cardEl, text);
-    } catch (err) {
-      replaceSkeletonWithContent(cardEl, '풀이를 불러오는 데 실패했습니다. 나중에 다시 시도해 주세요.');
+  function parseFortuneJson(text) {
+    const cleaned = text.replace(/^```json\s*|\s*```$/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+    if (!parsed || typeof parsed !== 'object') {
+      throw new Error('유효하지 않은 응답 형식입니다.');
     }
+    return parsed;
+  }
+
+  function showErrorOnAllCards(cardMap, message) {
+    ALL_KEYS.forEach(function(key) {
+      var el = cardMap[key];
+      if (el) replaceSkeletonWithContent(el, message);
+    });
   }
 
   async function renderAISection(container, saju, apiClient) {
@@ -181,36 +224,57 @@
     section.className = 'ai-section';
     container.appendChild(section);
 
-    const fortuneCards = [
-      { key: 'summary', title: '전체 성향 요약' },
-      { key: 'year', title: '올해 년운' },
-      { key: 'month', title: '이번 달 월운' },
-      { key: 'day', title: '오늘 일운' }
-    ];
-    const relationCards = [
-      { key: 'family', title: '가족과의 관계' },
-      { key: 'friends', title: '친구와의 관계' },
-      { key: 'relatives', title: '친척과의 관계' }
-    ];
+    const cardMap = {};
 
     var title1 = document.createElement('h3');
     title1.className = 'ai-section-title';
     title1.textContent = 'AI 사주 풀이 (년월일운)';
     section.appendChild(title1);
-    for (var i = 0; i < fortuneCards.length; i++) {
-      var c = fortuneCards[i];
-      var cardEl = renderSkeletonCard(section, c.title, c.key);
-      fetchAndRender(apiClient, saju, c.key, cardEl);
-    }
+    FORTUNE_CARDS.forEach(function(c) {
+      cardMap[c.key] = renderSkeletonCard(section, c.title, c.key);
+    });
 
     var title2 = document.createElement('h3');
     title2.className = 'ai-section-title';
     title2.textContent = 'AI 사주 풀이 (관계)';
     section.appendChild(title2);
-    for (var j = 0; j < relationCards.length; j++) {
-      var c2 = relationCards[j];
-      var cardEl2 = renderSkeletonCard(section, c2.title, c2.key);
-      fetchAndRender(apiClient, saju, c2.key, cardEl2);
+    RELATION_CARDS.forEach(function(c) {
+      cardMap[c.key] = renderSkeletonCard(section, c.title, c.key);
+    });
+
+    var values = extractValues(saju);
+    var cacheKey = getCacheKey(values);
+    var parsed = getCachedFortune(cacheKey);
+
+    if (parsed) {
+      ALL_KEYS.forEach(function(key) {
+        var content = parsed[key];
+        var cardEl = cardMap[key];
+        if (cardEl) {
+          replaceSkeletonWithContent(cardEl, typeof content === 'string' && content ? content : '해당 내용이 없습니다.');
+        }
+      });
+      return section;
+    }
+
+    try {
+      var text = await apiClient.callGemini(values);
+      try {
+        parsed = parseFortuneJson(text);
+      } catch (parseErr) {
+        showErrorOnAllCards(cardMap, '응답을 파싱하는 데 실패했습니다. 나중에 다시 시도해 주세요.');
+        return section;
+      }
+      setCachedFortune(cacheKey, parsed);
+      ALL_KEYS.forEach(function(key) {
+        var content = parsed[key];
+        var cardEl = cardMap[key];
+        if (cardEl) {
+          replaceSkeletonWithContent(cardEl, typeof content === 'string' && content ? content : '해당 내용이 없습니다.');
+        }
+      });
+    } catch (err) {
+      showErrorOnAllCards(cardMap, '풀이를 불러오는 데 실패했습니다. 나중에 다시 시도해 주세요.');
     }
 
     return section;
