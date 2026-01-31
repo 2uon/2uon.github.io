@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="사주풀이 결과 - AI가 풀어주는 사주팔자">
+  <title>사주풀이 결과</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="api-base" content="https://sdfipp.netlify.app">
+</head>
+<body class="destiny-page">
+  <div class="destiny-container">
+    <div id="top-actions" class="page-top-actions"></div>
+    <header class="destiny-header">
+      <h1>사주풀이 결과</h1>
+      <p>당신의 사주팔자와 AI 기반 풀이를 확인해 보세요.</p>
+    </header>
+
+    <main class="destiny-main">
+      <div id="error-area"></div>
+      <div id="saju-area"></div>
+      <div id="ai-area"></div>
+    </main>
+
+    <footer class="destiny-footer">
+      <a href="index.html" class="link-back">다시 입력하기</a>
+      <a href="../index.html" class="link-back" style="margin-left:12px;">메인으로</a>
+      <a href="index.html" class="btn-retry">다시하기</a>
+    </footer>
+  </div>
+
+  <script src="js/sajuCalculator.js"></script>
+  <script src="js/apiClient.js"></script>
+  <script src="js/resultRenderer.js"></script>
+  <script>
+    (function() {
+      const params = new URLSearchParams(location.search);
+      const birth = params.get('birth');
+      const time = params.get('time');
+      const min = params.get('min') || '0';
+      const gender = params.get('gender') || 'male';
+      const calendar = params.get('calendar') || 'solar';
+
+      const errorArea = document.getElementById('error-area');
+      const sajuArea = document.getElementById('saju-area');
+      const aiArea = document.getElementById('ai-area');
+
+      if (!birth || time === null || time === '') {
+        ResultRenderer.renderErrorCard(errorArea, '생년월일과 출생시간을 입력해 주세요. 입력 페이지로 이동합니다.');
+        setTimeout(function() { location.href = 'index.html'; }, 2500);
+        return;
+      }
+
+      let saju;
+      try {
+        saju = SajuCalculator.calculate(birth, time, gender, min);
+      } catch (e) {
+        ResultRenderer.renderErrorCard(errorArea, '잘못된 입력입니다. 입력 페이지에서 다시 확인해 주세요.');
+        return;
+      }
+
+      ResultRenderer.renderSajuTable(sajuArea, saju);
+
+      var queryParams = { birth: birth, time: time, min: min, gender: gender, calendar: calendar };
+      var detailHref = 'detail.html?' + new URLSearchParams(queryParams).toString();
+      var topActions = document.getElementById('top-actions');
+      if (topActions) {
+        topActions.innerHTML = '<a href="' + detailHref + '" class="btn-detail" id="detail-link">상세 사주 보기</a>';
+      }
+
+      ResultRenderer.renderAISection(aiArea, saju, DestinyAPI);
+    })();
+  </script>
+</body>
+</html>

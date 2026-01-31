@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="사주 상세 분석 - 합, 충, 살, 십성, 오행 비율">
+  <title>사주 상세 분석</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="destiny-page">
+  <div class="destiny-container" id="detail-container">
+    <div class="page-top-actions">
+      <a href="result.html" id="result-link" class="btn-detail">결과로 돌아가기</a>
+    </div>
+    <header class="destiny-header">
+      <h1>사주 상세 분석</h1>
+      <p>합·충·살·십성·오행 비율을 확인해 보세요.</p>
+    </header>
+
+    <main class="destiny-main">
+      <div id="error-area"></div>
+
+      <section class="detail-section">
+        <h3>사주팔자</h3>
+        <div id="saju-table"></div>
+      </section>
+
+      <section class="detail-section">
+        <h3>합 (六合)</h3>
+        <p class="section-desc">지지 간의 조화로운 관계입니다.</p>
+        <ul class="relationship-list" id="hap-list"></ul>
+      </section>
+
+      <section class="detail-section">
+        <h3>충 (六沖)</h3>
+        <p class="section-desc">지지 간의 상극 관계입니다.</p>
+        <ul class="relationship-list" id="chung-list"></ul>
+      </section>
+
+      <section class="detail-section">
+        <h3>십성 관계</h3>
+        <p class="section-desc">일간(日干)을 기준으로 한 각 기둥과의 관계입니다.</p>
+        <ul class="relationship-list" id="sal-list"></ul>
+      </section>
+
+      <section class="detail-section">
+        <h3>오행 비율</h3>
+        <p class="section-desc">사주에 포함된 오행(목·화·토·금·수)의 비율입니다.</p>
+        <div id="ohang-chart" class="ohang-chart"></div>
+      </section>
+    </main>
+
+    <footer class="destiny-footer">
+      <a href="index.html" class="link-back">다시 입력</a>
+      <a href="../index.html" class="link-back" style="margin-left:12px;">메인으로</a>
+      <a href="index.html" class="btn-retry">다시하기</a>
+    </footer>
+  </div>
+
+  <script src="js/sajuCalculator.js"></script>
+  <script src="js/resultRenderer.js"></script>
+  <script src="js/detailRenderer.js"></script>
+  <script>
+    (function() {
+      const params = new URLSearchParams(location.search);
+      const birth = params.get('birth');
+      const time = params.get('time');
+      const min = params.get('min') || '0';
+      const gender = params.get('gender') || 'male';
+      const calendar = params.get('calendar') || 'solar';
+
+      const errorArea = document.getElementById('error-area');
+      const container = document.getElementById('detail-container');
+      const resultLink = document.getElementById('result-link');
+
+      if (resultLink && birth && time) {
+        resultLink.href = 'result.html?' + new URLSearchParams({ birth: birth, time: time, min: min, gender: gender, calendar: calendar }).toString();
+      }
+
+      if (!birth || time === null || time === '') {
+        ResultRenderer.renderErrorCard(errorArea, '생년월일과 출생시간이 필요합니다. 입력 페이지로 이동합니다.');
+        setTimeout(function() { location.href = 'index.html'; }, 2500);
+        return;
+      }
+
+      let saju;
+      try {
+        saju = SajuCalculator.calculate(birth, time, gender, min);
+      } catch (e) {
+        ResultRenderer.renderErrorCard(errorArea, '잘못된 입력입니다.');
+        return;
+      }
+
+      DetailRenderer.renderDetail(container, saju);
+    })();
+  </script>
+</body>
+</html>
