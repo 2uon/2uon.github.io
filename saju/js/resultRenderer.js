@@ -44,12 +44,35 @@
     `;
     const html = noSection ? tableHtml : `
       <section class="detail-section">
-        <h3>사주팔자</h3>
+        <h3><a href="dict.html#saju-palja" class="dict-link">사주팔자</a></h3>
         ${tableHtml}
       </section>
     `;
     container.innerHTML = html;
   }
+
+  const DETAIL_INFO_TEXTS = {
+    sipseong: {
+      what: '십성(十星)',
+      desc: '일간(日干, 일주의 천간)을 기준으로 사주 각 기둥의 천간·지지가 일간과 어떤 관계인지 나타냅니다.',
+      criteria: '비견/겁재, 식신/상관, 편재/정재, 편관/정관, 편인/정인 등 10가지 관계로 분류됩니다. 성격, 재물, 직업, 인간관계 해석에 활용합니다.'
+    },
+    hapchunghyeongpahae: {
+      what: '합·충·형·파·해',
+      desc: '지지(地支) 간의 상호작용 관계입니다. 합은 조화, 충은 상극, 형·파·해는 다양한 작용을 나타냅니다.',
+      criteria: '육합(六合)·육충(六沖)·형(刑)·파(破)·해(害)는 12지지의 조합에 따라 결정되며, 사주의 길흉과 인간관계·건강 해석에 활용됩니다.'
+    },
+    ohang: {
+      what: '오행 비율',
+      desc: '사주팔자에 포함된 목·화·토·금·수 다섯 원소의 비율을 시각화합니다.',
+      criteria: '년·월·일·시 네 기둥의 천간·지지(총 8글자)에 포함된 오행 개수를 합산해 비율을 계산합니다. 균형과 편중을 파악하는 데 활용됩니다.'
+    },
+    daewoon: {
+      what: '대운(大運)',
+      desc: '10년 단위로 바뀌는 운의 흐름입니다. 출생 후 첫 대운 시작 시점은 성별과 연·월에 따라 다릅니다.',
+      criteria: '월주를 기준으로 역순 또는 순행하여 10년마다 대운이 바뀝니다. 해당 기간의 간지가 사주와 어떻게 작용하는지로 운세를 판단합니다.'
+    }
+  };
 
   const INFO_TEXTS = {
     summary: {
@@ -90,7 +113,7 @@
   };
 
   function showInfoModal(key) {
-    const info = INFO_TEXTS[key];
+    const info = INFO_TEXTS[key] || DETAIL_INFO_TEXTS[key];
     if (!info) return;
     const overlay = document.createElement('div');
     overlay.className = 'info-modal-overlay';
@@ -289,6 +312,7 @@
     renderSajuTable,
     renderAISection,
     renderErrorCard,
-    setDetailLink
+    setDetailLink,
+    showInfoModal
   };
 })(typeof window !== 'undefined' ? window : this);
