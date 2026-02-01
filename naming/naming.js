@@ -294,9 +294,91 @@
     return result;
   }
 
+  // 발음 점수: 부드러운 자음(ㄴㄹㅁㅇㅅㅈㅎ) / 강한 자음(ㄱㄷㅂㅋㅌㅍㅊ, 쌍자음 포함)
+  // 초성 인덱스(0~18): ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ
+  var SOFT_CHO = { 2: 1, 5: 1, 6: 1, 11: 1, 9: 1, 12: 1, 18: 1 };
+  var STRONG_CHO = { 0: 1, 1: 1, 3: 1, 4: 1, 7: 1, 8: 1, 10: 1, 13: 1, 14: 1, 15: 1, 16: 1, 17: 1 };
+
   /**
-   * 이름 발음 점수 (0~10점)
-   * - 받침+초성 연음 흐름, 자음 조합, 모음 조화 고려
+   * 이름 발음 점수 (한국어 발음 흐름 반영)
+   * - 음절 연결(받침+초성), 강한 자음 연속, 이름 길이, 받침 개수 반영
+   * @param {string} name - 전체 이름 (성+이름, 한글)
+   * @returns {{ rawScore: number, normalizedScore: number, reasons: string[] }}
+   */
+  function calculatePronunciationScore(name) {
+    var str = (name || '').trim();
+    var syllables = decomposeHangul(str);
+    if (syllables.length < 2) {
+      return { rawScore: 5, normalizedScore: 5, reasons: [] };
+    }
+
+    var rawScore = 5;
+    var reasons = [];
+
+    // 1. 음절 연결 규칙 (이전 종성 ↔ 다음 초성)
+    for (var i = 0; i < syllables.length - 1; i++) {
+      var curr = syllables[i];
+      var next = syllables[i + 1];
+      var hasJong = curr.jong > 0;
+      var nextCho = next.cho;
+      if (!hasJong) continue;
+      if (nextCho === 11) {
+        rawScore += 3;
+        reasons.push('받침+모음 연결');
+      } else if (SOFT_CHO[nextCho]) {
+        rawScore += 1;
+        reasons.push('받침+부드러운 자음');
+      } else if (STRONG_CHO[nextCho]) {
+        rawScore -= 3;
+        reasons.push('받침+강한 자음 충돌');
+      }
+    }
+
+    // 2. 강한 자음 연속 2회 이상 → -4
+    var strongRun = 0;
+    for (var j = 0; j < syllables.length; j++) {
+      if (STRONG_CHO[syllables[j].cho]) {
+        strongRun++;
+        if (strongRun >= 2) {
+          rawScore -= 4;
+          reasons.push('강한 자음 연속');
+          break;
+        }
+      } else {
+        strongRun = 0;
+      }
+    }
+
+    // 3. 이름 길이 점수
+    var len = syllables.length;
+    if (len === 2) {
+      rawScore += 2;
+      reasons.push('2음절');
+    } else if (len === 3) {
+      rawScore += 1;
+      reasons.push('3음절');
+    } else if (len >= 4) {
+      rawScore -= 2;
+      reasons.push('4음절 이상');
+    }
+
+    // 4. 받침 2개 이상 → -3
+    var jongCount = 0;
+    for (var k = 0; k < syllables.length; k++) {
+      if (syllables[k].jong > 0) jongCount++;
+    }
+    if (jongCount >= 2) {
+      rawScore -= 3;
+      reasons.push('받침 2개 이상');
+    }
+
+    var normalizedScore = Math.max(0, Math.min(10, rawScore));
+    normalizedScore = Math.round(normalizedScore * 10) / 10;
+    return { rawScore: rawScore, normalizedScore: normalizedScore, reasons: reasons };
+  }
+
+  /**
+   * 성+이름 음을 합쳐 발음 점수 계산 후, 기존 API 형식으로 반환
    * @param {string} surname - 성
    * @param {string} r1 - 이름 첫 글자 음
    * @param {string} r2 - 이름 둘째 글자 음
@@ -304,43 +386,22 @@
    */
   function getPronunciationScore(surname, r1, r2) {
     var full = (surname || '') + (r1 || '') + (r2 || '');
-    if (full.length < 2) return { score: 5, reason: '' };
-    var syllables = decomposeHangul(full);
-    if (syllables.length < 2) return { score: 5, reason: '' };
-    var score = 5;
-    var reasons = [];
-    for (var i = 0; i < syllables.length - 1; i++) {
-      var curr = syllables[i];
-      var next = syllables[i + 1];
-      var currCho = curr.cho;
-      var currJong = curr.jong;
-      var nextCho = next.cho;
-      var nextJung = next.jung;
-      if (currJong === 8 && nextCho === 2) {
-        score -= 2;
-        reasons.push('ㄹㄴ');
-      }
-      if (currJong === 2 && nextCho === 8) {
-        score -= 2;
-        reasons.push('ㄴㄹ');
-      }
-      if (currJong === 4 && nextCho === 4) {
-        score -= 1;
-        reasons.push('ㄷㄷ');
-      }
-      if (curr.jung === nextJung && curr.cho === nextCho) {
-        score -= 2;
-        reasons.push('동음반복');
-      }
+    var result = calculatePronunciationScore(full);
+    var reasonText = summarizePronunciationReasons(result.reasons, result.normalizedScore);
+    return { score: result.normalizedScore, reason: reasonText };
+  }
+
+  function summarizePronunciationReasons(reasons, normalizedScore) {
+    if (!reasons || reasons.length === 0) {
+      return normalizedScore >= 7 ? '발음 양호' : '';
     }
-    if (syllables.length >= 2) {
-      var jungs = syllables.map(function(s) { return s.jung; });
-      var hasVariety = jungs.some(function(j, i) { return i === 0 || j !== jungs[i - 1]; });
-      if (hasVariety && score >= 5) score += 2;
-      if (reasons.length === 0 && score < 10) score += 3;
-    }
-    score = Math.max(0, Math.min(10, score));
-    return { score: score, reason: reasons.length ? reasons.join(', ') : (score >= 7 ? '발음 양호' : '') };
+    var seen = {};
+    var unique = reasons.filter(function(r) { if (seen[r]) return false; seen[r] = 1; return true; });
+    var bad = ['받침+강한 자음 충돌', '강한 자음 연속', '받침 2개 이상', '4음절 이상'];
+    var hasBad = unique.some(function(r) { return bad.indexOf(r) !== -1; });
+    if (hasBad && normalizedScore < 5) return '받침 충돌이 많아 다소 무거운 발음';
+    if (unique.indexOf('받침+모음 연결') !== -1 && normalizedScore >= 6) return '받침과 모음 연결이 자연스러움';
+    return unique.slice(0, 2).join(', ');
   }
 
   /**
@@ -697,6 +758,7 @@
     getRecommendations: getRecommendations,
     getHanjaByReading: getHanjaByReading,
     parseParams: parseParams,
+    calculatePronunciationScore: calculatePronunciationScore,
     OHANG_COLORS: OHANG_COLORS
   };
 })(typeof window !== 'undefined' ? window : this);

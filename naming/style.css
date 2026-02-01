@@ -911,6 +911,17 @@
   color: #999;
 }
 
+.recommendation-card .rec-pron {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.recommendation-card .rec-pron-reason {
+  font-size: 0.75rem;
+  color: #888;
+}
+
 .no-results {
   padding: 20px;
   text-align: center;
