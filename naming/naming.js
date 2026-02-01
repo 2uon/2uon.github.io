@@ -300,16 +300,41 @@
     return result;
   }
 
+  /** 현재 페이지와 같은 디렉터리 기준 URL (GitHub Pages·로컬 공통) */
+  function getBaseUrl() {
+    if (typeof window === 'undefined') return '';
+    try {
+      if (document && document.baseURI) {
+        var dir = new URL('./', document.baseURI);
+        return dir.href;
+      }
+    } catch (e) { /* ignore */ }
+    var loc = window.location;
+    if (!loc) return '';
+    var origin = loc.origin || (loc.protocol + '//' + (loc.host || ''));
+    var pathname = loc.pathname || '';
+    var i = pathname.lastIndexOf('/');
+    return origin + (i >= 0 ? pathname.substring(0, i + 1) : '/');
+  }
+
   function loadHanjaXml() {
+    var base = getBaseUrl();
     var promises = HANJA_FILES.map(function(f) {
-      return fetch(f).then(function(res) {
-        if (!res.ok) throw new Error('Failed to load ' + f);
+      var url = base ? (base.replace(/\/$/, '') + '/' + f) : f;
+      return fetch(url).then(function(res) {
+        if (!res.ok) throw new Error('Failed to load ' + f + ' (status ' + res.status + ')');
         return res.text();
       });
     });
     return Promise.all(promises).then(function(texts) {
       var all = [];
-      texts.forEach(function(xml) { all = all.concat(parseHanjaXml(xml)); });
+      for (var i = 0; i < texts.length; i++) {
+        try {
+          all = all.concat(parseHanjaXml(texts[i]));
+        } catch (e) {
+          throw new Error('XML 파싱 실패: ' + HANJA_FILES[i] + ' - ' + (e && e.message ? e.message : String(e)));
+        }
+      }
       return all;
     });
   }
