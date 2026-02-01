@@ -415,6 +415,33 @@
   border-color: #22c55e;
 }
 
+/* info-btn - 모든 인포메이션 버튼 공통 스타일 */
+.info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.info-btn:hover {
+  background: #1a1a1a;
+  color: #fff;
+}
+
 /* info-btn 클릭 시 표시되는 모달 (사주 detail.html 패턴) */
 .info-modal-overlay {
   position: fixed;
@@ -618,28 +645,6 @@
 .result-section-title .dict-link:hover {
   color: #666;
   text-decoration: underline;
-}
-
-.result-section-title .info-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.06);
-  color: #666;
-  font-size: 0.85rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-
-.result-section-title .info-btn:hover {
-  background: #1a1a1a;
-  color: #fff;
 }
 
 .section-desc {
