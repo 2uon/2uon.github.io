@@ -1,14 +1,27 @@
 /**
  * 한자 데이터 정리 스크립트
  * 
- * 이름에서 거의 사용되지 않는 음(reading)을 가진 한자를 제거하고,
- * 시대별 사용 패턴에 따라 era 필드를 조정합니다.
+ * 1. 불용한자(문자 기준) 제거 - 성명학·훈민정음 오행성명 등에서 기피하는 한자
+ * 2. 이름에서 거의 사용되지 않는 음(reading) 제거
+ * 3. 시대별 사용 패턴에 따라 era 필드 조정
  * 
+ * 참고: 김만태 훈민정음 오행성명, 베베플러스 불용한자 등
  * 실행: node cleanup-hanja.js
  */
 
 const fs = require('fs');
 const path = require('path');
+
+// 불용한자 (문자 기준) - 작명 시 기피하는 한자
+// 참고: https://blog.naver.com/ware4u/223122482722, https://bebeplus.kr/article/도장인장-지식/7/207
+const EXCLUDE_CHARS = new Set([
+  '一',   // 숫자, 장남만 사용 가능
+  '陵',   // 능침(무덤) 연상
+  '甁',   // 병(病)과 음 혼동, 항아리
+  '夜',   // 밤(어둠) 연상
+  '冥',   // 어둡다
+  '默',   // 잠잠하다 (이름에 부적절)
+]);
 
 // 이름에서 자주 사용되는 음 (시대별 분류)
 // 제공된 트렌드 데이터 기반
@@ -172,8 +185,12 @@ function processFile(filename) {
   
   const originalCount = hanjaList.length;
   
-  // 필터링: 제외할 음 삭제
-  const filtered = hanjaList.filter(h => !EXCLUDE_READINGS.has(h.reading));
+  // 필터링: 불용한자(문자) + 제외할 음 삭제
+  const filtered = hanjaList.filter(h => {
+    if (EXCLUDE_CHARS.has(h.char)) return false;
+    if (EXCLUDE_READINGS.has(h.reading)) return false;
+    return true;
+  });
   
   // era 조정
   const adjusted = filtered.map(h => ({
@@ -192,12 +209,15 @@ function processFile(filename) {
   
   console.log(`${filename}: ${originalCount}개 → ${adjusted.length}개 (${removedCount}개 삭제)`);
   
-  // 삭제된 음 목록
+  const removedChars = hanjaList.filter(h => EXCLUDE_CHARS.has(h.char)).map(h => h.char + '(' + h.reading + ')');
   const removedReadings = [...new Set(
     hanjaList
       .filter(h => EXCLUDE_READINGS.has(h.reading))
       .map(h => h.reading)
   )];
+  if (removedChars.length > 0) {
+    console.log(`  불용한자(문자): ${removedChars.join(', ')}`);
+  }
   if (removedReadings.length > 0) {
     console.log(`  삭제된 음: ${removedReadings.join(', ')}`);
   }
