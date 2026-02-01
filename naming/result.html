@@ -27,43 +27,82 @@
         <!-- 성 한자 추천 -->
         <div class="surname-hanja-result" id="surname-hanja-result" hidden></div>
 
-        <!-- 사주 오행 요약 -->
-        <section class="result-section" id="ohang-section">
-          <h2 class="result-section-title">
-            <a href="./dict.html#ohang" class="dict-link">오행</a> 분석
-            <button type="button" class="info-btn" data-info-key="ohang" aria-label="오행 설명 보기" title="설명">ⓘ</button>
-          </h2>
-          <p class="section-desc">부족한 기운을 이름으로 보완할 수 있습니다.</p>
-          <div class="ohang-chart" id="ohang-chart"></div>
-          <div class="ohang-need-table-wrap" id="ohang-need-table-wrap">
-            <p class="ohang-need-table-caption">
-              필요한 기운 요약
-              <button type="button" class="info-btn" data-info-key="ohangNeedTable" aria-label="필요한 기운·보강·없어야 기운 설명 보기" title="설명">ⓘ</button>
-            </p>
-            <table class="ohang-need-table" id="ohang-need-table" aria-label="필요한 기운 요약">
+        <!-- 사주 팔자 (saju 페이지와 동일한 표 구조: 천간/지지 2행, 시·일·월·년 열) -->
+        <section class="result-section" id="saju-section">
+          <h2 class="result-section-title">사주 팔자</h2>
+          <p class="section-desc">생년월일시로 나온 네 기둥입니다. 일주(일간)를 중심으로 이름 보강 방향을 참고합니다.</p>
+          <div class="saju-table-wrap" id="saju-pillars-wrap">
+            <table class="saju-table saju-palja-table" id="saju-pillars-table" aria-label="사주 팔자">
               <thead>
                 <tr>
-                  <th scope="col">필요한 기운</th>
-                  <th scope="col">보강하면 좋은 기운</th>
-                  <th scope="col">없어야 좋은 기운</th>
+                  <th></th>
+                  <th scope="col">시</th>
+                  <th scope="col">일</th>
+                  <th scope="col">월</th>
+                  <th scope="col">년</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td id="cell-needed"></td>
-                  <td id="cell-supplement"></td>
-                  <td id="cell-excess"></td>
+                <tr class="palja-row cheongan-row">
+                  <th>천간</th>
+                  <td id="pillar-hour-stem" class="pillar-cell"></td>
+                  <td id="pillar-day-stem" class="pillar-cell"></td>
+                  <td id="pillar-month-stem" class="pillar-cell"></td>
+                  <td id="pillar-year-stem" class="pillar-cell"></td>
+                </tr>
+                <tr class="palja-row jiji-row">
+                  <th>지지</th>
+                  <td id="pillar-hour-branch" class="pillar-cell"></td>
+                  <td id="pillar-day-branch" class="pillar-cell"></td>
+                  <td id="pillar-month-branch" class="pillar-cell"></td>
+                  <td id="pillar-year-branch" class="pillar-cell"></td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="ohang-detail-toggle-wrap" id="ohang-detail-toggle-wrap">
+          <div class="saju-structure-note" id="saju-structure-note"></div>
+          <div class="saju-supplement-note" id="saju-supplement-note"></div>
+
+          <div class="detail-toggle-wrap ohang-detail-toggle-wrap" id="detail-toggle-wrap">
             <button type="button" class="toggle-btn" id="toggle-detail-btn" aria-expanded="false">
-              <span class="toggle-label">상세 분석 보기 (오행 비율 · 합충형파해 · 십성)</span>
+              <span class="toggle-label">상세 분석 보기 (오행 · 필요한 기운 · 음양)</span>
               <span class="toggle-icon" aria-hidden="true">▼</span>
             </button>
-            <div class="ohang-detail-content" id="ohang-detail-content" hidden>
-              <div id="ohang-detail-body"></div>
+            <div class="detail-content ohang-detail-content" id="detail-content" hidden>
+              <div class="detail-inner">
+                <h3 class="detail-subtitle">
+                  <a href="./dict.html#ohang" class="dict-link">오행</a> 분석
+                  <button type="button" class="info-btn" data-info-key="ohang" aria-label="오행 설명 보기" title="설명">ⓘ</button>
+                </h3>
+                <div class="ohang-chart" id="ohang-chart"></div>
+                <div class="ohang-need-table-wrap" id="ohang-need-table-wrap">
+                  <p class="ohang-need-table-caption">
+                    필요한 기운 요약
+                    <button type="button" class="info-btn" data-info-key="ohangNeedTable" aria-label="필요한 기운·보강·없어야 기운 설명 보기" title="설명">ⓘ</button>
+                  </p>
+                  <table class="ohang-need-table" id="ohang-need-table" aria-label="필요한 기운 요약">
+                    <thead>
+                      <tr>
+                        <th scope="col">필요한 기운</th>
+                        <th scope="col">보강하면 좋은 기운</th>
+                        <th scope="col">없어야 좋은 기운</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td id="cell-needed"></td>
+                        <td id="cell-supplement"></td>
+                        <td id="cell-excess"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div id="ohang-detail-body"></div>
+                <div class="yinYang-desc-wrap" id="yinYang-desc-wrap">
+                  <h4 class="yinYang-desc-title">음양</h4>
+                  <p class="yinYang-desc" id="yinYang-desc"></p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -246,11 +285,14 @@
         var excess = deficientResult.excess || [];
         var ohangDetail = deficientResult.detail || { ratio: [], hapChung: [], sipseong: [] };
         var pillars = [saju.year, saju.month, saju.day, saju.hour];
-        var yinYang = { yang: 0, yin: 0 };
-        pillars.forEach(function(p) {
-          if (p.yinyang === '양') yinYang.yang++;
-          else yinYang.yin++;
-        });
+        var yinYang = deficientResult.yinYangRatio || { yang: 0, yin: 0 };
+        if (yinYang.yang === undefined && yinYang.yin === undefined) {
+          yinYang = { yang: 0, yin: 0 };
+          pillars.forEach(function(p) {
+            if (p.yinyang === '양') yinYang.yang++;
+            else yinYang.yin++;
+          });
+        }
 
         var birthYear = params.birth ? parseInt(params.birth.split('-')[0], 10) : null;
         var birthOrder = params.birthOrder || undefined;
@@ -266,14 +308,58 @@
           birthOrder
         );
 
-        // 오행 그래프 렌더링
+        // 사주 팔자 표 렌더링 (saju 페이지와 동일: 천간/지지 2행, 시·일·월·년 열)
+        var colOrder = [pillars[3], pillars[2], pillars[1], pillars[0]]; // 시, 일, 월, 년
+        var OHANG_COLORS = NamingService.OHANG_COLORS || {};
+        function stemCellHtml(p) {
+          if (!p || !p.stem) return '—';
+          var yinYang = p.yinyang === '양' ? 'yang' : 'yin';
+          var colorClass = (p.colorClass || (p.stemOhang && OHANG_COLORS[p.stemOhang]) ? OHANG_COLORS[p.stemOhang] : '') || '';
+          var ohangText = p.stemOhang ? p.stem + p.stemOhang : p.stem;
+          return '<span class="pillar-char">' + escapeHtml(p.stem) + '</span><span class="pillar-ohang">(' + escapeHtml(ohangText) + ')</span>';
+        }
+        function branchCellHtml(p) {
+          if (!p || !p.branch) return '—';
+          var colorClass = (p.branchColorClass || p.colorClass || (p.branchOhang && OHANG_COLORS[p.branchOhang]) ? OHANG_COLORS[p.branchOhang] : '') || '';
+          var ohangText = p.branchOhang ? p.branch + p.branchOhang : p.branch;
+          return '<span class="pillar-char">' + escapeHtml(p.branch) + '</span><span class="pillar-ohang">(' + escapeHtml(ohangText) + ')</span>';
+        }
+        var stemIds = ['pillar-hour-stem', 'pillar-day-stem', 'pillar-month-stem', 'pillar-year-stem'];
+        var branchIds = ['pillar-hour-branch', 'pillar-day-branch', 'pillar-month-branch', 'pillar-year-branch'];
+        colOrder.forEach(function(p, i) {
+          var stemEl = document.getElementById(stemIds[i]);
+          var branchEl = document.getElementById(branchIds[i]);
+          var stemColor = p.colorClass || (p.stemOhang && OHANG_COLORS[p.stemOhang]) || '';
+          var branchColor = p.branchColorClass || p.colorClass || (p.branchOhang && OHANG_COLORS[p.branchOhang]) || '';
+          if (stemEl) {
+            stemEl.innerHTML = stemCellHtml(p);
+            stemEl.className = 'pillar-cell ' + (p.yinyang === '양' ? 'yang' : 'yin') + ' ' + stemColor;
+          }
+          if (branchEl) {
+            branchEl.innerHTML = branchCellHtml(p);
+            branchEl.className = 'pillar-cell ' + branchColor;
+          }
+        });
+
+        // 일주 구조·보강 문구
+        var structureNoteEl = document.getElementById('saju-structure-note');
+        var supplementNoteEl = document.getElementById('saju-supplement-note');
+        if (structureNoteEl && deficientResult.structureNote) {
+          structureNoteEl.textContent = deficientResult.structureNote;
+          structureNoteEl.style.display = '';
+        } else if (structureNoteEl) structureNoteEl.style.display = 'none';
+        if (supplementNoteEl && deficientResult.supplementNote) {
+          supplementNoteEl.textContent = deficientResult.supplementNote;
+          supplementNoteEl.style.display = '';
+        } else if (supplementNoteEl) supplementNoteEl.style.display = 'none';
+
+        // 오행 그래프 렌더링 (상세 분석 안)
         renderOhangChart(saju.ohangCount, deficientElements);
 
         // 오행 요약 표: 필요한 기운 · 보강하면 좋은 기운 · 없어야 좋은 기운
         var cellNeeded = document.getElementById('cell-needed');
         var cellSupplement = document.getElementById('cell-supplement');
         var cellExcess = document.getElementById('cell-excess');
-        var OHANG_COLORS = NamingService.OHANG_COLORS || {};
         function fmtOhangList(arr) {
           if (!arr || arr.length === 0) return '—';
           return arr.map(function(e) {
@@ -285,18 +371,17 @@
         if (cellSupplement) cellSupplement.innerHTML = fmtOhangList(supplementGood);
         if (cellExcess) cellExcess.innerHTML = fmtOhangList(excess);
 
-        // 상세 분석(오행 비율 · 합충형파해 · 십성) 토글 — 항상 표시
-        var detailWrap = document.getElementById('ohang-detail-toggle-wrap');
+        // 상세 분석: 오행 비율·합충형파해·십성 테이블 + 음양 설명
+        var detailWrap = document.getElementById('detail-toggle-wrap');
         var toggleBtn = document.getElementById('toggle-detail-btn');
-        var detailContent = document.getElementById('ohang-detail-content');
+        var detailContent = document.getElementById('detail-content');
         var detailBody = document.getElementById('ohang-detail-body');
         if (detailWrap) detailWrap.style.display = '';
         if (detailBody) {
-          var OHANG_COLORS_D = NamingService.OHANG_COLORS || {};
           function fmtOhangTags(arr) {
             if (!arr || arr.length === 0) return '—';
             return arr.map(function(e) {
-              var cls = OHANG_COLORS_D[e] || '';
+              var cls = OHANG_COLORS[e] || '';
               return '<span class="ohang-tag ' + cls + '">' + escapeHtml(e) + '</span>';
             }).join(' ');
           }
@@ -315,11 +400,18 @@
           }
           detailBody.innerHTML = tableHtml;
         }
+        // 음양 설명
+        var yinYangDescEl = document.getElementById('yinYang-desc');
+        if (yinYangDescEl) {
+          var yangCnt = yinYang.yang != null ? yinYang.yang : 0;
+          var yinCnt = yinYang.yin != null ? yinYang.yin : 0;
+          yinYangDescEl.textContent = '사주 팔자 중 천간(天干)의 음양 비율은 양 ' + yangCnt + '개, 음 ' + yinCnt + '개입니다. 양이 많으면 이름에 음(陰) 한자를, 음이 많으면 양(陽) 한자를 섞어 균형을 참고할 수 있습니다.';
+        }
         if (toggleBtn && detailContent) {
           toggleBtn.addEventListener('click', function() {
             var expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
             toggleBtn.setAttribute('aria-expanded', !expanded);
-            toggleBtn.querySelector('.toggle-label').textContent = expanded ? '상세 분석 보기 (오행 비율 · 합충형파해 · 십성)' : '상세 분석 접기';
+            toggleBtn.querySelector('.toggle-label').textContent = expanded ? '상세 분석 보기 (오행 · 필요한 기운 · 음양)' : '상세 분석 접기';
             toggleBtn.querySelector('.toggle-icon').textContent = expanded ? '▼' : '▲';
             detailContent.hidden = expanded;
           });

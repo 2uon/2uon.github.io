@@ -518,7 +518,7 @@
 .info-modal-body .dict-link-inline {
   font-size: 0.85rem;
   color: #666;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .info-modal-body .dict-link-inline:hover {
@@ -644,7 +644,7 @@
 
 .result-section-title .dict-link:hover {
   color: #666;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .section-desc {
@@ -758,6 +758,118 @@
 .ohang-tag.ohang-to { background: #fff3e0; color: #e65100; }
 .ohang-tag.ohang-geum { background: #fff8e1; color: #f9a825; }
 .ohang-tag.ohang-su { background: #e3f2fd; color: #1565c0; }
+
+/* 사주 팔자 표 (saju 페이지와 동일한 구조·스타일) */
+.saju-table-wrap {
+  overflow-x: auto;
+  margin: 24px 0;
+}
+.saju-table {
+  width: 100%;
+  min-width: 280px;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.saju-table th,
+.saju-table td {
+  padding: 14px 12px;
+  text-align: center;
+  border: 1px solid #e8e0d8;
+}
+.saju-table th {
+  background: #f5f0eb;
+  font-weight: 600;
+  color: #2c1810;
+}
+.saju-table .pillar-cell {
+  font-size: 1.25rem;
+  font-weight: 600;
+  min-height: 44px;
+}
+.saju-table .pillar-cell.yang {
+  font-weight: 700;
+}
+.saju-table .pillar-cell.yin {
+  opacity: 0.9;
+}
+.saju-palja-table th:first-child {
+  font-size: 0.85rem;
+  color: #7d6b5d;
+  font-weight: 500;
+  width: 48px;
+}
+.saju-palja-table .palja-row th {
+  background: #faf8f5;
+}
+.saju-palja-table .pillar-cell {
+  font-size: 1.4rem;
+  font-weight: 600;
+  vertical-align: top;
+}
+.saju-palja-table .pillar-cell .pillar-char {
+  display: block;
+}
+.saju-palja-table .pillar-cell .pillar-ohang {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: normal;
+  margin-top: 2px;
+  opacity: 0.85;
+}
+.saju-palja-table .pillar-cell.ohang-mok { color: #2e7d32; }
+.saju-palja-table .pillar-cell.ohang-hwa { color: #c62828; }
+.saju-palja-table .pillar-cell.ohang-to { color: #795548; }
+.saju-palja-table .pillar-cell.ohang-geum { color: #616161; }
+.saju-palja-table .pillar-cell.ohang-su { color: #1565c0; }
+
+.saju-structure-note,
+.saju-supplement-note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #444;
+  background: #f9f9f9;
+  border-radius: 6px;
+  border-left: 3px solid #888;
+}
+.saju-supplement-note {
+  margin-top: 6px;
+  border-left-color: #5a9fd4;
+}
+
+/* 상세 분석 내부 */
+.detail-inner { margin: 0; }
+.detail-subtitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin: 14px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.detail-subtitle:first-child { margin-top: 0; }
+.yinYang-desc-wrap {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+.yinYang-desc-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 6px 0;
+}
+.yinYang-desc {
+  font-size: 0.8rem;
+  color: #555;
+  line-height: 1.5;
+  margin: 0;
+}
 
 .ohang-detail-toggle-wrap {
   margin-top: 12px;
@@ -1019,7 +1131,7 @@
 .dict-link {
   color: inherit;
   text-decoration: none;
-  border-bottom: 1px dashed currentColor;
+  border-bottom: none;
   cursor: pointer;
 }
 
@@ -1030,7 +1142,7 @@
 .dict-link-inline {
   color: #666;
   text-decoration: none;
-  border-bottom: 1px dotted currentColor;
+  border-bottom: none;
   font-size: 0.9em;
 }
 
@@ -1149,7 +1261,7 @@
 }
 
 .dict-term:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .dict-nav {

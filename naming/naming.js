@@ -425,11 +425,44 @@
     return needElements.filter(Boolean);
   }
 
+  /** 일간 강약: 인·비겁(돕는 기운) vs 식상·재·관살(빼앗거나 누르는 기운) */
+  function getDayStemStrength(saju) {
+    var dayOhang = saju.dayStemOhang || '';
+    if (!dayOhang) return { help: 0, drain: 0, strength: 'balanced' };
+    var pillars = [saju.year, saju.month, saju.day, saju.hour];
+    var counts = { 인: 0, 비겁: 0, 식상: 0, 재: 0, 관살: 0 };
+    pillars.forEach(function(p) {
+      ['stemOhang', 'branchOhang'].forEach(function(key) {
+        var type = getSipseongType(dayOhang, p[key]);
+        if (counts[type] !== undefined) counts[type]++;
+      });
+    });
+    var help = counts.인 + counts.비겁;
+    var drain = counts.식상 + counts.재 + counts.관살;
+    var strength = help < drain ? 'weak' : (help > drain ? 'strong' : 'balanced');
+    return { help: help, drain: drain, strength: strength };
+  }
+
+  /** 일주 표기: 정화(음화), 병화(양화) 등 */
+  function getDayStemLabel(saju) {
+    if (!saju || !saju.dayStem || !saju.dayStemOhang) return { name: '', yinYang: '' };
+    var name = (saju.dayStem || '') + (saju.dayStemOhang || '');
+    var yinYang = (saju.day && saju.day.yinyang) ? saju.day.yinyang : '';
+    return { name: name, yinYang: yinYang };
+  }
+
   function getDeficientElements(saju) {
     var defaultResult = {
       elements: ['목', '화', '토', '금', '수'],
       supplementGood: [], excess: [], reasons: [],
-      detail: { ratio: [], hapChung: [], sipseong: [] }
+      detail: { ratio: [], hapChung: [], sipseong: [] },
+      pillarsDisplay: [],
+      dayStemName: '',
+      dayStemYinYang: '',
+      dayStemStrength: 'balanced',
+      structureNote: '',
+      supplementNote: '',
+      yinYangRatio: { yang: 0, yin: 0 }
     };
     if (!saju) return defaultResult;
 
@@ -475,7 +508,54 @@
       ? counts.filter(function(c) { return c.count === maxCount; }).map(function(c) { return c.element; })
       : [];
 
-    return { elements: final, supplementGood: supplementGood, excess: excess, reasons: reasons, detail: detail };
+    // 사주 팔자 표시용
+    var pillarsDisplay = pillars.map(function(p) { return (p.stem || '') + (p.branch || ''); });
+    var dayLabel = getDayStemLabel(saju);
+    var dayStemName = dayLabel.name;
+    var dayStemYinYang = dayLabel.yinYang;
+    var strengthResult = getDayStemStrength(saju);
+    var dayStemStrength = strengthResult.strength;
+
+    // 일주 관점 구조·보강 문구 (음화·양화 등 일간 성격 반영)
+    var yinYangLabel = dayStemYinYang === '음' ? '음' : (dayStemYinYang === '양' ? '양' : '');
+    var dayStemFullLabel = dayStemName + (yinYangLabel ? '(' + yinYangLabel + dayStemName.slice(-1) + ')' : '');
+    var structureNote = '';
+    var supplementNote = '';
+    if (dayStemName) {
+      // 보강 기운 표기: 화가 필요할 때 일주가 음화면 '음화', 양화면 '양화'로 구분
+      var supplementLabels = final.map(function(e) {
+        if (e === '화' && yinYangLabel) return yinYangLabel + '화';
+        return e;
+      });
+      var supplementText = supplementLabels.join('·');
+      if (dayStemStrength === 'weak') {
+        structureNote = '전체 균형은 참고하되, 본인인 일주를 보면 ' + dayStemFullLabel + '가 약해지는 구조입니다.';
+        supplementNote = '이름으로 ' + supplementText + ' 보강을 하면 도움이 됩니다.';
+      } else if (dayStemStrength === 'strong') {
+        structureNote = '일주 ' + dayStemFullLabel + '가 든든한 편입니다.';
+        supplementNote = '필요한 기운(' + supplementText + ')을 이름에 반영하면 균형에 도움이 됩니다.';
+      } else {
+        structureNote = '일주와 사주 전체 균형을 함께 봅니다.';
+        supplementNote = '이름에 ' + (final.length ? supplementText + ' 기운을 반영' : '균형 잡힌 한자') + '하면 좋습니다.';
+      }
+    }
+
+    var yinYangRatio = getYinYangRatio(pillars);
+
+    return {
+      elements: final,
+      supplementGood: supplementGood,
+      excess: excess,
+      reasons: reasons,
+      detail: detail,
+      pillarsDisplay: pillarsDisplay,
+      dayStemName: dayStemName,
+      dayStemYinYang: dayStemYinYang,
+      dayStemStrength: dayStemStrength,
+      structureNote: structureNote,
+      supplementNote: supplementNote,
+      yinYangRatio: yinYangRatio
+    };
   }
 
   function getYinYangRatio(pillars) {
