@@ -296,6 +296,9 @@
   // 초성 인덱스(0~18): ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ
   var SOFT_CHO = { 2: 1, 5: 1, 6: 1, 11: 1, 9: 1, 12: 1, 18: 1 };
   var STRONG_CHO = { 0: 1, 1: 1, 3: 1, 4: 1, 7: 1, 8: 1, 10: 1, 13: 1, 14: 1, 15: 1, 16: 1, 17: 1 };
+  // 배치 점수: 이름 첫글자에 오면 흐름이 끊어지는 받침 (ㄱㄷㅂㅋㅌㅍㅊ 등)
+  // 종성 인덱스(0~27): 0없음 1ㄱ 2ㄲ 3ㄳ 4ㄴ 5ㄵ 6ㄶ 7ㄷ 8ㄹ 9ㄺ 10ㄻ 11ㄼ 12ㄽ 13ㄾ 14ㄿ 15ㅀ 16ㅁ 17ㅂ 18ㅄ 19ㅅ 20ㅆ 21ㅇ 22ㅈ 23ㅊ 24ㅋ 25ㅌ 26ㅍ 27ㅎ
+  var HARD_JONG = { 1: 1, 2: 1, 3: 1, 7: 1, 9: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1, 17: 1, 18: 1, 23: 1, 24: 1, 25: 1, 26: 1 };
 
   /**
    * 이름 발음 점수 (한국어 발음 흐름 반영)
@@ -465,15 +468,42 @@
     return Math.min(5, Math.round((base + bonus) * 10) / 10);
   }
 
+  /**
+   * 배치(위치) 점수: 같은 글자라도 위치에 따라 발음 흐름이 다름
+   * - 이름 첫글자에 ㄱ/ㄷ/ㅂ 등 강한 받침이 오면 흐름이 끊어짐 (감점)
+   * - 이름 끝글자에 받침이 있으면 자연스러움 (보통)
+   * @param {Array} syllables - decomposeHangul 결과 [성, 이름1, 이름2]
+   * @returns {{ base: number, positionDelta: number, reason: string }}
+   */
+  function getPlacementPositionScore(syllables) {
+    var base = 0;
+    var reason = '';
+    if (!syllables || syllables.length < 2) return { base: 0, positionDelta: 0, reason: '' };
+    var firstIdx = 1;
+    var lastIdx = syllables.length - 1;
+    var firstSyl = syllables[firstIdx];
+    var lastSyl = syllables[lastIdx];
+    if (firstSyl && firstSyl.jong > 0 && HARD_JONG[firstSyl.jong]) {
+      base -= 2;
+      reason = '이름 첫글자 강한 받침(ㄱ/ㄷ/ㅂ 등)으로 흐름 끊김';
+    } else if (firstSyl && (firstSyl.jong === 0 || firstSyl.jong === 4 || firstSyl.jong === 8 || firstSyl.jong === 16 || firstSyl.jong === 21)) {
+      base += 0.5;
+      reason = '이름 첫글자 받침 없음/부드러운 받침으로 자연스러운 흐름';
+    }
+    return { base: base, positionDelta: base, reason: reason };
+  }
+
   function ratePlacement(h1, h2, ctx) {
     var full = (ctx.surname || '') + (h1.reading || '') + (h2.reading || '');
     var syllables = decomposeHangul(full);
     if (syllables.length < 2) return 4;
     var pron = calculatePronunciationScore(full);
-    if (pron.normalizedScore >= 8) return 5;
-    if (pron.normalizedScore >= 6) return 4;
-    if (pron.normalizedScore >= 4) return 3;
-    return Math.max(1, Math.round(pron.normalizedScore / 2));
+    var posScore = getPlacementPositionScore(syllables);
+    var baseFromPron = pron.normalizedScore / 2;
+    var positionAdj = posScore.positionDelta;
+    var raw = baseFromPron + positionAdj;
+    var score = Math.min(5, Math.max(0, Math.round(raw * 10) / 10));
+    return score;
   }
 
   function ratePronunciation(h1, h2, ctx) {
