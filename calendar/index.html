@@ -3,97 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="데스크톱 캘린더 위젯 - 심플하고 깔끔한 Windows용 달력 위젯 애플리케이션입니다.">
+  <meta name="description" content="데스크톱 캘린더 위젯 - 구글 캘린더 연동 Windows용 달력 위젯, 다운로드">
   <meta name="keywords" content="캘린더 위젯, 달력 위젯, 데스크톱 위젯, Windows 위젯, 일정 관리">
-  <meta name="author" content="Desktop Calendar Widget">
-  <title>데스크톱 캘린더 위젯 - 공식 사이트</title>
+  <title>데스크톱 캘린더 위젯 | 2uon</title>
+  <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <header>
-    <div class="container">
-      <img src="icon.png" alt="데스크톱 캘린더 위젯">
-      <h1>데스크톱 캘린더 위젯</h1>
-      <p>구글 캘린더 연동 데스크톱 위젯젯</p>
+<body class="hub-page cal-page">
+  <header class="hub-hero cal-hero">
+    <div class="hub-hero__inner">
+      <a href="../" class="cal-hero__back" aria-label="홈으로">← 홈</a>
+      <img src="icon.png" alt="" class="cal-hero__icon" width="64" height="64">
+      <h1 class="hub-hero__title">데스크톱 캘린더 위젯</h1>
+      <p class="hub-hero__desc">구글 캘린더 연동 Windows용 달력 위젯. 바탕화면에서 일정을 빠르게 확인하세요.</p>
     </div>
   </header>
 
-  <nav>
-    <ul>
-      <li><a href="index.html">홈</a></li>
-      <li><a href="#about">소개</a></li>
-      <li><a href="#features">기능 소개</a></li>
-      <li><a href="#contact">문의</a></li>
-    </ul>
-  </nav>
-
-  <main class="container">
-    <section id="about">
-      <h2>애플리케이션 소개</h2>
-      <p>
-        데스크톱 캘린더 위젯은 Windows 데스크톱 환경에서 사용할 수 있는 심플하고 깔끔한 달력 위젯입니다. 
-        바탕화면에 항상 표시되어 일정을 빠르게 확인할 수 있으며, 가벼운 리소스 사용으로 시스템 성능에 영향을 주지 않습니다.
-      </p>
-      <p>
-        본 애플리케이션은 PySide6 프레임워크를 기반으로 개발되었으며, 
-        사용자 친화적인 인터페이스와 다양한 커스터마이징 옵션을 제공합니다.
-      </p>
-    </section>
-
-    <section id="features">
-      <h2>주요 기능</h2>
-      
-      <div class="feature-box">
-        <h3>구글 캘린더 연동</h3>
-        <p>구글 캘린더와 연동하여 등록된 일정을 위젯에서 바로 확인할 수 있습니다.</p>
-      </div>
-
-      <div class="feature-box">
-        <h3>깔끔한 달력 표시</h3>
-        <p>월별 달력을 한눈에 확인할 수 있으며, 오늘 날짜가 자동으로 강조 표시됩니다.</p>
-      </div>
-
-      <div class="feature-box">
-        <h3>데스크톱 위젯</h3>
-        <p>바탕화면에 항상 표시되어 다른 작업 중에도 빠르게 날짜를 확인할 수 있습니다.</p>
-      </div>
-
-      <div class="feature-box">
-        <h3>가벼운 시스템 리소스</h3>
-        <p>최적화된 코드로 메모리와 CPU 사용량을 최소화하여 시스템 성능에 영향을 주지 않습니다.</p>
-      </div>
-
-      <div class="feature-box">
-        <h3>사용자 정의 옵션</h3>
-        <p>위젯 크기, 위치, 투명도 등 다양한 설정을 사용자 취향에 맞게 조절할 수 있습니다.</p>
+  <main class="hub-main cal-main">
+    <!-- 다운로드 CTA -->
+    <section class="cal-section cal-download" aria-labelledby="cal-download-title">
+      <h2 class="hub-section__title" id="cal-download-title">다운로드</h2>
+      <div class="cal-download__box">
+        <img src="icon.png" alt="" class="cal-download__icon" width="80" height="80">
+        <p class="cal-download__text">Windows용 데스크톱 캘린더 위젯을 다운로드할 수 있습니다.</p>
+        <a href="#" class="cal-download__btn" id="cal-download-btn">다운로드</a>
+        <p class="cal-download__note">※ 배포 준비 중일 수 있습니다. 링크가 동작하지 않으면 저장소에서 확인해 주세요.</p>
       </div>
     </section>
 
-    <section id="advertisement">
-      <h2>광고 정책 안내</h2>
-      <p>
-        본 애플리케이션은 무료로 제공되며, 운영 및 개발 지원을 위해 애플리케이션 내에 광고 배너를 표시할 예정입니다. 
-        광고는 사용자 경험을 해치지 않는 범위 내에서 최소한으로 표시됩니다.
+    <!-- 소개 -->
+    <section class="cal-section" id="about" aria-labelledby="cal-about-title">
+      <h2 class="hub-section__title" id="cal-about-title">소개</h2>
+      <p class="cal-section__p">
+        데스크톱 캘린더 위젯은 Windows 바탕화면에서 사용할 수 있는 달력 위젯입니다.
+        구글 캘린더와 연동해 등록된 일정을 위젯에서 바로 확인할 수 있으며,
+        가벼운 리소스 사용으로 시스템 성능에 영향을 주지 않습니다.
+      </p>
+      <p class="cal-section__p">
+        PySide6 기반으로 제작되었으며, 위젯 크기·위치·투명도 등 사용자 설정을 지원합니다.
       </p>
     </section>
 
-    <section id="contact">
-      <h2>문의하기</h2>
-      <p>
-        애플리케이션 관련 문의사항이나 버그 리포트, 기능 제안 등이 있으시면 언제든지 연락해 주세요.
-        사용자 여러분의 피드백은 더 나은 애플리케이션 개발에 큰 도움이 됩니다.
+    <!-- 주요 기능 -->
+    <section class="cal-section" id="features" aria-labelledby="cal-features-title">
+      <h2 class="hub-section__title" id="cal-features-title">주요 기능</h2>
+      <div class="cal-cards">
+        <article class="hub-card cal-card">
+          <h3 class="hub-card__title">구글 캘린더 연동</h3>
+          <p class="hub-card__desc">구글 캘린더와 연동하여 등록된 일정을 위젯에서 바로 확인할 수 있습니다.</p>
+        </article>
+        <article class="hub-card cal-card">
+          <h3 class="hub-card__title">깔끔한 달력 표시</h3>
+          <p class="hub-card__desc">월별 달력을 한눈에 확인할 수 있으며, 오늘 날짜가 자동으로 강조 표시됩니다.</p>
+        </article>
+        <article class="hub-card cal-card">
+          <h3 class="hub-card__title">데스크톱 위젯</h3>
+          <p class="hub-card__desc">바탕화면에 항상 표시되어 다른 작업 중에도 빠르게 날짜를 확인할 수 있습니다.</p>
+        </article>
+        <article class="hub-card cal-card">
+          <h3 class="hub-card__title">가벼운 리소스</h3>
+          <p class="hub-card__desc">최적화된 코드로 메모리·CPU 사용량을 최소화합니다.</p>
+        </article>
+        <article class="hub-card cal-card">
+          <h3 class="hub-card__title">사용자 설정</h3>
+          <p class="hub-card__desc">위젯 크기, 위치, 투명도 등 다양한 옵션을 조절할 수 있습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 광고 안내 -->
+    <section class="cal-section" id="advertisement" aria-labelledby="cal-ad-title">
+      <h2 class="hub-section__title" id="cal-ad-title">광고 안내</h2>
+      <p class="cal-section__p">
+        본 앱은 무료로 제공되며, 운영·개발 지원을 위해 앱 내 광고 배너를 표시할 예정입니다.
+        사용자 경험을 해치지 않는 범위에서 최소한으로 노출됩니다.
       </p>
-      <p>
-        GitHub 저장소를 통해 이슈를 등록하시거나, 직접 개발팀에 문의하실 수 있습니다.
+    </section>
+
+    <!-- 문의 -->
+    <section class="cal-section" id="contact" aria-labelledby="cal-contact-title">
+      <h2 class="hub-section__title" id="cal-contact-title">문의</h2>
+      <p class="cal-section__p">
+        버그 리포트, 기능 제안, 문의사항은 아래 메일 또는 GitHub 이슈로 보내 주시면 감사하겠습니다.
       </p>
-      <p><strong>연락처:</strong> <a href="mailto:it.wondong@gmail.com" class="contact-email">it.wondong@gmail.com</a></p>
+      <p class="cal-contact">
+        <strong>연락처:</strong>
+        <a href="mailto:it.wondong@gmail.com" class="cal-contact__link">it.wondong@gmail.com</a>
+      </p>
     </section>
   </main>
 
-  <footer>
-    <div class="container">
-      <p>본 사이트는 데스크톱 캘린더 위젯 애플리케이션의 공식 웹사이트입니다.</p>
-    </div>
+  <footer class="hub-footer">
+    <p class="hub-footer__text"><a href="../" class="hub-footer__link">2uon</a> · 데스크톱 캘린더 위젯</p>
   </footer>
 </body>
 </html>

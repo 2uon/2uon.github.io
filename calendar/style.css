@@ -1,204 +1,148 @@
-/* Base Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/**
+ * 캘린더 위젯 페이지 (calendar/index.html)
+ * 허브(../css/main.css) 변수·스타일을 사용해 디자인 통일
+ */
+
+/* ============================================
+   Hero (캘린더 전용)
+   ============================================ */
+.cal-hero__back {
+  display: inline-block;
+  margin-bottom: var(--hub-space-md);
+  font-size: 0.9rem;
+  color: var(--hub-accent);
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.6;
-  color: #333;
-  background-color: #f9f9f9;
+.cal-hero__back:hover {
+  color: var(--hub-accent-hover);
 }
 
-/* Container */
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
+.cal-hero__icon {
+  display: block;
+  margin: 0 auto var(--hub-space-sm);
+  border-radius: var(--hub-radius);
 }
 
-/* Header */
-header {
-  background: linear-gradient(135deg, #79CFF9 0%, #055A84 100%);
-  color: white;
-  padding: 40px 20px;
+/* ============================================
+   다운로드 섹션
+   ============================================ */
+.cal-download__box {
+  background: var(--hub-featured-bg);
+  border: 1px solid var(--hub-featured-border);
+  border-radius: var(--hub-radius-card);
+  padding: var(--hub-space-lg);
   text-align: center;
 }
 
-header h1 {
-  font-size: 2rem;
-  margin-bottom: 10px;
+.cal-download__icon {
+  display: block;
+  margin: 0 auto var(--hub-space-md);
+  border-radius: var(--hub-radius);
 }
 
-header p {
-  font-size: 1.1rem;
-  opacity: 0.9;
+.cal-download__text {
+  margin: 0 0 var(--hub-space-md);
+  font-size: 1rem;
+  color: var(--hub-text);
 }
 
-/* Navigation */
-nav {
-  background-color: #fff;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 15px 20px;
-}
-
-nav ul {
-  list-style: none;
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-}
-
-nav a {
+.cal-download__btn {
+  display: inline-block;
+  padding: var(--hub-space-sm) var(--hub-space-lg);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--hub-surface);
+  background: var(--hub-accent);
+  border: 1px solid var(--hub-accent);
+  border-radius: var(--hub-radius);
   text-decoration: none;
-  color: #4a90d9;
-  font-weight: 500;
-  transition: color 0.3s ease;
+  transition: background 0.2s, border-color 0.2s;
 }
 
-nav a:hover {
-  color: #2a5a8a;
+.cal-download__btn:hover {
+  background: var(--hub-accent-hover);
+  border-color: var(--hub-accent-hover);
 }
 
-/* Main Content */
-main {
-  background-color: #fff;
-  padding: 40px 20px;
-  min-height: 400px;
+.cal-download__note {
+  margin: var(--hub-space-md) 0 0;
+  font-size: 0.85rem;
+  color: var(--hub-text-muted);
 }
 
-section {
-  margin-bottom: 40px;
+/* ============================================
+   섹션 공통
+   ============================================ */
+.cal-section {
+  margin-bottom: var(--hub-space-xl);
 }
 
-section:last-child {
+.cal-section:last-of-type {
+  margin-bottom: var(--hub-space-lg);
+}
+
+.cal-section__p {
+  margin: 0 0 var(--hub-space-sm);
+  font-size: 1rem;
+  color: var(--hub-text-muted);
+  line-height: 1.6;
+}
+
+.cal-section__p:last-child {
   margin-bottom: 0;
 }
 
-h2 {
-  color: #2c3e50;
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #4a90d9;
+/* 주요 기능 카드 그리드 */
+.cal-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--hub-space-md);
 }
 
-h3 {
-  color: #34495e;
-  font-size: 1.2rem;
-  margin: 20px 0 10px 0;
+.cal-card {
+  /* hub-card 스타일 그대로 사용, 링크 없음 */
 }
 
-p {
-  margin-bottom: 15px;
-  color: #555;
+/* ============================================
+   문의
+   ============================================ */
+.cal-contact {
+  margin: var(--hub-space-sm) 0 0;
 }
 
-ul {
-  margin-left: 20px;
-  margin-bottom: 15px;
-}
-
-li {
-  margin-bottom: 8px;
-  color: #555;
-}
-
-/* Feature Box */
-.feature-box {
-  background-color: #f5f8fc;
-  border-left: 4px solid #4a90d9;
-  padding: 20px;
-  margin: 20px 0;
-  border-radius: 0 8px 8px 0;
-}
-
-.feature-box h3 {
-  margin-top: 0;
-  color: #4a90d9;
-}
-
-/* Contact Email - 본문 텍스트와 자연스럽게 어울리도록 */
-#contact .contact-email {
-  color: #555;
+.cal-contact__link {
+  color: var(--hub-accent);
   text-decoration: none;
-  font-weight: normal;
-  border-bottom: 1px dotted #888;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
 }
 
-#contact .contact-email:hover {
-  color: #2c3e50;
-  border-bottom-color: #2c3e50;
+.cal-contact__link:hover {
+  border-bottom-color: var(--hub-accent);
 }
 
-/* Footer */
-footer {
-  background-color: #2c3e50;
-  color: #fff;
-  text-align: center;
-  padding: 30px 20px;
-  margin-top: 40px;
+/* 푸터 링크 */
+.hub-footer__link {
+  color: var(--hub-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
-footer p {
-  color: #bdc3c7;
-  font-size: 0.9rem;
+.hub-footer__link:hover {
+  color: var(--hub-accent);
 }
 
-/* Banner Page Styles */
-.banner-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 90px;
-  background-color: #f0f0f0;
-  border: 1px dashed #ccc;
-  border-radius: 4px;
-  margin: 0;
-}
-
-.banner-container p {
-  color: #888;
-  font-size: 0.95rem;
-  margin: 0;
-  text-align: center;
-}
-
-.banner-page {
-  background-color: #fff;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.banner-page main {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  header h1 {
-    font-size: 1.5rem;
+/* ============================================
+   모바일
+   ============================================ */
+@media (max-width: 640px) {
+  .cal-download__box {
+    padding: var(--hub-space-md);
   }
 
-  nav ul {
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-  }
-
-  main {
-    padding: 25px 15px;
-  }
-
-  h2 {
-    font-size: 1.3rem;
+  .cal-cards {
+    grid-template-columns: 1fr;
   }
 }
