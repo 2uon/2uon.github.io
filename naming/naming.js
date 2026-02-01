@@ -414,12 +414,12 @@
   // ═══════════════════════════════════════════════════════════════════
 
   const RATING_CATEGORIES = [
-    { id: 'ohang', label: '오행 보완', weight: 1, maxScore: 5 },
-    { id: 'maleum', label: '말음 트렌드', weight: 1, maxScore: 5 },
-    { id: 'flow', label: '음절 흐름', weight: 1, maxScore: 5 },
-    { id: 'era', label: '세대 음운', weight: 1, maxScore: 5 },
-    { id: 'gender', label: '성별 적합', weight: 1, maxScore: 5 },
-    { id: 'harmony', label: '의미/획수', weight: 1, maxScore: 5 }
+    { id: 'ohang', label: '오행 보완', weight: 1.5, maxScore: 5 },
+    { id: 'maleum', label: '말음 트렌드', weight: 1.3, maxScore: 5 },
+    { id: 'flow', label: '음절 흐름', weight: 1.2, maxScore: 5 },
+    { id: 'era', label: '세대 음운', weight: 1.0, maxScore: 5 },
+    { id: 'gender', label: '성별 적합', weight: 1.0, maxScore: 5 },
+    { id: 'harmony', label: '의미/획수', weight: 0.5, maxScore: 5 }
   ];
 
   /**
