@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 작명소 성(姓) 데이터베이스 - 성 읽기에 따른 한자 추천 -->
+<surnames>
+  <entry><reading>김</reading><char>金</char><meaning>쇠 금, 부유함</meaning></entry>
+  <entry><reading>이</reading><char>李</char><meaning>오얏나무 이</meaning></entry>
+  <entry><reading>박</reading><char>朴</char><meaning>순박할 박</meaning></entry>
+  <entry><reading>최</reading><char>崔</char><meaning>높을 최</meaning></entry>
+  <entry><reading>정</reading><char>鄭</char><meaning>정나라 정</meaning></entry>
+  <entry><reading>정</reading><char>丁</char><meaning>네째 천간 정</meaning></entry>
+  <entry><reading>정</reading><char>程</char><meaning>한도 정</meaning></entry>
+  <entry><reading>강</reading><char>姜</char><meaning>성 강</meaning></entry>
+  <entry><reading>강</reading><char>康</char><meaning>편안할 강</meaning></entry>
+  <entry><reading>강</reading><char>江</char><meaning>강 강</meaning></entry>
+  <entry><reading>조</reading><char>趙</char><meaning>조나라 조</meaning></entry>
+  <entry><reading>조</reading><char>曺</char><meaning>성 조</meaning></entry>
+  <entry><reading>윤</reading><char>尹</char><meaning>다스릴 윤</meaning></entry>
+  <entry><reading>윤</reading><char>潤</char><meaning>윤택할 윤</meaning></entry>
+  <entry><reading>장</reading><char>張</char><meaning>베풀 장</meaning></entry>
+  <entry><reading>장</reading><char>莊</char><meaning>장엄할 장</meaning></entry>
+  <entry><reading>장</reading><char>章</char><meaning>글쓸 장</meaning></entry>
+  <entry><reading>임</reading><char>林</char><meaning>수풀 림</meaning></entry>
+  <entry><reading>임</reading><char>任</char><meaning>맡길 임</meaning></entry>
+  <entry><reading>한</reading><char>韓</char><meaning>한국 한</meaning></entry>
+  <entry><reading>한</reading><char>漢</char><meaning>한나라 한</meaning></entry>
+  <entry><reading>오</reading><char>吳</char><meaning>오나라 오</meaning></entry>
+  <entry><reading>오</reading><char>五</char><meaning>다섯 오</meaning></entry>
+  <entry><reading>서</reading><char>徐</char><meaning>천천히 서</meaning></entry>
+  <entry><reading>서</reading><char>西</char><meaning>서쪽 서</meaning></entry>
+  <entry><reading>신</reading><char>申</char><meaning>납 신</meaning></entry>
+  <entry><reading>신</reading><char>辛</char><meaning>매울 신</meaning></entry>
+  <entry><reading>권</reading><char>權</char><meaning>권세 권</meaning></entry>
+  <entry><reading>황</reading><char>黃</char><meaning>누를 황</meaning></entry>
+  <entry><reading>안</reading><char>安</char><meaning>편안 안</meaning></entry>
+  <entry><reading>송</reading><char>宋</char><meaning>송나라 송</meaning></entry>
+  <entry><reading>전</reading><char>全</char><meaning>온전할 전</meaning></entry>
+  <entry><reading>전</reading><char>田</char><meaning>밭 전</meaning></entry>
+  <entry><reading>홍</reading><char>洪</char><meaning>넓을 홍</meaning></entry>
+  <entry><reading>유</reading><char>柳</char><meaning>버들 유</meaning></entry>
+  <entry><reading>유</reading><char>劉</char><meaning>베풀 유</meaning></entry>
+  <entry><reading>유</reading><char>兪</char><meaning>성 유</meaning></entry>
+  <entry><reading>류</reading><char>柳</char><meaning>버들 류</meaning></entry>
+  <entry><reading>류</reading><char>劉</char><meaning>베풀 류</meaning></entry>
+  <entry><reading>노</reading><char>盧</char><meaning>성 노</meaning></entry>
+  <entry><reading>노</reading><char>魯</char><meaning>노나라 노</meaning></entry>
+  <entry><reading>문</reading><char>文</char><meaning>글월 문</meaning></entry>
+  <entry><reading>양</reading><char>梁</char><meaning>들보 양</meaning></entry>
+  <entry><reading>양</reading><char>楊</char><meaning>버들 양</meaning></entry>
+  <entry><reading>양</reading><char>羊</char><meaning>양 양</meaning></entry>
+  <entry><reading>손</reading><char>孫</char><meaning>손자 손</meaning></entry>
+  <entry><reading>배</reading><char>裴</char><meaning>성 배</meaning></entry>
+  <entry><reading>백</reading><char>白</char><meaning>흰 백</meaning></entry>
+  <entry><reading>허</reading><char>許</char><meaning>허락할 허</meaning></entry>
+  <entry><reading>고</reading><char>高</char><meaning>높을 고</meaning></entry>
+  <entry><reading>하</reading><char>夏</char><meaning>여름 하</meaning></entry>
+  <entry><reading>하</reading><char>河</char><meaning>강 하</meaning></entry>
+  <entry><reading>마</reading><char>馬</char><meaning>말 마</meaning></entry>
+  <entry><reading>범</reading><char>范</char><meaning>법 범</meaning></entry>
+  <entry><reading>남</reading><char>南</char><meaning>남쪽 남</meaning></entry>
+  <entry><reading>심</reading><char>沈</char><meaning>잠길 심</meaning></entry>
+  <entry><reading>구</reading><char>具</char><meaning>갖출 구</meaning></entry>
+  <entry><reading>구</reading><char>丘</char><meaning>언덕 구</meaning></entry>
+  <entry><reading>탁</reading><char>卓</char><meaning>높을 탁</meaning></entry>
+  <entry><reading>주</reading><char>周</char><meaning>두루 주</meaning></entry>
+  <entry><reading>주</reading><char>朱</char><meaning>붉을 주</meaning></entry>
+  <entry><reading>진</reading><char>陳</char><meaning>펼 진</meaning></entry>
+  <entry><reading>진</reading><char>秦</char><meaning>진나라 진</meaning></entry>
+  <entry><reading>지</reading><char>池</char><meaning>못 지</meaning></entry>
+  <entry><reading>채</reading><char>蔡</char><meaning>나라 이름 채</meaning></entry>
+  <entry><reading>채</reading><char>采</char><meaning>캘 채</meaning></entry>
+  <entry><reading>염</reading><char>廉</char><meaning>곧을 염</meaning></entry>
+  <entry><reading>예</reading><char>芮</char><meaning>나라 이름 예</meaning></entry>
+  <entry><reading>도</reading><char>都</char><meaning>도읍 도</meaning></entry>
+  <entry><reading>도</reading><char>陶</char><meaning>질그릇 도</meaning></entry>
+  <entry><reading>변</reading><char>邊</char><meaning>가 변</meaning></entry>
+  <entry><reading>설</reading><char>薛</char><meaning>나라 이름 설</meaning></entry>
+  <entry><reading>방</reading><char>方</char><meaning>모 방</meaning></entry>
+  <entry><reading>방</reading><char>房</char><meaning>방 방</meaning></entry>
+  <entry><reading>원</reading><char>元</char><meaning>으뜸 원</meaning></entry>
+  <entry><reading>원</reading><char>原</char><meaning>근원 원</meaning></entry>
+  <entry><reading>원</reading><char>袁</char><meaning>성 원</meaning></entry>
+  <entry><reading>표</reading><char>表</char><meaning>겉 표</meaning></entry>
+  <entry><reading>소</reading><char>蘇</char><meaning>차조기 소</meaning></entry>
+  <entry><reading>소</reading><char>邵</char><meaning>부를 소</meaning></entry>
+  <entry><reading>석</reading><char>石</char><meaning>돌 석</meaning></entry>
+  <entry><reading>선</reading><char>宣</char><meaning>베풀 선</meaning></entry>
+  <entry><reading>선</reading><char>鮮</char><meaning>고울 선</meaning></entry>
+  <entry><reading>라</reading><char>羅</char><meaning>그물 라</meaning></entry>
+  <entry><reading>봉</reading><char>奉</char><meaning>받들 봉</meaning></entry>
+  <entry><reading>봉</reading><char>鳳</char><meaning>봉황 봉</meaning></entry>
+  <entry><reading>음</reading><char>陰</char><meaning>그늘 음</meaning></entry>
+  <entry><reading>교</reading><char>喬</char><meaning>높을 교</meaning></entry>
+</surnames>

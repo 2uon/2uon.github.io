@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="작명소 - 사주 기반 이름 추천 서비스">
+  <title>작명소 - 사주 기반 이름 추천</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="naming-page">
+  <div class="naming-container">
+    <!-- 헤더: 서비스 소개 -->
+    <header class="naming-header">
+      <h1>작명소</h1>
+      <p>사주에 맞는 이름 추천 · 결과 공유 가능 · <a href="./dict.html" class="dict-link-inline">용어 사전</a></p>
+    </header>
+
+    <main class="naming-main">
+      <form id="naming-form" class="naming-form" novalidate>
+        <!-- 성 입력 (필수, 1글자) -->
+        <div class="form-group">
+          <label for="surname">성 <span class="required">*</span></label>
+          <input type="text" id="surname" name="surname" maxlength="1" required
+                 placeholder="예: 김, 이, 박" autocomplete="off"
+                 aria-describedby="surname-hint surname-error surname-hanja">
+          <span class="form-hint" id="surname-hint">한 글자만 입력해 주세요 (예: 김, 이, 박)</span>
+          <div class="surname-hanja-area" id="surname-hanja" aria-live="polite" hidden></div>
+          <span class="form-error" id="surname-error" role="alert"></span>
+        </div>
+
+        <!-- 이름 칸 2개 (선택 입력) -->
+        <div class="form-group form-row">
+          <div class="form-group-inline">
+            <label for="name1">이름 첫 글자</label>
+            <input type="text" id="name1" name="name1" maxlength="1" placeholder="선택"
+                   autocomplete="off" aria-describedby="name1-hint">
+            <span class="form-hint" id="name1-hint">음 입력 시 해당 음의 한자 찾기 (형제자매 공통 글자 가능)</span>
+          </div>
+          <div class="form-group-inline">
+            <label for="name2">이름 둘째 글자</label>
+            <input type="text" id="name2" name="name2" maxlength="1" placeholder="선택"
+                   autocomplete="off" aria-describedby="name2-hint">
+            <span class="form-hint" id="name2-hint">음 입력 시 해당 음의 한자 찾기</span>
+          </div>
+        </div>
+
+        <!-- 양력/음력 선택 -->
+        <div class="form-group">
+          <label>양력/음력</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="calendar" value="solar" checked>
+              <span>양력</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="calendar" value="lunar">
+              <span>음력</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 생년월일 -->
+        <div class="form-group">
+          <label for="birth">생년월일 <span class="required">*</span></label>
+          <input type="date" id="birth" name="birth" required
+                 min="1900-01-01" max=""
+                 aria-describedby="birth-hint birth-error">
+          <span class="form-hint" id="birth-hint">태어나신 날짜를 선택해 주세요</span>
+          <span class="form-error" id="birth-error" role="alert"></span>
+        </div>
+
+        <!-- 생년월일시 (시간, 분) -->
+        <div class="form-group form-row">
+          <div class="form-group-inline">
+            <label for="hour">출생 시간 <span class="required">*</span></label>
+            <input type="number" id="hour" name="hour" required
+                   min="0" max="23" placeholder="시 (0~23)"
+                   aria-describedby="hour-error">
+            <span class="form-error" id="hour-error" role="alert"></span>
+          </div>
+          <div class="form-group-inline">
+            <label for="min">분</label>
+            <input type="number" id="min" name="min"
+                   min="0" max="59" placeholder="분 (0~59)">
+            <span class="form-hint">비워두면 0분으로 적용</span>
+          </div>
+        </div>
+
+        <!-- 성별 -->
+        <div class="form-group">
+          <label>성별 <span class="required">*</span></label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="gender" value="male" checked>
+              <span>남성</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="gender" value="female">
+              <span>여성</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">이름 추천 받기</button>
+      </form>
+    </main>
+
+    <footer class="naming-footer">
+      <p>참고용 · 전문가 상담 권장</p>
+      <a href="../index.html" class="link-back">← 메인</a>
+    </footer>
+  </div>
+
+  <script src="naming.js"></script>
+  <script>
+    // 입력 페이지 전용: 폼 유효성 검사, 성 한자 추천, GET 파라미터로 result.html 이동
+    (function() {
+      'use strict';
+
+      const form = document.getElementById('naming-form');
+      const surnameInput = document.getElementById('surname');
+      const surnameHanjaEl = document.getElementById('surname-hanja');
+      let surnameMap = null;
+
+      // 성 데이터베이스 로드
+      NamingService.loadSurnameXml().then(function(map) {
+        surnameMap = map;
+        if (surnameInput.value && surnameInput.value.trim()) updateSurnameHanja();
+      }).catch(function() {});
+
+      function updateSurnameHanja() {
+        if (!surnameHanjaEl) return;
+        var val = (surnameInput.value || '').trim();
+        if (!val || !surnameMap) {
+          surnameHanjaEl.hidden = true;
+          return;
+        }
+        var list = NamingService.getSurnameHanja(surnameMap, val);
+        if (list.length === 0) {
+          surnameHanjaEl.hidden = true;
+          return;
+        }
+        var html = '<span class="surname-hanja-label">' + val + '씨 성 한자: </span>';
+        html += list.map(function(item) {
+          return '<span class="surname-hanja-item"><span class="surname-hanja-char">' + escapeHtml(item.char) + '</span><span class="surname-hanja-meaning">(' + escapeHtml(item.meaning) + ')</span></span>';
+        }).join(', ');
+        surnameHanjaEl.innerHTML = html;
+        surnameHanjaEl.hidden = false;
+      }
+
+      function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+      const birthInput = document.getElementById('birth');
+      const hourInput = document.getElementById('hour');
+      const minInput = document.getElementById('min');
+      const surnameError = document.getElementById('surname-error');
+      const birthError = document.getElementById('birth-error');
+      const hourError = document.getElementById('hour-error');
+
+      // 생년월일 max를 오늘로 설정
+      function setMaxDate() {
+        const today = new Date();
+        birthInput.setAttribute('max', today.toISOString().split('T')[0]);
+      }
+
+      function validateSurname() {
+        const value = (surnameInput.value || '').trim();
+        if (!value) {
+          surnameError.textContent = '성을 입력해 주세요.';
+          surnameInput.setAttribute('aria-invalid', 'true');
+          return false;
+        }
+        if (value.length > 1) {
+          surnameError.textContent = '성은 한 글자만 입력해 주세요.';
+          surnameInput.setAttribute('aria-invalid', 'true');
+          return false;
+        }
+        surnameError.textContent = '';
+        surnameInput.removeAttribute('aria-invalid');
+        return true;
+      }
+
+      function validateBirth() {
+        const value = (birthInput.value || '').trim();
+        if (!value) {
+          birthError.textContent = '생년월일을 선택해 주세요.';
+          birthInput.setAttribute('aria-invalid', 'true');
+          return false;
+        }
+        const date = new Date(value);
+        if (isNaN(date.getTime()) || date < new Date('1900-01-01') || date > new Date()) {
+          birthError.textContent = '올바른 날짜를 선택해 주세요.';
+          birthInput.setAttribute('aria-invalid', 'true');
+          return false;
+        }
+        birthError.textContent = '';
+        birthInput.removeAttribute('aria-invalid');
+        return true;
+      }
+
+      function validateHour() {
+        const value = (hourInput.value || '').trim();
+        if (value === '') {
+          hourError.textContent = '출생 시간(시)을 입력해 주세요. (0~23)';
+          hourInput.setAttribute('aria-invalid', 'true');
+          return false;
+        }
+        const num = parseInt(value, 10);
+        if (isNaN(num) || num < 0 || num > 23) {
+          hourError.textContent = '0~23 사이의 숫자를 입력해 주세요.';
+          hourInput.setAttribute('aria-invalid', 'true');
+          return false;
+        }
+        hourError.textContent = '';
+        hourInput.removeAttribute('aria-invalid');
+        return true;
+      }
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        surnameError.textContent = '';
+        birthError.textContent = '';
+        hourError.textContent = '';
+
+        if (!validateSurname() || !validateBirth() || !validateHour()) return;
+
+        const surname = surnameInput.value.trim();
+        const name1 = (document.getElementById('name1').value || '').trim();
+        const name2 = (document.getElementById('name2').value || '').trim();
+        const birth = birthInput.value;
+        const hour = parseInt(hourInput.value, 10);
+        const minVal = (minInput.value || '').trim();
+        const min = minVal === '' ? 0 : Math.min(59, Math.max(0, parseInt(minVal, 10) || 0));
+        const gender = form.querySelector('input[name="gender"]:checked').value;
+        const calendar = form.querySelector('input[name="calendar"]:checked').value;
+
+        const params = new URLSearchParams({
+          surname: surname,
+          birth: birth,
+          hour: String(hour),
+          min: String(min),
+          gender: gender,
+          calendar: calendar
+        });
+        if (name1) params.set('name1', name1);
+        if (name2) params.set('name2', name2);
+
+        window.location.href = 'result.html?' + params.toString();
+      }
+
+      surnameInput.addEventListener('blur', validateSurname);
+      surnameInput.addEventListener('input', function() {
+        surnameError.textContent = '';
+        updateSurnameHanja();
+      });
+      surnameInput.addEventListener('change', updateSurnameHanja);
+      birthInput.addEventListener('blur', validateBirth);
+      birthInput.addEventListener('input', function() { birthError.textContent = ''; });
+      hourInput.addEventListener('blur', validateHour);
+      hourInput.addEventListener('input', function() { hourError.textContent = ''; });
+
+      form.addEventListener('submit', handleSubmit);
+      setMaxDate();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,747 @@
+/**
+ * 작명소 스타일 - 심플 & 공유하기 좋은 디자인
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.naming-page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+  background: #fafafa;
+  min-height: 100vh;
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+
+.naming-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+/* 헤더 */
+.naming-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.naming-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.naming-header p {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* 폼 */
+.naming-form {
+  background: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group:last-of-type {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.form-group .required {
+  color: #e53e3e;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fff;
+  transition: border-color 0.15s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #333;
+}
+
+.form-group input[aria-invalid="true"] {
+  border-color: #e53e3e;
+}
+
+.form-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 4px;
+}
+
+.form-error {
+  display: block;
+  font-size: 0.8rem;
+  color: #e53e3e;
+  margin-top: 4px;
+}
+
+/* 성 한자 추천 (입력 시 표시) */
+.surname-hanja-area {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #f8f8f8;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.surname-hanja-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.surname-hanja-item {
+  display: inline;
+}
+
+.surname-hanja-char {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1a1a1a;
+}
+
+.surname-hanja-meaning {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* 성 한자 추천 (결과 페이지) */
+.surname-hanja-result {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.form-group-inline {
+  flex: 1;
+  min-width: 100px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 16px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.radio-label input {
+  width: 16px;
+  height: 16px;
+}
+
+/* 버튼 */
+.btn-submit {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  background: #1a1a1a;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.btn-submit:hover {
+  background: #333;
+}
+
+.btn-submit:active {
+  opacity: 0.9;
+}
+
+/* 푸터 */
+.naming-footer {
+  margin-top: 28px;
+}
+
+.naming-footer p {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+.link-back {
+  font-size: 0.875rem;
+  color: #666;
+  text-decoration: none;
+}
+
+.link-back:hover {
+  color: #1a1a1a;
+}
+
+.footer-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-footer {
+  flex: 1;
+  display: block;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-footer.btn-main {
+  color: #333;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+}
+
+.btn-footer.btn-main:hover {
+  background: #f5f5f5;
+}
+
+.btn-footer.btn-retry {
+  color: #fff;
+  background: #1a1a1a;
+  border: 1px solid #1a1a1a;
+}
+
+.btn-footer.btn-retry:hover {
+  background: #333;
+}
+
+/* 공유 버튼 */
+.share-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  margin-bottom: 24px;
+}
+
+.share-bar__label {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.share-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #666;
+  background: #f5f5f5;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-share:hover {
+  background: #eee;
+  color: #1a1a1a;
+}
+
+.btn-share.copied {
+  color: #22c55e;
+  border-color: #22c55e;
+}
+
+/* ===== 결과 페이지 ===== */
+.loading-area {
+  text-align: center;
+  padding: 40px 20px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.loading-area p {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.error-message {
+  background: #fef2f2;
+  color: #e53e3e;
+  padding: 14px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin: 16px 0;
+}
+
+.result-section {
+  margin-bottom: 24px;
+}
+
+.result-section h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+.section-desc {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+/* 오행 그래프 */
+.ohang-chart {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  margin-bottom: 12px;
+}
+
+.ohang-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ohang-bar:last-child {
+  margin-bottom: 0;
+}
+
+.ohang-bar label {
+  width: 28px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.ohang-bar .bar-track {
+  flex: 1;
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0 10px;
+}
+
+.ohang-bar .bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.ohang-bar .bar-fill.deficient {
+  opacity: 0.9;
+}
+
+.ohang-bar .bar-value {
+  width: 20px;
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.deficient-desc {
+  font-size: 0.8rem;
+  color: #666;
+  background: #fff;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+/* 음별 한자 찾기 */
+.hanja-reading-block {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  margin-bottom: 16px;
+}
+
+.hanja-reading-block:last-child {
+  margin-bottom: 0;
+}
+
+.hanja-reading-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+.hanja-reading-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hanja-reading-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.hanja-reading-item:last-child {
+  border-bottom: none;
+}
+
+.hanja-reading-item .hanja-reading-char {
+  font-size: 2rem;
+  font-weight: 600;
+  min-width: 1.5em;
+  text-align: center;
+}
+
+.hanja-reading-item .hanja-reading-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hanja-reading-item .hanja-reading-reading {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.hanja-reading-item .hanja-reading-meaning {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.hanja-reading-item em {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+/* 오행 색상 - 심플하게 */
+.ohang-mok { color: #16a34a; }
+.ohang-hwa { color: #dc2626; }
+.ohang-to { color: #92400e; }
+.ohang-geum { color: #4b5563; }
+.ohang-su { color: #2563eb; }
+
+.ohang-bar .bar-fill.ohang-mok { background-color: #16a34a; }
+.ohang-bar .bar-fill.ohang-hwa { background-color: #dc2626; }
+.ohang-bar .bar-fill.ohang-to { background-color: #92400e; }
+.ohang-bar .bar-fill.ohang-geum { background-color: #4b5563; }
+.ohang-bar .bar-fill.ohang-su { background-color: #2563eb; }
+
+/* 추천 카드 - 한자 크게, 음 중간, 뜻 작게 */
+.recommendation-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #eee;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.recommendation-card:hover {
+  border-color: #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.recommendation-card .rec-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.rec-hanja-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+.rec-hanja-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.rec-hanja-item .rec-char {
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.rec-hanja-item .rec-reading {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.rec-hanja-item .rec-meaning {
+  font-size: 0.75rem;
+  color: #888;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.recommendation-card .rec-explanation {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.recommendation-card .rec-score {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+/* 용어 사전 링크 (클릭 시 dict로 이동) */
+.dict-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dashed currentColor;
+  cursor: pointer;
+}
+
+.dict-link:hover {
+  opacity: 0.8;
+}
+
+.dict-link-inline {
+  color: #666;
+  text-decoration: none;
+  border-bottom: 1px dotted currentColor;
+  font-size: 0.9em;
+}
+
+.dict-link-inline:hover {
+  color: #1a1a1a;
+}
+
+/* ===== 용어 사전 페이지 ===== */
+.page-top-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+/* 타이틀 위 액션 (사주와 동일 구조) */
+.page-top-actions .btn-detail {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fff;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.page-top-actions .btn-detail:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+  color: #333;
+}
+
+.dict-main {
+  padding-bottom: 16px;
+}
+
+.dict-section {
+  margin-bottom: 28px;
+}
+
+.dict-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #eee;
+}
+
+.dict-desc {
+  font-size: 0.875rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.dict-subtitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin: 16px 0 8px;
+}
+
+.dict-simple-list {
+  list-style: none;
+  margin: 12px 0;
+  padding: 14px 16px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.dict-simple-list li {
+  font-size: 0.875rem;
+  color: #555;
+  padding: 6px 0;
+  line-height: 1.5;
+}
+
+.dict-table-wrap {
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.dict-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+.dict-table th,
+.dict-table td {
+  padding: 10px 14px;
+  text-align: left;
+  border: 1px solid #eee;
+  font-size: 0.875rem;
+}
+
+.dict-table th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #333;
+}
+
+.dict-table td {
+  color: #555;
+}
+
+.dict-term {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.dict-term:hover {
+  text-decoration: underline;
+}
+
+.dict-nav {
+  margin-top: 12px;
+}
+
+.dict-nav a {
+  font-size: 0.8rem;
+  color: #888;
+  text-decoration: none;
+}
+
+.dict-nav a:hover {
+  color: #1a1a1a;
+}
+
+/* 모바일 */
+@media (max-width: 480px) {
+  .naming-container {
+    padding: 16px;
+  }
+
+  .naming-form {
+    padding: 20px;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-group-inline {
+    min-width: 100%;
+  }
+
+  .share-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .share-btns {
+    justify-content: flex-end;
+  }
+}
