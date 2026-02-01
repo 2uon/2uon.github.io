@@ -30,10 +30,16 @@
         const result = [];
         for (let i = 0; i < hanjaNodes.length; i++) {
           const n = hanjaNodes[i];
+          var mainEl = (n.querySelector('main_element') && n.querySelector('main_element').textContent) ||
+            (n.querySelector('element') && n.querySelector('element').textContent) || '';
+          var subEl = (n.querySelector('sub_element') && n.querySelector('sub_element').textContent) || '';
+          if (subEl === '없음') subEl = '';
           result.push({
             char: (n.querySelector('char') && n.querySelector('char').textContent) || '',
             reading: (n.querySelector('reading') && n.querySelector('reading').textContent) || '',
-            element: (n.querySelector('element') && n.querySelector('element').textContent) || '',
+            element: mainEl,
+            mainElement: mainEl,
+            subElement: subEl,
             strokes: parseInt((n.querySelector('strokes') && n.querySelector('strokes').textContent) || '0', 10) || 0,
             yinYang: (n.querySelector('yinYang') && n.querySelector('yinYang').textContent) || '',
             meaning: (n.querySelector('meaning') && n.querySelector('meaning').textContent) || '',
@@ -55,6 +61,21 @@
 
   // 沖에서 被克(손상)되는 오행: [a,b] → b가 a에게 克당함
   const CHUNG_DAMAGED = { '0,6': '화', '6,0': '화', '2,8': '목', '8,2': '목', '3,9': '목', '9,3': '목', '5,11': '화', '11,5': '화' };
+
+  /**
+   * 한자의 오행 배열 반환 (주 오행 + 부 오행)
+   * @param {Object} h - 한자 객체
+   * @returns {string[]} [mainElement, subElement?] (subElement는 없음이 아닐 때만)
+   */
+  function getHanjaElements(h) {
+    if (!h) return [];
+    var main = h.mainElement || h.element || '';
+    var sub = h.subElement || '';
+    if (!main) return [];
+    var arr = [main];
+    if (sub && sub !== '없음') arr.push(sub);
+    return arr;
+  }
 
   function getBranchIdx(branchChar) {
     return JIJI.indexOf(branchChar);
@@ -470,14 +491,18 @@
   }
 
   function rateOhang(h1, h2, ctx) {
-    var nameElements = [h1.element, h2.element];
     var match = 0;
     var seen = {};
-    for (var i = 0; i < (ctx.deficientElements || []).length; i++) {
-      var el = ctx.deficientElements[i];
-      if (nameElements.indexOf(el) !== -1 && !seen[el]) { match++; seen[el] = 1; }
+    var defs = ctx.deficientElements || [];
+    for (var i = 0; i < defs.length; i++) {
+      var el = defs[i];
+      if (seen[el]) continue;
+      var mainMatch = (h1.mainElement === el || h2.mainElement === el || h1.element === el || h2.element === el);
+      var subMatch = (h1.subElement === el || h2.subElement === el);
+      if (mainMatch) { match += 1; seen[el] = 1; }
+      else if (subMatch) { match += 0.5; seen[el] = 1; }
     }
-    var base = match === 0 ? 1 : (match === 1 ? 3 : 5);
+    var base = match === 0 ? 1 : (match >= 2 ? 5 : 3);
     var nameYang = (h1.yinYang === '양' ? 1 : 0) + (h2.yinYang === '양' ? 1 : 0);
     var nameYin = (h1.yinYang === '음' ? 1 : 0) + (h2.yinYang === '음' ? 1 : 0);
     var bonus = 0;
@@ -627,11 +652,15 @@
     var weightedSum = 0;
     var weightTotal = 0;
     var deficientMatch = 0;
-    var nameElements = [h1.element, h2.element];
     var seenEl = {};
-    for (var i = 0; i < (ctx.deficientElements || []).length; i++) {
-      var el = ctx.deficientElements[i];
-      if (nameElements.indexOf(el) !== -1 && !seenEl[el]) { deficientMatch++; seenEl[el] = 1; }
+    var defs = ctx.deficientElements || [];
+    for (var i = 0; i < defs.length; i++) {
+      var el = defs[i];
+      if (seenEl[el]) continue;
+      var mainM = (h1.mainElement === el || h2.mainElement === el || h1.element === el || h2.element === el);
+      var subM = (h1.subElement === el || h2.subElement === el);
+      if (mainM) { deficientMatch += 1; seenEl[el] = 1; }
+      else if (subM) { deficientMatch += 0.5; seenEl[el] = 1; }
     }
 
     for (var j = 0; j < RATING_CATEGORIES.length; j++) {
@@ -800,11 +829,18 @@
 
       var fitScore = 0;
       var fitReason = '';
-      if (deficientElements.indexOf(h.element) !== -1) {
+      var mainEl = h.mainElement || h.element || '';
+      var subEl = h.subElement || '';
+      var mainFit = deficientElements.indexOf(mainEl) !== -1;
+      var subFit = subEl && deficientElements.indexOf(subEl) !== -1;
+      if (mainFit) {
         fitScore = 1;
-        fitReason = h.element + ' 기운 보완에 좋음';
+        fitReason = mainEl + ' 기운 보완에 좋음';
+      } else if (subFit) {
+        fitScore = 0.5;
+        fitReason = subEl + ' 보조 기운 보완';
       } else {
-        fitReason = h.element + ' 오행';
+        fitReason = mainEl + (subEl ? '+' + subEl : '') + ' 오행';
       }
       matched.push({
         hanja: h,
@@ -822,10 +858,10 @@
    */
   function buildExplanation(h1, h2, deficientElements, score) {
     const parts = [];
-    const nameElements = [h1.element, h2.element];
+    const nameEls = getHanjaElements(h1).concat(getHanjaElements(h2));
     for (let i = 0; i < deficientElements.length; i++) {
       const e = deficientElements[i];
-      if (nameElements.indexOf(e) !== -1) {
+      if (nameEls.indexOf(e) !== -1) {
         parts.push(e + ' 기운 보완');
       }
     }
