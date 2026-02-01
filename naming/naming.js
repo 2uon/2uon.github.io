@@ -82,6 +82,42 @@
     '2020s': { batchim: 0.15, strong: 0.10, soft: 0.75, open: 0.82, softJong: 0.80 }
   };
 
+  // 시대별 첫글자 초성 선호도 (트렌드에서 도출)
+  // 초성 인덱스: ㄱ0 ㄲ1 ㄴ2 ㄷ3 ㄸ4 ㄹ5 ㅁ6 ㅂ7 ㅃ8 ㅅ9 ㅆ10 ㅇ11 ㅈ12 ㅉ13 ㅊ14 ㅋ15 ㅌ16 ㅍ17 ㅎ18
+  const FIRST_CHO_PREFERENCE = {
+    male: {
+      '1950s': { 0: 0.9, 9: 0.9, 16: 0.9, 7: 0.8, 12: 0.8 }, // ㄱㅅㅌㅂㅈ - 영철, 성수, 태식
+      '1960s': { 0: 0.9, 3: 0.85, 9: 0.9, 12: 0.85, 7: 0.8 }, // 종철, 기영, 동식
+      '1970s': { 3: 0.9, 12: 0.9, 9: 0.9, 0: 0.85, 6: 0.8 }, // 동현, 정훈, 상민
+      '1980s': { 6: 1.0, 12: 0.95, 9: 0.9, 18: 0.85, 3: 0.8 }, // 민수, 준호, 재훈, 성민, 현석
+      '1990s': { 12: 1.0, 18: 0.95, 6: 0.9, 16: 0.85, 9: 0.85 }, // 지훈, 현우, 민준
+      '2000s': { 12: 1.0, 6: 0.95, 9: 0.95, 3: 0.9, 18: 0.85 }, // 준서, 민재, 승현, 도현
+      '2010s': { 9: 1.0, 18: 0.95, 3: 0.95, 12: 0.9, 11: 0.85 }, // 서준, 하준, 시윤, 도윤
+      '2020s': { 11: 1.0, 18: 0.95, 9: 0.95, 5: 0.9, 12: 0.85 } // 이안, 하온, 시안, 로운
+    },
+    female: {
+      '1950s': { 9: 0.9, 6: 0.9, 11: 0.85, 12: 0.8 },
+      '1960s': { 6: 0.9, 11: 0.9, 0: 0.85, 9: 0.85 },
+      '1970s': { 6: 0.9, 11: 0.9, 0: 0.85, 9: 0.85, 18: 0.8 },
+      '1980s': { 12: 0.95, 18: 0.95, 11: 0.9, 9: 0.9, 6: 0.85 },
+      '1990s': { 9: 0.95, 12: 0.95, 11: 0.9, 18: 0.9, 2: 0.85 },
+      '2000s': { 9: 1.0, 11: 0.95, 12: 0.95, 14: 0.9, 18: 0.85 }, // 서현, 예은, 지민, 채영
+      '2010s': { 9: 1.0, 18: 0.95, 12: 0.95, 11: 0.9, 14: 0.9 }, // 서연, 하윤, 지아
+      '2020s': { 11: 1.0, 18: 0.95, 5: 0.95, 9: 0.9, 6: 0.85 } // 아린, 하린, 리아
+    }
+  };
+
+  // 부자연스러운 이름 조합 (한글 두 글자)
+  const AWKWARD_NAMES = {
+    '비서': 1, '부서': 1, '보서': 1, // 직업명/단어와 동음
+    '기자': 1, '가수': 1, '의사': 1, '간호': 1,
+    '회사': 1, '사장': 1, '과장': 1, '대리': 1,
+    '학교': 1, '학생': 1, '선생': 1,
+    '경찰': 1, '군인': 1, '소방': 1,
+    '음식': 1, '요리': 1, '식사': 1,
+    '돈': 1, '차': 1
+  };
+
   // ═══════════════════════════════════════════════════════════════════
   // 한글 분해 및 음운 분석
   // ═══════════════════════════════════════════════════════════════════
@@ -476,63 +512,77 @@
   }
 
   /**
-   * 3. 음절 흐름 점수 (0~5) - 첫글자-둘째글자 연결 자연스러움
+   * 3. 음절 흐름 점수 (0~5) - 첫글자-둘째글자 연결 + 첫글자 초성 트렌드
    */
   function scoreFlow(h1, h2, ctx) {
     var name1 = h1.reading || '';
     var name2 = h2.reading || '';
     var fullName = (ctx.surname || '') + name1 + name2;
+    var nameOnly = name1 + name2;
     var syls = decomposeHangul(fullName);
     if (syls.length < 2) return 3;
 
-    var score = 4; // 기본 점수
+    var era = getEraFromBirthYear(ctx.birthYear);
+    var gender = ctx.userGender === 'female' ? 'female' : 'male';
+    var score = 3; // 기본 점수 (낮춤 - 가점 방식)
 
-    // 1. 성과 이름 첫글자 연결
+    // 0. 어색한 이름 조합 체크 (치명적 감점)
+    if (AWKWARD_NAMES[nameOnly]) {
+      return 0.5; // 단어와 겹치면 매우 낮은 점수
+    }
+
+    // 1. 첫글자 초성 트렌드 (중요!)
+    var firstChoPrefs = FIRST_CHO_PREFERENCE[gender] && FIRST_CHO_PREFERENCE[gender][era];
+    if (firstChoPrefs && syls.length >= 2) {
+      var firstCho = syls[1].cho;
+      if (firstChoPrefs[firstCho]) {
+        score += firstChoPrefs[firstCho] * 1.5; // 최대 +1.5
+      } else if (STRONG_CHO[firstCho]) {
+        // 해당 시대에 선호되지 않는 강한 초성 → 감점
+        score -= 0.8;
+      }
+    }
+
+    // 2. 성과 이름 첫글자 연결
     if (syls.length >= 2) {
       var surname = syls[0];
       var first = syls[1];
       
-      // 성에 받침 있고 이름 첫글자가 ㅇ 초성이면 연음으로 자연스러움
       if (surname.jong > 0 && first.cho === 11) {
-        score += 0.5;
+        score += 0.3; // 연음
       }
-      // 강한 받침 + 강한 초성은 부자연스러움
       if (HARD_JONG[surname.jong] && STRONG_CHO[first.cho]) {
-        score -= 0.5;
+        score -= 0.3;
       }
     }
 
-    // 2. 이름 첫글자-둘째글자 연결
+    // 3. 이름 첫글자-둘째글자 연결
     if (syls.length >= 3) {
       var name1Syl = syls[1];
       var name2Syl = syls[2];
 
-      // 첫글자에 받침 있고 둘째글자 초성이 ㅇ이면 연음
       if (name1Syl.jong > 0 && name2Syl.cho === 11) {
-        score += 0.3;
+        score += 0.2;
       }
-      // 첫글자 받침 없으면 둘째글자와 자연스럽게 연결
       if (name1Syl.jong === 0 && SOFT_CHO[name2Syl.cho]) {
-        score += 0.3;
+        score += 0.2;
       }
-      // 같은 모음 연속은 약간 단조로움
       if (name1Syl.jung === name2Syl.jung) {
-        score -= 0.3;
+        score -= 0.2;
       }
-      // 첫글자 받침이 강하고 둘째글자 초성이 강하면 발음 어려움
       if (HARD_JONG[name1Syl.jong] && STRONG_CHO[name2Syl.cho]) {
         score -= 0.8;
       }
     }
 
-    // 3. 같은 초성 연속 감점
+    // 4. 같은 초성 연속 감점
     for (var i = 1; i < syls.length; i++) {
       if (syls[i].cho === syls[i-1].cho && syls[i].cho !== 11) {
-        score -= 0.4;
+        score -= 0.3;
       }
     }
 
-    // 4. 전체적인 발음 무게감 (받침 많으면 무거움)
+    // 5. 전체적인 발음 무게감 (받침 많으면 무거움)
     var batchimCnt = syls.filter(function(s) { return s.jong > 0; }).length;
     if (batchimCnt >= 2) score -= 0.3;
     if (batchimCnt >= 3) score -= 0.3;
