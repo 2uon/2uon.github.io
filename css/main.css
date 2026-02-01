@@ -239,6 +239,7 @@
   transition: box-shadow 0.25s ease, border-color 0.2s, transform 0.2s ease;
   display: flex;
   flex-direction: column;
+  min-height: 200px;
 }
 
 .hub-card:hover {
