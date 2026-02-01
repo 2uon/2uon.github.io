@@ -451,6 +451,12 @@
     return { name: name, yinYang: yinYang };
   }
 
+  /** 일간 기준 십성→오행: 인(生)·비겁(同)·식상(泄)·재(日剋)·관살(剋日) */
+  var SENG_WO = { 목: '수', 화: '목', 토: '화', 금: '토', 수: '금' };  // 生: 인 오행
+  var WO_SENG = { 목: '화', 화: '토', 토: '금', 금: '수', 수: '목' };  // 泄: 식상 오행
+  var DAY_KEUK = { 목: '토', 화: '금', 토: '수', 금: '목', 수: '화' };  // 日剋: 재 오행
+  var GEUK_DAY = { 목: '금', 화: '수', 토: '목', 금: '화', 수: '토' };  // 剋日: 관살 오행
+
   function getDeficientElements(saju) {
     var defaultResult = {
       elements: ['목', '화', '토', '금', '수'],
@@ -462,7 +468,8 @@
       dayStemStrength: 'balanced',
       structureNote: '',
       supplementNote: '',
-      yinYangRatio: { yang: 0, yin: 0 }
+      yinYangRatio: { yang: 0, yin: 0 },
+      penaltyElements: []
     };
     if (!saju) return defaultResult;
 
@@ -473,64 +480,87 @@
     var reasons = [];
     var detail = { ratio: [], hapChung: [], sipseong: [] };
 
-    var counts = elements.map(function(e) { return { element: e, count: ohangCount[e] || 0 }; });
-    counts.sort(function(a, b) { return a.count - b.count; });
-    var minCount = counts[0].count;
-    counts.filter(function(c) { return c.count === minCount; }).forEach(function(c) {
-      resultSet[c.element] = true;
-      detail.ratio.push(c.element);
-    });
-    if (detail.ratio.length > 0) reasons.push('오행 비율');
-
-    analyzeHapChungPahaeHyeong(pillars).forEach(function(e) {
-      resultSet[e] = true;
-      if (detail.hapChung.indexOf(e) === -1) detail.hapChung.push(e);
-    });
-    if (detail.hapChung.length > 0) reasons.push('합·충·형·파·해');
-
-    analyzeSipseong(saju).forEach(function(e) {
-      resultSet[e] = true;
-      if (detail.sipseong.indexOf(e) === -1) detail.sipseong.push(e);
-    });
-    if (detail.sipseong.length > 0) reasons.push('십성');
-
-    var final = Object.keys(resultSet).filter(function(e) { return elements.indexOf(e) !== -1; });
-    if (final.length === 0) final = elements;
-
-    var secondMinCount = counts.find(function(c) { return c.count > minCount; });
-    secondMinCount = secondMinCount ? secondMinCount.count : minCount;
-    var supplementGood = counts
-      .filter(function(c) { return c.count === secondMinCount && final.indexOf(c.element) === -1; })
-      .map(function(c) { return c.element; });
-
-    var maxCount = counts[counts.length - 1].count;
-    var excess = maxCount > minCount
-      ? counts.filter(function(c) { return c.count === maxCount; }).map(function(c) { return c.element; })
-      : [];
-
-    // 사주 팔자 표시용
-    var pillarsDisplay = pillars.map(function(p) { return (p.stem || '') + (p.branch || ''); });
+    var dayOhang = saju.dayStemOhang || '';
+    var strengthResult = getDayStemStrength(saju);
+    var dayStemStrength = strengthResult.strength;
     var dayLabel = getDayStemLabel(saju);
     var dayStemName = dayLabel.name;
     var dayStemYinYang = dayLabel.yinYang;
-    var strengthResult = getDayStemStrength(saju);
-    var dayStemStrength = strengthResult.strength;
-
-    // 일주 관점 구조·보강 문구 (음화·양화 등 일간 성격 반영)
     var yinYangLabel = dayStemYinYang === '음' ? '음' : (dayStemYinYang === '양' ? '양' : '');
-    var dayStemFullLabel = dayStemName + (yinYangLabel ? '(' + yinYangLabel + dayStemName.slice(-1) + ')' : '');
+    var dayStemFullLabel = dayStemName + (yinYangLabel ? '(' + yinYangLabel + (dayStemName ? dayStemName.slice(-1) : '') + ')' : '');
+
+    var final;
+    var supplementGood;
+    var excess;
+    var penaltyElements = [];
+
+    if (dayOhang && dayStemStrength === 'weak') {
+      // 일간 중심: 오행 개수만으로 판단하지 않고, 일간이 약하면 生·比 보강, 剋·泄·재 감점
+      var inOhang = SENG_WO[dayOhang];   // 일간을 생하는 오행 (인)
+      var biOhang = dayOhang;             // 일간과 같은 오행 (비겁)
+      var gwanOhang = GEUK_DAY[dayOhang]; // 일간을 억제하는 오행 (관살)
+      var sikOhang = WO_SENG[dayOhang];   // 일간 에너지를 소모시키는 오행 (식상/泄)
+      var chaOhang = DAY_KEUK[dayOhang];  // 일간이 쏟는 財 (재) — 이름에 넣으면 일간 약화 가능
+      final = [inOhang, biOhang].filter(Boolean);
+      supplementGood = [];
+      excess = [gwanOhang, sikOhang, chaOhang].filter(Boolean);
+      penaltyElements = [gwanOhang, sikOhang, chaOhang].filter(Boolean);
+      reasons = ['일간 강약'];
+      detail.ratio = [];
+      detail.sipseong = [inOhang, biOhang];
+      detail.hapChung = [];
+    } else {
+      // 기존: 오행 비율·합충형파해·십성 종합
+      var counts = elements.map(function(e) { return { element: e, count: ohangCount[e] || 0 }; });
+      counts.sort(function(a, b) { return a.count - b.count; });
+      var minCount = counts[0].count;
+      counts.filter(function(c) { return c.count === minCount; }).forEach(function(c) {
+        resultSet[c.element] = true;
+        detail.ratio.push(c.element);
+      });
+      if (detail.ratio.length > 0) reasons.push('오행 비율');
+
+      analyzeHapChungPahaeHyeong(pillars).forEach(function(e) {
+        resultSet[e] = true;
+        if (detail.hapChung.indexOf(e) === -1) detail.hapChung.push(e);
+      });
+      if (detail.hapChung.length > 0) reasons.push('합·충·형·파·해');
+
+      analyzeSipseong(saju).forEach(function(e) {
+        resultSet[e] = true;
+        if (detail.sipseong.indexOf(e) === -1) detail.sipseong.push(e);
+      });
+      if (detail.sipseong.length > 0) reasons.push('십성');
+
+      final = Object.keys(resultSet).filter(function(e) { return elements.indexOf(e) !== -1; });
+      if (final.length === 0) final = elements;
+
+      var secondMinCount = counts.find(function(c) { return c.count > minCount; });
+      secondMinCount = secondMinCount ? secondMinCount.count : minCount;
+      supplementGood = counts
+        .filter(function(c) { return c.count === secondMinCount && final.indexOf(c.element) === -1; })
+        .map(function(c) { return c.element; });
+
+      var maxCount = counts[counts.length - 1].count;
+      excess = maxCount > minCount
+        ? counts.filter(function(c) { return c.count === maxCount; }).map(function(c) { return c.element; })
+        : [];
+    }
+
+    var pillarsDisplay = pillars.map(function(p) { return (p.stem || '') + (p.branch || ''); });
+
     var structureNote = '';
     var supplementNote = '';
     if (dayStemName) {
-      // 보강 기운 표기: 화가 필요할 때 일주가 음화면 '음화', 양화면 '양화'로 구분
       var supplementLabels = final.map(function(e) {
         if (e === '화' && yinYangLabel) return yinYangLabel + '화';
         return e;
       });
       var supplementText = supplementLabels.join('·');
       if (dayStemStrength === 'weak') {
-        structureNote = '전체 균형은 참고하되, 본인인 일주를 보면 ' + dayStemFullLabel + '가 약해지는 구조입니다.';
-        supplementNote = '이름으로 ' + supplementText + ' 보강을 하면 도움이 됩니다.';
+        var drainList = [GEUK_DAY[dayOhang], WO_SENG[dayOhang]].filter(Boolean);
+        structureNote = '오행 수량만 보면 균형형처럼 보일 수 있으나, 일간 ' + dayStemFullLabel + '가 지지의 ' + (drainList.join('·') || '억제·소모') + ' 등 구조적 영향으로 약해진 형태입니다.';
+        supplementNote = '단순 부족 오행 채우기가 아니라, 일간을 살리는 ' + (SENG_WO[dayOhang] || '') + '을 최우선, ' + (dayOhang || '') + '를 보조로 보강하는 작명 전략이 안정적입니다. 수·금 등 일간을 약화시키는 오행은 이름에 넣지 않는 편이 좋습니다.';
       } else if (dayStemStrength === 'strong') {
         structureNote = '일주 ' + dayStemFullLabel + '가 든든한 편입니다.';
         supplementNote = '필요한 기운(' + supplementText + ')을 이름에 반영하면 균형에 도움이 됩니다.';
@@ -554,7 +584,8 @@
       dayStemStrength: dayStemStrength,
       structureNote: structureNote,
       supplementNote: supplementNote,
-      yinYangRatio: yinYangRatio
+      yinYangRatio: yinYangRatio,
+      penaltyElements: penaltyElements
     };
   }
 
@@ -593,7 +624,8 @@
    */
   function scoreOhang(h1, h2, ctx) {
     var defs = ctx.deficientElements || [];
-    if (defs.length === 0) return 3;
+    var penalties = ctx.penaltyElements || [];
+    if (defs.length === 0 && penalties.length === 0) return 3;
 
     var score = 0;
     var matched = {};
@@ -601,7 +633,6 @@
     [h1, h2].forEach(function(h) {
       var main = h.mainElement || h.element || '';
       var sub = h.subElement || '';
-      
       if (main && defs.indexOf(main) !== -1 && !matched[main]) {
         score += 2;
         matched[main] = true;
@@ -612,7 +643,14 @@
       }
     });
 
-    // 음양 밸런스 보너스
+    // 일간을 약화시키는 오행(剋·泄·재) 포함 시 감점
+    [h1, h2].forEach(function(h) {
+      var main = h.mainElement || h.element || '';
+      var sub = h.subElement || '';
+      if (main && penalties.indexOf(main) !== -1) score -= 1.5;
+      if (sub && penalties.indexOf(sub) !== -1) score -= 0.8;
+    });
+
     var yang = (h1.yinYang === '양' ? 1 : 0) + (h2.yinYang === '양' ? 1 : 0);
     if (yang === 1) score += 0.5;
 
@@ -972,7 +1010,7 @@
     return parts.join(', ');
   }
 
-  function getRecommendations(hanjaArray, surname, deficientElements, yinYang, name1, name2, userGender, birthYear, birthOrder) {
+  function getRecommendations(hanjaArray, surname, deficientElements, penaltyElements, yinYang, name1, name2, userGender, birthYear, birthOrder) {
     var scored = [];
     var seen = {};
     var surnameNorm = (surname || '').trim();
@@ -1009,6 +1047,7 @@
         var ctx = {
           surname: surnameNorm,
           deficientElements: deficientElements || [],
+          penaltyElements: penaltyElements || [],
           yinYang: yinYang,
           userGender: userGender,
           birthYear: birthYear,

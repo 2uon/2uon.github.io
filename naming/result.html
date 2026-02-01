@@ -27,39 +27,11 @@
         <!-- 성 한자 추천 -->
         <div class="surname-hanja-result" id="surname-hanja-result" hidden></div>
 
-        <!-- 사주 팔자 (saju 페이지와 동일한 표 구조: 천간/지지 2행, 시·일·월·년 열) -->
-        <section class="result-section" id="saju-section">
+        <!-- 사주 팔자 (saju/result.html과 동일한 표: JS에서 전체 HTML 생성) -->
+        <section class="result-section saju-section" id="saju-section">
           <h2 class="result-section-title">사주 팔자</h2>
           <p class="section-desc">생년월일시로 나온 네 기둥입니다. 일주(일간)를 중심으로 이름 보강 방향을 참고합니다.</p>
-          <div class="saju-table-wrap" id="saju-pillars-wrap">
-            <table class="saju-table saju-palja-table" id="saju-pillars-table" aria-label="사주 팔자">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th scope="col">시</th>
-                  <th scope="col">일</th>
-                  <th scope="col">월</th>
-                  <th scope="col">년</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="palja-row cheongan-row">
-                  <th>천간</th>
-                  <td id="pillar-hour-stem" class="pillar-cell"></td>
-                  <td id="pillar-day-stem" class="pillar-cell"></td>
-                  <td id="pillar-month-stem" class="pillar-cell"></td>
-                  <td id="pillar-year-stem" class="pillar-cell"></td>
-                </tr>
-                <tr class="palja-row jiji-row">
-                  <th>지지</th>
-                  <td id="pillar-hour-branch" class="pillar-cell"></td>
-                  <td id="pillar-day-branch" class="pillar-cell"></td>
-                  <td id="pillar-month-branch" class="pillar-cell"></td>
-                  <td id="pillar-year-branch" class="pillar-cell"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <div id="saju-pillars-wrap"></div>
           <div class="saju-structure-note" id="saju-structure-note"></div>
           <div class="saju-supplement-note" id="saju-supplement-note"></div>
 
@@ -300,6 +272,7 @@
           hanjaArray,
           params.surname,
           deficientElements,
+          deficientResult.penaltyElements || [],
           yinYang,
           params.name1 || undefined,
           params.name2 || undefined,
@@ -308,38 +281,23 @@
           birthOrder
         );
 
-        // 사주 팔자 표 렌더링 (saju 페이지와 동일: 천간/지지 2행, 시·일·월·년 열)
-        var colOrder = [pillars[3], pillars[2], pillars[1], pillars[0]]; // 시, 일, 월, 년
-        var OHANG_COLORS = NamingService.OHANG_COLORS || {};
-        function stemCellHtml(p) {
-          if (!p || !p.stem) return '—';
-          var yinYang = p.yinyang === '양' ? 'yang' : 'yin';
-          var colorClass = (p.colorClass || (p.stemOhang && OHANG_COLORS[p.stemOhang]) ? OHANG_COLORS[p.stemOhang] : '') || '';
-          var ohangText = p.stemOhang ? p.stem + p.stemOhang : p.stem;
-          return '<span class="pillar-char">' + escapeHtml(p.stem) + '</span><span class="pillar-ohang">(' + escapeHtml(ohangText) + ')</span>';
+        // 사주 팔자 표 렌더링 (saju/result.html·resultRenderer.js와 동일한 HTML 생성)
+        var sajuWrap = document.getElementById('saju-pillars-wrap');
+        if (sajuWrap && pillars.length >= 4) {
+          var labels = ['시', '일', '월', '년'];
+          var colPillars = [pillars[3], pillars[2], pillars[1], pillars[0]]; // 시, 일, 월, 년
+          var theadCells = labels.map(function(l) { return '<th scope="col">' + escapeHtml(l) + '</th>'; }).join('');
+          var stemRow = colPillars.map(function(p) {
+            var yc = p.yinyang === '양' ? 'yang' : 'yin';
+            var cc = p.colorClass || '';
+            return '<td class="pillar-cell ' + yc + ' ' + cc + '"><span class="pillar-char">' + escapeHtml(p.stem || '') + '</span><span class="pillar-ohang">(' + escapeHtml((p.stem || '') + (p.stemOhang || '')) + ')</span></td>';
+          }).join('');
+          var branchRow = colPillars.map(function(p) {
+            var cc = p.branchColorClass || p.colorClass || '';
+            return '<td class="pillar-cell ' + cc + '"><span class="pillar-char">' + escapeHtml(p.branch || '') + '</span><span class="pillar-ohang">(' + escapeHtml((p.branch || '') + (p.branchOhang || '')) + ')</span></td>';
+          }).join('');
+          sajuWrap.innerHTML = '<div class="saju-table-wrap"><table class="saju-table saju-palja-table" aria-label="사주 팔자"><thead><tr><th></th>' + theadCells + '</tr></thead><tbody><tr class="palja-row cheongan-row"><th>천간</th>' + stemRow + '</tr><tr class="palja-row jiji-row"><th>지지</th>' + branchRow + '</tr></tbody></table></div>';
         }
-        function branchCellHtml(p) {
-          if (!p || !p.branch) return '—';
-          var colorClass = (p.branchColorClass || p.colorClass || (p.branchOhang && OHANG_COLORS[p.branchOhang]) ? OHANG_COLORS[p.branchOhang] : '') || '';
-          var ohangText = p.branchOhang ? p.branch + p.branchOhang : p.branch;
-          return '<span class="pillar-char">' + escapeHtml(p.branch) + '</span><span class="pillar-ohang">(' + escapeHtml(ohangText) + ')</span>';
-        }
-        var stemIds = ['pillar-hour-stem', 'pillar-day-stem', 'pillar-month-stem', 'pillar-year-stem'];
-        var branchIds = ['pillar-hour-branch', 'pillar-day-branch', 'pillar-month-branch', 'pillar-year-branch'];
-        colOrder.forEach(function(p, i) {
-          var stemEl = document.getElementById(stemIds[i]);
-          var branchEl = document.getElementById(branchIds[i]);
-          var stemColor = p.colorClass || (p.stemOhang && OHANG_COLORS[p.stemOhang]) || '';
-          var branchColor = p.branchColorClass || p.colorClass || (p.branchOhang && OHANG_COLORS[p.branchOhang]) || '';
-          if (stemEl) {
-            stemEl.innerHTML = stemCellHtml(p);
-            stemEl.className = 'pillar-cell ' + (p.yinyang === '양' ? 'yang' : 'yin') + ' ' + stemColor;
-          }
-          if (branchEl) {
-            branchEl.innerHTML = branchCellHtml(p);
-            branchEl.className = 'pillar-cell ' + branchColor;
-          }
-        });
 
         // 일주 구조·보강 문구
         var structureNoteEl = document.getElementById('saju-structure-note');
