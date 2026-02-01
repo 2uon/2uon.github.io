@@ -592,6 +592,7 @@
 
   /**
    * 4. 세대 음운 점수 (0~5)
+   * - 음운 특성 + 한자 era 필드 활용
    */
   function scoreEra(h1, h2, ctx) {
     var era = getEraFromBirthYear(ctx.birthYear);
@@ -601,6 +602,7 @@
     var fullName = (ctx.surname || '') + (h1.reading || '') + (h2.reading || '');
     var phonetics = analyzePhonetics(fullName);
 
+    // 1. 음운 특성 기반 점수 (60%)
     var diffs = [
       Math.abs(phonetics.batchim - profile.batchim),
       Math.abs(phonetics.strong - profile.strong),
@@ -608,11 +610,54 @@
       Math.abs(phonetics.open - profile.open),
       Math.abs(phonetics.softJong - profile.softJong)
     ];
-
     var avgDiff = diffs.reduce(function(a, b) { return a + b; }, 0) / diffs.length;
-    var score = Math.max(0, 5 * (1 - avgDiff * 2));
+    var phoneticScore = Math.max(0, 3 * (1 - avgDiff * 2));
+
+    // 2. 한자 era 필드 기반 점수 (40%)
+    // era 매핑: 한자 era → 출생연도 시대
+    var eraMapping = {
+      '전통': ['1950s', '1960s'],
+      '중세대': ['1970s', '1980s'],
+      '신세대': ['1990s', '2000s'],
+      '최신': ['2010s', '2020s']
+    };
     
-    return Math.round(score * 100) / 100;
+    var h1Era = h1.era || '전통';
+    var h2Era = h2.era || '전통';
+    var targetEras = [];
+    
+    // 사용자 시대에 맞는 era 찾기
+    Object.keys(eraMapping).forEach(function(key) {
+      if (eraMapping[key].indexOf(era) !== -1) {
+        targetEras.push(key);
+      }
+    });
+    
+    // 인접 시대도 허용 (부드러운 전환)
+    var allEras = ['전통', '중세대', '신세대', '최신'];
+    var targetIdx = allEras.indexOf(targetEras[0] || '전통');
+    var acceptableEras = [allEras[targetIdx]];
+    if (targetIdx > 0) acceptableEras.push(allEras[targetIdx - 1]);
+    if (targetIdx < allEras.length - 1) acceptableEras.push(allEras[targetIdx + 1]);
+    
+    var eraScore = 0;
+    
+    // 각 한자의 era 적합성 평가
+    [h1Era, h2Era].forEach(function(hanjaEra) {
+      if (acceptableEras.indexOf(hanjaEra) !== -1) {
+        if (hanjaEra === targetEras[0]) {
+          eraScore += 1; // 정확히 매칭
+        } else {
+          eraScore += 0.5; // 인접 시대
+        }
+      }
+      // 시대가 맞지 않으면 0점
+    });
+    
+    // 최종 점수 = 음운(60%) + era 필드(40%)
+    var finalScore = phoneticScore + eraScore;
+    
+    return Math.min(5, Math.max(0, Math.round(finalScore * 100) / 100));
   }
 
   /**

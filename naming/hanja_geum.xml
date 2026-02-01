@@ -3,16 +3,14 @@
 <names>
 <hanja><char>珂</char><reading>가</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>흰 옥, 마노</meaning><gender>여</gender><era>최신</era></hanja>
 <hanja><char>珏</char><reading>각</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>쌍옥, 두 개의 옥</meaning><gender>양</gender><era>최신</era></hanja>
-<hanja><char>客</char><reading>객</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>손님, 나그네</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>鍵</char><reading>건</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>17</strokes><yinYang>양</yinYang><meaning>열쇠, 핵심</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>庚</char><reading>경</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>8</strokes><yinYang>음</yinYang><meaning>일곱째 천간, 나이</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>勁</char><reading>경</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>강하다, 굳세다</meaning><gender>남</gender><era>중세대</era></hanja>
 <hanja><char>璟</char><reading>경</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>16</strokes><yinYang>양</yinYang><meaning>옥 빛 경</meaning><gender>양</gender><era>최신</era></hanja>
 <hanja><char>鏡</char><reading>경</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>19</strokes><yinYang>양</yinYang><meaning>거울, 비추다</meaning><gender>양</gender><era>전통</era></hanja>
-<hanja><char>琨</char><reading>곤</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>12</strokes><yinYang>음</yinYang><meaning>아름다운 옥</meaning><gender>남</gender><era>중세대</era></hanja>
 <hanja><char>琯</char><reading>관</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>12</strokes><yinYang>음</yinYang><meaning>옥 피리, 다스리다</meaning><gender>남</gender><era>중세대</era></hanja>
 <hanja><char>宏</char><reading>굉</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>7</strokes><yinYang>양</yinYang><meaning>크다, 넓다</meaning><gender>남</gender><era>중세대</era></hanja>
-<hanja><char>玽</char><reading>구</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>옥돌 구</meaning><gender>남</gender><era>최신</era></hanja>
+<hanja><char>玽</char><reading>구</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>옥돌 구</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>珺</char><reading>군</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>11</strokes><yinYang>양</yinYang><meaning>아름다운 옥 군</meaning><gender>양</gender><era>최신</era></hanja>
 <hanja><char>瑰</char><reading>귀</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>14</strokes><yinYang>음</yinYang><meaning>매우 아름다운 옥</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>珪</char><reading>규</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>10</strokes><yinYang>음</yinYang><meaning>홀, 서옥</meaning><gender>양</gender><era>중세대</era></hanja>
@@ -23,36 +21,17 @@
 <hanja><char>琪</char><reading>기</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>12</strokes><yinYang>음</yinYang><meaning>아름다운 옥</meaning><gender>양</gender><era>신세대</era></hanja>
 <hanja><char>璂</char><reading>기</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>15</strokes><yinYang>양</yinYang><meaning>신기한 옥 기</meaning><gender>남</gender><era>최신</era></hanja>
 <hanja><char>璣</char><reading>기</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>16</strokes><yinYang>양</yinYang><meaning>구슬 기, 별 이름 기</meaning><gender>여</gender><era>전통</era></hanja>
-<hanja><char>金</char><reading>김</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>부유함, 귀함</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>宅</char><reading>댁</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>6</strokes><yinYang>음</yinYang><meaning>집, 살다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>度</char><reading>도</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>법도, 마디</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>道</char><reading>도</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>12</strokes><yinYang>양</yinYang><meaning>길 도, 도리</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>獨</char><reading>독</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>16</strokes><yinYang>양</yinYang><meaning>홀로, 독창적</meaning><gender>남</gender><era>전통</era></hanja>
+<hanja><char>度</char><reading>도</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>법도, 마디</meaning><gender>남</gender><era>신세대</era></hanja>
+<hanja><char>道</char><reading>도</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>12</strokes><yinYang>양</yinYang><meaning>길 도, 도리</meaning><gender>남</gender><era>신세대</era></hanja>
 <hanja><char>璉</char><reading>련</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>14</strokes><yinYang>음</yinYang><meaning>제기, 옥 그릇</meaning><gender>여</gender><era>중세대</era></hanja>
 <hanja><char>鍊</char><reading>련</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>17</strokes><yinYang>양</yinYang><meaning>불리다, 단련하다</meaning><gender>남</gender><era>중세대</era></hanja>
-<hanja><char>瓏</char><reading>롱</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>20</strokes><yinYang>음</yinYang><meaning>옥 소리, 밝음</meaning><gender>여</gender><era>전통</era></hanja>
-<hanja><char>硫</char><reading>류</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>12</strokes><yinYang>음</yinYang><meaning>유황</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>璘</char><reading>린</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>16</strokes><yinYang>양</yinYang><meaning>옥빛 린</meaning><gender>양</gender><era>최신</era></hanja>
-<hanja><char>猛</char><reading>맹</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>12</strokes><yinYang>음</yinYang><meaning>사납다, 용맹하다</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>銘</char><reading>명</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>14</strokes><yinYang>양</yinYang><meaning>새기다, 기록</meaning><gender>남</gender><era>중세대</era></hanja>
-<hanja><char>瑁</char><reading>모</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>14</strokes><yinYang>양</yinYang><meaning>서옥, 보배</meaning><gender>여</gender><era>전통</era></hanja>
-<hanja><char>貌</char><reading>모</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>14</strokes><yinYang>음</yinYang><meaning>모양, 얼굴</meaning><gender>여</gender><era>전통</era></hanja>
-<hanja><char>謀</char><reading>모</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>16</strokes><yinYang>음</yinYang><meaning>꾀하다, 도모하다</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>玟</char><reading>민</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>옥돌 민</meaning><gender>양</gender><era>최신</era></hanja>
 <hanja><char>珉</char><reading>민</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>옥돌 민</meaning><gender>양</gender><era>신세대</era></hanja>
-<hanja><char>珀</char><reading>박</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>호박(보석)</meaning><gender>여</gender><era>신세대</era></hanja>
-<hanja><char>璞</char><reading>박</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>16</strokes><yinYang>음</yinYang><meaning>다듬지 않은 옥</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>鉢</char><reading>발</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>바리때, 그릇</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>碧</char><reading>벽</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>14</strokes><yinYang>양</yinYang><meaning>푸르다, 벽옥</meaning><gender>양</gender><era>전통</era></hanja>
-<hanja><char>璧</char><reading>벽</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>18</strokes><yinYang>음</yinYang><meaning>둥근 옥, 완벽함</meaning><gender>양</gender><era>전통</era></hanja>
-<hanja><char>別</char><reading>별</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>7</strokes><yinYang>양</yinYang><meaning>나누다, 특별함</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>宓</char><reading>복</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>8</strokes><yinYang>음</yinYang><meaning>편안하다, 조용하다</meaning><gender>양</gender><era>전통</era></hanja>
-<hanja><char>賦</char><reading>부</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>15</strokes><yinYang>양</yinYang><meaning>구실, 부여하다</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>分</char><reading>분</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>4</strokes><yinYang>양</yinYang><meaning>나누다, 명분</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>非</char><reading>비</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>아니다, 비범함</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>琵</char><reading>비</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>비파, 악기</meaning><gender>여</gender><era>전통</era></hanja>
-<hanja><char>緋</char><reading>비</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>14</strokes><yinYang>음</yinYang><meaning>붉은빛, 비단</meaning><gender>여</gender><era>전통</era></hanja>
-<hanja><char>賓</char><reading>빈</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>14</strokes><yinYang>음</yinYang><meaning>손님, 따르다</meaning><gender>양</gender><era>전통</era></hanja>
+<hanja><char>賓</char><reading>빈</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>14</strokes><yinYang>음</yinYang><meaning>손님, 따르다</meaning><gender>양</gender><era>신세대</era></hanja>
 <hanja><char>史</char><reading>사</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>역사, 기록</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>司</char><reading>사</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>맡다, 관청</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>仕</char><reading>사</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>벼슬하다, 섬기다</meaning><gender>남</gender><era>전통</era></hanja>
@@ -64,26 +43,22 @@
 <hanja><char>賜</char><reading>사</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>15</strokes><yinYang>양</yinYang><meaning>주다, 하사하다</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>謝</char><reading>사</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>17</strokes><yinYang>양</yinYang><meaning>사례하다, 꽃지다</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>辭</char><reading>사</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>19</strokes><yinYang>양</yinYang><meaning>말씀, 사양함</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>削</char><reading>삭</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>깎다, 연마</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>珊</char><reading>산</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>산호, 아름다운 소리</meaning><gender>여</gender><era>중세대</era></hanja>
 <hanja><char>産</char><reading>산</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>11</strokes><yinYang>양</yinYang><meaning>낳다, 재산</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>狀</char><reading>상</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>형상, 문서</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>象</char><reading>상</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>12</strokes><yinYang>양</yinYang><meaning>코끼리, 형상</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>詳</char><reading>상</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>자세하다, 알다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>璽</char><reading>새</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>19</strokes><yinYang>양</yinYang><meaning>옥새, 귀함</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>色</char><reading>색</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>6</strokes><yinYang>음</yinYang><meaning>빛깔, 모양</meaning><gender>양</gender><era>전통</era></hanja>
-<hanja><char>生</char><reading>생</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>날 생, 삶</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>舒</char><reading>서</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>12</strokes><yinYang>양</yinYang><meaning>펼 서</meaning><gender>여</gender><era>최신</era></hanja>
 <hanja><char>瑞</char><reading>서</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>상서로움, 길상</meaning><gender>양</gender><era>신세대</era></hanja>
-<hanja><char>誓</char><reading>서</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>14</strokes><yinYang>음</yinYang><meaning>맹세하다, 다짐하다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>緖</char><reading>서</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>15</strokes><yinYang>양</yinYang><meaning>실마리, 이어받다</meaning><gender>여</gender><era>중세대</era></hanja>
-<hanja><char>昔</char><reading>석</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>옛, 오래됨</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>席</char><reading>석</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>자리, 지위</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>惜</char><reading>석</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>11</strokes><yinYang>양</yinYang><meaning>아끼다, 소중함</meaning><gender>양</gender><era>전통</era></hanja>
+<hanja><char>誓</char><reading>서</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>14</strokes><yinYang>음</yinYang><meaning>맹세하다, 다짐하다</meaning><gender>남</gender><era>신세대</era></hanja>
+<hanja><char>緖</char><reading>서</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>15</strokes><yinYang>양</yinYang><meaning>실마리, 이어받다</meaning><gender>여</gender><era>신세대</era></hanja>
+<hanja><char>昔</char><reading>석</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>옛, 오래됨</meaning><gender>남</gender><era>중세대</era></hanja>
+<hanja><char>席</char><reading>석</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>자리, 지위</meaning><gender>남</gender><era>중세대</era></hanja>
+<hanja><char>惜</char><reading>석</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>11</strokes><yinYang>양</yinYang><meaning>아끼다, 소중함</meaning><gender>양</gender><era>중세대</era></hanja>
 <hanja><char>碩</char><reading>석</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>14</strokes><yinYang>양</yinYang><meaning>클 석</meaning><gender>남</gender><era>중세대</era></hanja>
-<hanja><char>奭</char><reading>석</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>15</strokes><yinYang>양</yinYang><meaning>크다, 빛나다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>锡</char><reading>석</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>16</strokes><yinYang>양</yinYang><meaning>주다, 은혜</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>釋</char><reading>석</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>20</strokes><yinYang>양</yinYang><meaning>풀다, 깨닫다</meaning><gender>남</gender><era>전통</era></hanja>
+<hanja><char>奭</char><reading>석</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>15</strokes><yinYang>양</yinYang><meaning>크다, 빛나다</meaning><gender>남</gender><era>중세대</era></hanja>
+<hanja><char>锡</char><reading>석</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>16</strokes><yinYang>양</yinYang><meaning>주다, 은혜</meaning><gender>남</gender><era>중세대</era></hanja>
+<hanja><char>釋</char><reading>석</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>20</strokes><yinYang>양</yinYang><meaning>풀다, 깨닫다</meaning><gender>남</gender><era>중세대</era></hanja>
 <hanja><char>仙</char><reading>선</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>선인 선</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>先</char><reading>선</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>6</strokes><yinYang>양</yinYang><meaning>먼저 선</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>宣</char><reading>선</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>베품, 널리 알림</meaning><gender>양</gender><era>중세대</era></hanja>
@@ -93,7 +68,6 @@
 <hanja><char>嬋</char><reading>선</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>15</strokes><yinYang>양</yinYang><meaning>곱다, 예쁘다</meaning><gender>여</gender><era>전통</era></hanja>
 <hanja><char>鮮</char><reading>선</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>17</strokes><yinYang>양</yinYang><meaning>곱다, 깨끗하다</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>璿</char><reading>선</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>18</strokes><yinYang>양</yinYang><meaning>아름다운 옥 선</meaning><gender>양</gender><era>전통</era></hanja>
-<hanja><char>說</char><reading>설</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>14</strokes><yinYang>양</yinYang><meaning>말씀, 달래다</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>成</char><reading>성</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>7</strokes><yinYang>양</yinYang><meaning>이룸, 완성</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>性</char><reading>성</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>성품, 바탕</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>星</char><reading>성</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>별, 빛남</meaning><gender>양</gender><era>신세대</era></hanja>
@@ -104,17 +78,13 @@
 <hanja><char>誠</char><reading>성</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>정성, 진실</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>聖</char><reading>성</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>성인 성</meaning><gender>양</gender><era>중세대</era></hanja>
 <hanja><char>世</char><reading>세</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>세상, 대를 이음</meaning><gender>남</gender><era>중세대</era></hanja>
-<hanja><char>小</char><reading>소</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>3</strokes><yinYang>양</yinYang><meaning>작을 소</meaning><gender>양</gender><era>전통</era></hanja>
-<hanja><char>少</char><reading>소</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>4</strokes><yinYang>양</yinYang><meaning>적을 소</meaning><gender>양</gender><era>전통</era></hanja>
-<hanja><char>召</char><reading>소</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>부르다, 알리다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>宵</char><reading>소</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>밤, 닮다</meaning><gender>양</gender><era>전통</era></hanja>
+<hanja><char>小</char><reading>소</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>3</strokes><yinYang>양</yinYang><meaning>작을 소</meaning><gender>양</gender><era>신세대</era></hanja>
+<hanja><char>少</char><reading>소</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>4</strokes><yinYang>양</yinYang><meaning>적을 소</meaning><gender>양</gender><era>신세대</era></hanja>
+<hanja><char>召</char><reading>소</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>부르다, 알리다</meaning><gender>남</gender><era>신세대</era></hanja>
+<hanja><char>宵</char><reading>소</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>밤, 닮다</meaning><gender>양</gender><era>신세대</era></hanja>
 <hanja><char>韶</char><reading>소</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>14</strokes><yinYang>양</yinYang><meaning>아름답다, 풍류 이름</meaning><gender>양</gender><era>신세대</era></hanja>
-<hanja><char>續</char><reading>속</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>21</strokes><yinYang>양</yinYang><meaning>잇다, 계속</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>孫</char><reading>손</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>손자, 후손</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>宋</char><reading>송</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>7</strokes><yinYang>양</yinYang><meaning>송나라, 집</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>頌</char><reading>송</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>칭송하다, 기리다</meaning><gender>양</gender><era>신세대</era></hanja>
-<hanja><char>刷</char><reading>쇄</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>인쇄하다, 씻다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>鎖</char><reading>쇄</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>18</strokes><yinYang>양</yinYang><meaning>쇠사슬, 잠그다</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>守</char><reading>수</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>6</strokes><yinYang>양</yinYang><meaning>지킴, 보존</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>修</char><reading>수</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>닦다, 공부하다</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>琇</char><reading>수</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>11</strokes><yinYang>양</yinYang><meaning>옥돌 수</meaning><gender>여</gender><era>최신</era></hanja>
@@ -124,21 +94,19 @@
 <hanja><char>宿</char><reading>숙</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>11</strokes><yinYang>양</yinYang><meaning>묵다, 오래되다</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>肅</char><reading>숙</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>엄숙하다, 정중함</meaning><gender>양</gender><era>전통</era></hanja>
 <hanja><char>純</char><reading>순</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>순수할 순</meaning><gender>여</gender><era>전통</era></hanja>
-<hanja><char>珣</char><reading>순</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>옥 이름 순</meaning><gender>여</gender><era>최신</era></hanja>
+<hanja><char>珣</char><reading>순</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>옥 이름 순</meaning><gender>여</gender><era>전통</era></hanja>
 <hanja><char>舜</char><reading>순</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>12</strokes><yinYang>양</yinYang><meaning>순임금 순</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>拾</char><reading>습</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>줍다, 거두다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>習</char><reading>습</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>11</strokes><yinYang>양</yinYang><meaning>익히다, 연습</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>承</char><reading>승</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>이어받음, 맡음</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>昇</char><reading>승</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>오를 승</meaning><gender>남</gender><era>중세대</era></hanja>
-<hanja><char>乘</char><reading>승</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>타다, 곱하다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>勝</char><reading>승</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>12</strokes><yinYang>양</yinYang><meaning>이기다, 뛰어나다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>矢</char><reading>시</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>화살, 곧다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>始</char><reading>시</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>비로소 시</meaning><gender>양</gender><era>중세대</era></hanja>
-<hanja><char>施</char><reading>시</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>베풀 시</meaning><gender>양</gender><era>전통</era></hanja>
-<hanja><char>視</char><reading>시</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>12</strokes><yinYang>양</yinYang><meaning>보다, 살피다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>詩</char><reading>시</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>시, 아름다운 글</meaning><gender>양</gender><era>전통</era></hanja>
-<hanja><char>試</char><reading>시</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>시험하다, 쓰다</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>諡</char><reading>시</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>16</strokes><yinYang>양</yinYang><meaning>시호, 기리다</meaning><gender>남</gender><era>전통</era></hanja>
+<hanja><char>承</char><reading>승</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>이어받음, 맡음</meaning><gender>남</gender><era>신세대</era></hanja>
+<hanja><char>昇</char><reading>승</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>오를 승</meaning><gender>남</gender><era>신세대</era></hanja>
+<hanja><char>乘</char><reading>승</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>타다, 곱하다</meaning><gender>남</gender><era>신세대</era></hanja>
+<hanja><char>勝</char><reading>승</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>12</strokes><yinYang>양</yinYang><meaning>이기다, 뛰어나다</meaning><gender>남</gender><era>신세대</era></hanja>
+<hanja><char>矢</char><reading>시</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>화살, 곧다</meaning><gender>남</gender><era>최신</era></hanja>
+<hanja><char>始</char><reading>시</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>비로소 시</meaning><gender>양</gender><era>최신</era></hanja>
+<hanja><char>施</char><reading>시</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>베풀 시</meaning><gender>양</gender><era>최신</era></hanja>
+<hanja><char>視</char><reading>시</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>12</strokes><yinYang>양</yinYang><meaning>보다, 살피다</meaning><gender>남</gender><era>최신</era></hanja>
+<hanja><char>詩</char><reading>시</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>시, 아름다운 글</meaning><gender>양</gender><era>최신</era></hanja>
+<hanja><char>試</char><reading>시</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>시험하다, 쓰다</meaning><gender>남</gender><era>최신</era></hanja>
+<hanja><char>諡</char><reading>시</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>16</strokes><yinYang>양</yinYang><meaning>시호, 기리다</meaning><gender>남</gender><era>최신</era></hanja>
 <hanja><char>殖</char><reading>식</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>12</strokes><yinYang>양</yinYang><meaning>불리다, 번성하다</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>識</char><reading>식</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>19</strokes><yinYang>양</yinYang><meaning>알다, 지식</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>申</char><reading>신</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>펼치다, 알리다</meaning><gender>남</gender><era>전통</era></hanja>
@@ -155,11 +123,11 @@
 <hanja><char>璦</char><reading>애</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>17</strokes><yinYang>양</yinYang><meaning>아름다운 옥 애</meaning><gender>여</gender><era>최신</era></hanja>
 <hanja><char>言</char><reading>언</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>7</strokes><yinYang>양</yinYang><meaning>말씀, 가르침</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>如</char><reading>여</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>6</strokes><yinYang>양</yinYang><meaning>같을 여</meaning><gender>여</gender><era>신세대</era></hanja>
-<hanja><char>宴</char><reading>연</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>10</strokes><yinYang>음</yinYang><meaning>잔치, 즐겁다</meaning><gender>양</gender><era>전통</era></hanja>
+<hanja><char>宴</char><reading>연</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>10</strokes><yinYang>음</yinYang><meaning>잔치, 즐겁다</meaning><gender>양</gender><era>중세대</era></hanja>
 <hanja><char>琰</char><reading>염</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>12</strokes><yinYang>음</yinYang><meaning>옥 빛, 홀의 끝</meaning><gender>양</gender><era>신세대</era></hanja>
 <hanja><char>瑛</char><reading>영</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>옥빛 영</meaning><gender>여</gender><era>신세대</era></hanja>
 <hanja><char>瓔</char><reading>영</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>21</strokes><yinYang>양</yinYang><meaning>옥 목걸이, 보배</meaning><gender>여</gender><era>전통</era></hanja>
-<hanja><char>銳</char><reading>예</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>15</strokes><yinYang>양</yinYang><meaning>날카롭다, 정예</meaning><gender>남</gender><era>중세대</era></hanja>
+<hanja><char>銳</char><reading>예</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>15</strokes><yinYang>양</yinYang><meaning>날카롭다, 정예</meaning><gender>남</gender><era>신세대</era></hanja>
 <hanja><char>玉</char><reading>옥</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>5</strokes><yinYang>양</yinYang><meaning>보배, 아름다움</meaning><gender>여</gender><era>전통</era></hanja>
 <hanja><char>鈺</char><reading>옥</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>보배, 귀한 금</meaning><gender>양</gender><era>최신</era></hanja>
 <hanja><char>完</char><reading>완</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>7</strokes><yinYang>양</yinYang><meaning>완전하다, 다하다</meaning><gender>남</gender><era>전통</era></hanja>
@@ -183,22 +151,19 @@
 <hanja><char>錚</char><reading>정</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>16</strokes><yinYang>음</yinYang><meaning>쇳소리, 빼어나다</meaning><gender>남</gender><era>신세대</era></hanja>
 <hanja><char>宗</char><reading>종</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>8</strokes><yinYang>음</yinYang><meaning>마루, 으뜸</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>鐘</char><reading>종</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>20</strokes><yinYang>양</yinYang><meaning>쇠북, 모음</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>周</char><reading>주</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>두루, 둘러싸다</meaning><gender>양</gender><era>전통</era></hanja>
+<hanja><char>周</char><reading>주</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>두루, 둘러싸다</meaning><gender>양</gender><era>중세대</era></hanja>
 <hanja><char>宙</char><reading>주</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>8</strokes><yinYang>양</yinYang><meaning>하늘과 땅, 무한</meaning><gender>양</gender><era>신세대</era></hanja>
-<hanja><char>珠</char><reading>주</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>구슬, 보배</meaning><gender>여</gender><era>전통</era></hanja>
-<hanja><char>鑄</char><reading>주</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>22</strokes><yinYang>음</yinYang><meaning>불리다, 주조하다</meaning><gender>남</gender><era>전통</era></hanja>
+<hanja><char>珠</char><reading>주</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>구슬, 보배</meaning><gender>여</gender><era>중세대</era></hanja>
+<hanja><char>鑄</char><reading>주</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>22</strokes><yinYang>음</yinYang><meaning>불리다, 주조하다</meaning><gender>남</gender><era>중세대</era></hanja>
 <hanja><char>珍</char><reading>진</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>보배, 귀함</meaning><gender>양</gender><era>중세대</era></hanja>
-<hanja><char>振</char><reading>진</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>떨침, 떨쳐 일어남</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>晋</char><reading>진</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>나아갈 진</meaning><gender>남</gender><era>전통</era></hanja>
+<hanja><char>振</char><reading>진</reading><main_element>금</main_element><sub_element>목</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>떨침, 떨쳐 일어남</meaning><gender>남</gender><era>중세대</era></hanja>
+<hanja><char>晋</char><reading>진</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>나아갈 진</meaning><gender>남</gender><era>중세대</era></hanja>
 <hanja><char>瑨</char><reading>진</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>14</strokes><yinYang>양</yinYang><meaning>아름다운 옥 진</meaning><gender>남</gender><era>최신</era></hanja>
 <hanja><char>鎭</char><reading>진</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>18</strokes><yinYang>양</yinYang><meaning>진정, 진압</meaning><gender>남</gender><era>중세대</era></hanja>
-<hanja><char>次</char><reading>차</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>6</strokes><yinYang>양</yinYang><meaning>버금 차</meaning><gender>양</gender><era>전통</era></hanja>
-<hanja><char>瓚</char><reading>찬</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>23</strokes><yinYang>양</yinYang><meaning>제기 찬, 옥 그릇</meaning><gender>남</gender><era>전통</era></hanja>
-<hanja><char>寵</char><reading>총</reading><main_element>금</main_element><sub_element>수</sub_element><strokes>19</strokes><yinYang>양</yinYang><meaning>사랑하다, 영화롭다</meaning><gender>양</gender><era>전통</era></hanja>
+<hanja><char>瓚</char><reading>찬</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>23</strokes><yinYang>양</yinYang><meaning>제기 찬, 옥 그릇</meaning><gender>남</gender><era>신세대</era></hanja>
 <hanja><char>璀</char><reading>최</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>15</strokes><yinYang>양</yinYang><meaning>옥의 광채, 선명함</meaning><gender>양</gender><era>신세대</era></hanja>
 <hanja><char>瑃</char><reading>춘</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>옥 이름 춘</meaning><gender>양</gender><era>최신</era></hanja>
 <hanja><char>琸</char><reading>탁</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>12</strokes><yinYang>양</yinYang><meaning>다듬은 옥 탁</meaning><gender>남</gender><era>신세대</era></hanja>
-<hanja><char>宕</char><reading>탕</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>8</strokes><yinYang>음</yinYang><meaning>호탕하다, 방탕(경계)</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>憲</char><reading>헌</reading><main_element>금</main_element><sub_element>화</sub_element><strokes>16</strokes><yinYang>양</yinYang><meaning>법, 법도</meaning><gender>남</gender><era>중세대</era></hanja>
 <hanja><char>玹</char><reading>현</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>옥빛 현</meaning><gender>여</gender><era>최신</era></hanja>
 <hanja><char>鉉</char><reading>현</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>13</strokes><yinYang>양</yinYang><meaning>솥귀, 지도자</meaning><gender>남</gender><era>중세대</era></hanja>
@@ -206,5 +171,4 @@
 <hanja><char>鎬</char><reading>호</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>18</strokes><yinYang>음</yinYang><meaning>냄비, 빛나다</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>宦</char><reading>환</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>9</strokes><yinYang>양</yinYang><meaning>벼슬하다, 배우다</meaning><gender>남</gender><era>전통</era></hanja>
 <hanja><char>珝</char><reading>후</reading><main_element>금</main_element><sub_element>토</sub_element><strokes>10</strokes><yinYang>양</yinYang><meaning>옥 이름 후</meaning><gender>남</gender><era>최신</era></hanja>
-<hanja><char>欽</char><reading>흠</reading><main_element>금</main_element><sub_element>없음</sub_element><strokes>12</strokes><yinYang>음</yinYang><meaning>공경하다, 흠모하다</meaning><gender>남</gender><era>전통</era></hanja>
 </names>
