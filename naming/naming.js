@@ -436,16 +436,16 @@
    * @typedef {{ id: string, label: string, weight: number, maxScore: number }}
    */
   var RATING_CATEGORIES = [
-    { id: 'era', label: '세대 적합도', weight: 1.0, maxScore: 5 },
-    { id: 'gender', label: '성별 어감 적합도', weight: 1.0, maxScore: 5 },
-    { id: 'ohang', label: '오행 보완 효과', weight: 1.0, maxScore: 5 },
-    { id: 'placement', label: '배치(음절 순서)', weight: 0.8, maxScore: 5 },
-    { id: 'pronunciation', label: '발음 흐름', weight: 0.8, maxScore: 5 },
-    { id: 'stroke', label: '획수 조화', weight: 0.3, maxScore: 5 },
-    { id: 'birthOrder', label: '서열/돌림자 적합도', weight: 0.3, maxScore: 5 },
-    { id: 'meaning', label: '의미 조화', weight: 0.3, maxScore: 5 },
-    { id: 'balance', label: '흔함/유니크 밸런스', weight: 0.3, maxScore: 5 },
-    { id: 'sensory', label: '이름 자연스러움', weight: 0.4, maxScore: 5, altLabel: '기타 감성' }
+    { id: 'era', label: '세대 적합도', weight: 1, maxScore: 5 },
+    { id: 'gender', label: '성별 어감 적합도', weight: 1, maxScore: 5 },
+    { id: 'ohang', label: '오행 보완 효과', weight: 1, maxScore: 5 },
+    { id: 'placement', label: '배치(음절 순서)', weight: 1, maxScore: 5 },
+    { id: 'pronunciation', label: '발음 흐름', weight: 1, maxScore: 5 },
+    { id: 'stroke', label: '획수 조화', weight: 1, maxScore: 5 },
+    { id: 'birthOrder', label: '서열/돌림자 적합도', weight: 1, maxScore: 5 },
+    { id: 'meaning', label: '의미 조화', weight: 1, maxScore: 5 },
+    { id: 'balance', label: '흔함/유니크 밸런스', weight: 1, maxScore: 5 },
+    { id: 'sensory', label: '이름 자연스러움', weight: 1, maxScore: 5, altLabel: '기타 감성' }
   ];
 
   function getWeightTotal() {
