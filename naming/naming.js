@@ -30,43 +30,35 @@
   const OPEN_VOWEL = { 0: 1, 2: 1, 4: 1, 6: 1, 8: 1, 12: 1, 13: 1, 17: 1, 20: 1 };
 
   // ═══════════════════════════════════════════════════════════════════
-  // 시대별/성별 말음(이름 끝소리) 선호 패턴
-  // 트렌드에서 도출: 이름 끝 음절의 모음+받침 조합
+  // 시대별/성별 말음(이름 끝소리) 선호 패턴 — 전체 이름 기준
+  // '앞음절 받침 + 마지막 음절' 조합으로 평가 (예: ㄴ+서→민서·준서·은서, ㅇ+서→영서)
   // ═══════════════════════════════════════════════════════════════════
   
   /**
-   * 말음 패턴 (모음 인덱스 + 받침 인덱스 조합)
-   * - 각 시대별로 선호되는 말음 패턴에 점수 부여
-   * - 높을수록 해당 시대에 잘 맞는 말음
+   * 말음 패턴: "앞받침+마지막음절(중성+종성)" 전체 조합
+   * - X = 받침 없음, ㄴ·ㅇ·ㄹ·ㅁ 등 = 앞 음절 받침
+   * - 단독 말음(ㅓ, ㅕㄴ 등)도 유지해 2음절 이름·폴백 지원
    */
   const MALEUM_PATTERNS = {
-    // 남성 말음 패턴 (시대별)
     male: {
-      // 1950s~1960s: 철, 수, 식, 호, 구, 영, 훈, 호 → 받침 있는 강한 말음
-      '1950s': { 'ㅓㄹ': 1.0, 'ㅜ': 0.9, 'ㅣㄱ': 0.9, 'ㅗ': 0.8, 'ㅜ': 0.8, 'ㅕㅇ': 0.9, 'ㅜㄴ': 0.8, 'ㅗ': 0.7 },
-      '1960s': { 'ㅓㄹ': 1.0, 'ㅕㅇ': 0.9, 'ㅣㄱ': 0.9, 'ㅗ': 0.8, 'ㅜ': 0.8 },
-      // 1970s~1980s: 현, 훈, 민, 석, 호, 수, 준 → 받침 섞임
-      '1970s': { 'ㅕㄴ': 1.0, 'ㅜㄴ': 0.95, 'ㅣㄴ': 0.9, 'ㅓㄱ': 0.85, 'ㅗ': 0.8, 'ㅜ': 0.8 },
-      '1980s': { 'ㅜ': 1.0, 'ㅗ': 0.95, 'ㅜㄴ': 0.95, 'ㅣㄴ': 0.9, 'ㅓㄱ': 0.85, 'ㅕㄴ': 0.9 },
-      // 1990s: 훈, 우, 준, 석, 현 → 부드러운 받침 또는 열린 모음
-      '1990s': { 'ㅜㄴ': 1.0, 'ㅜ': 0.95, 'ㅕㄴ': 0.95, 'ㅓㄱ': 0.8, 'ㅗ': 0.85 },
-      // 2000s: 서, 재, 현, 훈, 현 → 열린 모음 증가
-      '2000s': { 'ㅓ': 1.0, 'ㅐ': 0.95, 'ㅕㄴ': 0.95, 'ㅜㄴ': 0.9, 'ㅗ': 0.85 },
-      // 2010s: 준, 윤, 우, 아 → 열린 모음, ㄴ 받침
-      '2010s': { 'ㅜㄴ': 1.0, 'ㅠㄴ': 1.0, 'ㅜ': 0.95, 'ㅏ': 0.9, 'ㅗ': 0.85, 'ㅓ': 0.85 },
-      // 2020s: 안, 온, 운, 준 → 열린 모음 + ㄴ 받침
-      '2020s': { 'ㅏㄴ': 1.0, 'ㅗㄴ': 1.0, 'ㅜㄴ': 1.0, 'ㅜ': 0.9, 'ㅏ': 0.85 }
+      '1950s': { 'ㅓㄹ': 1.0, 'ㅜ': 0.9, 'ㅣㄱ': 0.9, 'ㅗ': 0.8, 'ㅕㅇ': 0.9, 'ㅜㄴ': 0.8, 'ㄴ+ㅓㄹ': 1.0, 'ㅇ+ㅕㅇ': 0.95 },
+      '1960s': { 'ㅓㄹ': 1.0, 'ㅕㅇ': 0.9, 'ㅣㄱ': 0.9, 'ㅗ': 0.8, 'ㅜ': 0.8, 'ㄴ+ㅓㄹ': 0.95, 'ㅇ+ㅕㅇ': 0.9 },
+      '1970s': { 'ㅕㄴ': 1.0, 'ㅜㄴ': 0.95, 'ㅣㄴ': 0.9, 'ㅓㄱ': 0.85, 'ㄴ+ㅕㄴ': 1.0, 'ㅇ+ㅕㄴ': 0.95, 'ㄴ+ㅜㄴ': 0.95, 'ㄹ+ㅜㄴ': 0.9 },
+      '1980s': { 'ㅜ': 1.0, 'ㅗ': 0.95, 'ㅜㄴ': 0.95, 'ㅣㄴ': 0.9, 'ㄴ+ㅜ': 1.0, 'ㄴ+ㅜㄴ': 0.95, 'ㅇ+ㅗ': 0.9 },
+      '1990s': { 'ㅜㄴ': 1.0, 'ㅜ': 0.95, 'ㅕㄴ': 0.95, 'ㄴ+ㅜㄴ': 1.0, 'ㄴ+ㅜ': 0.95, 'ㅇ+ㅜㄴ': 0.9, 'ㄹ+ㅜㄴ': 0.9 },
+      '2000s': { 'ㅓ': 1.0, 'ㅐ': 0.95, 'ㅕㄴ': 0.95, 'ㅜㄴ': 0.9, 'ㄴ+ㅓ': 1.0, 'ㅇ+ㅓ': 1.0, 'ㄹ+ㅓ': 0.95, 'ㅁ+ㅓ': 0.9, 'X+ㅓ': 0.85 },
+      '2010s': { 'ㅜㄴ': 1.0, 'ㅠㄴ': 1.0, 'ㅜ': 0.95, 'ㅏ': 0.9, 'ㄴ+ㅜㄴ': 1.0, 'ㅇ+ㅠㄴ': 1.0, 'ㄴ+ㅏ': 0.95, 'ㅇ+ㅏ': 0.95 },
+      '2020s': { 'ㅏㄴ': 1.0, 'ㅗㄴ': 1.0, 'ㅜㄴ': 1.0, 'ㄴ+ㅏㄴ': 1.0, 'ㅇ+ㅗㄴ': 1.0, 'ㄴ+ㅜㄴ': 1.0, 'X+ㅏㄴ': 0.9 }
     },
-    // 여성 말음 패턴
     female: {
-      '1950s': { 'ㅏ': 1.0, 'ㅜㄱ': 0.9, 'ㅜㄴ': 0.85 },
-      '1960s': { 'ㅏ': 1.0, 'ㅗㄱ': 0.9, 'ㅜㄱ': 0.85 },
-      '1970s': { 'ㅕㅇ': 1.0, 'ㅜ': 0.95, 'ㅡㅣ': 0.9, 'ㅣㄴ': 0.9, 'ㅜㄱ': 0.85 },
-      '1980s': { 'ㅕㄴ': 1.0, 'ㅣㄴ': 0.95, 'ㅓㅇ': 0.95, 'ㅕㄴ': 0.9, 'ㅣㄴ': 0.9 },
-      '1990s': { 'ㅣㄴ': 1.0, 'ㅡㄴ': 0.95, 'ㅝㄴ': 0.95, 'ㅕㄴ': 0.9 },
-      '2000s': { 'ㅕㄴ': 1.0, 'ㅡㄴ': 0.95, 'ㅣㄴ': 0.95, 'ㅕㅇ': 0.9, 'ㅕㄴ': 0.9 },
-      '2010s': { 'ㅏ': 1.0, 'ㅠㄴ': 0.95, 'ㅝㄴ': 0.95, 'ㅕㄴ': 0.9 },
-      '2020s': { 'ㅏ': 1.0, 'ㅣㄴ': 0.95, 'ㅏ': 0.95 }
+      '1950s': { 'ㅏ': 1.0, 'ㅜㄱ': 0.9, 'ㅜㄴ': 0.85, 'ㄴ+ㅏ': 1.0, 'ㅇ+ㅏ': 0.95 },
+      '1960s': { 'ㅏ': 1.0, 'ㅗㄱ': 0.9, 'ㅜㄱ': 0.85, 'ㄴ+ㅏ': 1.0, 'ㅇ+ㅏ': 0.95 },
+      '1970s': { 'ㅕㅇ': 1.0, 'ㅜ': 0.95, 'ㅣㄴ': 0.9, 'ㄴ+ㅕㅇ': 1.0, 'ㅇ+ㅜ': 0.95, 'ㄴ+ㅣㄴ': 0.95 },
+      '1980s': { 'ㅕㄴ': 1.0, 'ㅣㄴ': 0.95, 'ㄴ+ㅕㄴ': 1.0, 'ㄴ+ㅣㄴ': 1.0, 'ㅇ+ㅓㅇ': 0.95, 'ㄹ+ㅕㄴ': 0.9 },
+      '1990s': { 'ㅣㄴ': 1.0, 'ㅡㄴ': 0.95, 'ㄴ+ㅣㄴ': 1.0, 'ㅇ+ㅡㄴ': 0.95, 'ㄴ+ㅝㄴ': 0.95 },
+      '2000s': { 'ㅕㄴ': 1.0, 'ㅡㄴ': 0.95, 'ㅣㄴ': 0.95, 'ㄴ+ㅓ': 1.0, 'ㅇ+ㅓ': 1.0, 'ㄴ+ㅕㄴ': 1.0, 'ㅇ+ㅕㄴ': 0.95, 'X+ㅓ': 0.9 },
+      '2010s': { 'ㅏ': 1.0, 'ㅠㄴ': 0.95, 'ㄴ+ㅏ': 1.0, 'ㅇ+ㅏ': 1.0, 'ㄴ+ㅠㄴ': 0.95, 'ㅇ+ㅠㄴ': 0.95 },
+      '2020s': { 'ㅏ': 1.0, 'ㅣㄴ': 0.95, 'ㄴ+ㅏ': 1.0, 'ㅇ+ㅏ': 1.0, 'ㄴ+ㅣㄴ': 0.95 }
     }
   };
 
@@ -107,17 +99,6 @@
     }
   };
 
-  // 부자연스러운 이름 조합 (한글 두 글자)
-  const AWKWARD_NAMES = {
-    '비서': 1, '부서': 1, '보서': 1, // 직업명/단어와 동음
-    '기자': 1, '가수': 1, '의사': 1, '간호': 1,
-    '회사': 1, '사장': 1, '과장': 1, '대리': 1,
-    '학교': 1, '학생': 1, '선생': 1,
-    '경찰': 1, '군인': 1, '소방': 1,
-    '음식': 1, '요리': 1, '식사': 1,
-    '돈': 1, '차': 1
-  };
-
   // ═══════════════════════════════════════════════════════════════════
   // 한글 분해 및 음운 분석
   // ═══════════════════════════════════════════════════════════════════
@@ -143,6 +124,20 @@
     var jung = JUNG_LIST[syl.jung] || '';
     var jong = JONG_LIST[syl.jong] || '';
     return jung + jong;
+  }
+
+  /**
+   * 전체 이름 말음 패턴: '앞음절 받침 + 마지막 음절(중성+종성)'
+   * 예: 민서 → ㄴ+ㅓ, 영서 → ㅇ+ㅓ, 준서 → ㄴ+ㅓ
+   */
+  function getEndingPatternFull(syls) {
+    if (!syls || syls.length === 0) return null;
+    var last = syls[syls.length - 1];
+    var lastMaleum = syllableToMaleum(last);
+    if (syls.length === 1) return 'X+' + lastMaleum;
+    var prev = syls[syls.length - 2];
+    var prevJongChar = prev.jong === 0 ? 'X' : (JONG_LIST[prev.jong] || '');
+    return prevJongChar + '+' + lastMaleum;
   }
 
   function analyzePhonetics(name) {
@@ -459,52 +454,48 @@
   }
 
   /**
-   * 2. 말음 트렌드 점수 (0~5) - 이름 끝소리가 시대/성별에 맞는지
+   * 2. 말음 트렌드 점수 (0~5) — 성+이름 전체 말음 패턴으로 평가
+   * '앞음절 받침 + 마지막 음절' 조합 사용 (민서=ㄴ+서, 영서=ㅇ+서 등)
    */
   function scoreMaleum(h1, h2, ctx) {
     var era = getEraFromBirthYear(ctx.birthYear);
     var gender = ctx.userGender === 'female' ? 'female' : 'male';
     var patterns = MALEUM_PATTERNS[gender] && MALEUM_PATTERNS[gender][era];
     
-    if (!patterns) return 2.5; // 패턴 없으면 중립 점수
+    if (!patterns) return 2.5;
 
     var fullName = (ctx.surname || '') + (h1.reading || '') + (h2.reading || '');
     var syls = decomposeHangul(fullName);
     if (syls.length < 2) return 2.5;
 
-    // 이름 끝 음절 (h2의 음)
+    // 전체 말음 패턴: 앞받침 + 마지막 음절(중성+종성)
+    var fullPattern = getEndingPatternFull(syls);
     var lastSyl = syls[syls.length - 1];
-    var maleum = syllableToMaleum(lastSyl);
+    var maleumOnly = syllableToMaleum(lastSyl);
 
-    // 패턴 매칭 (정확한 매칭 또는 부분 매칭)
     var score = 0;
-    if (patterns[maleum]) {
-      score = patterns[maleum] * 5;
+    // 1) 전체 패턴(받침+말음) 우선 매칭
+    if (fullPattern && patterns[fullPattern]) {
+      score = patterns[fullPattern] * 5;
+    } else if (patterns[maleumOnly]) {
+      score = patterns[maleumOnly] * 5;
     } else {
-      // 모음만 매칭
       var vowelOnly = JUNG_LIST[lastSyl.jung] || '';
       if (patterns[vowelOnly]) {
         score = patterns[vowelOnly] * 4;
+      } else if (SOFT_JONG[lastSyl.jong]) {
+        score = 2.0;
+      } else if (lastSyl.jong === 0) {
+        score = 2.5;
       } else {
-        // 받침 유형으로 판단
-        if (SOFT_JONG[lastSyl.jong]) {
-          score = 2.0; // 부드러운 받침은 기본 점수
-        } else if (lastSyl.jong === 0) {
-          score = 2.5; // 받침 없음은 약간 더
-        } else {
-          score = 1.5; // 강한 받침은 낮은 점수
-        }
+        score = 1.5;
       }
     }
 
-    // 이름 끝 글자가 ㄹ/ㅁ/ㅗ/ㅣ로 끝나면 감점 (특히 남성)
     if (gender === 'male') {
-      var cho2 = h2.reading ? decomposeHangul(h2.reading)[0] : null;
-      if (cho2) {
-        // "로", "리", "모", "미" 같은 말음은 남성에게 부자연스러움
-        if ((cho2.cho === 5 || cho2.cho === 6) && cho2.jong === 0) { // ㄹ, ㅁ 초성 + 받침 없음
-          score -= 1.5;
-        }
+      var cho2 = lastSyl.cho;
+      if ((cho2 === 5 || cho2 === 6) && lastSyl.jong === 0) {
+        score -= 1.5;
       }
     }
 
@@ -512,7 +503,7 @@
   }
 
   /**
-   * 3. 음절 흐름 점수 (0~5) - 첫글자-둘째글자 연결 + 첫글자 초성 트렌드
+   * 3. 음절 흐름 점수 (0~5) — 성+이름 전체로 받침·연음·자음 반복·모음 반복 평가
    */
   function scoreFlow(h1, h2, ctx) {
     var name1 = h1.reading || '';
@@ -524,68 +515,62 @@
 
     var era = getEraFromBirthYear(ctx.birthYear);
     var gender = ctx.userGender === 'female' ? 'female' : 'male';
-    var score = 3; // 기본 점수 (낮춤 - 가점 방식)
+    var score = 3;
 
-    // 0. 어색한 이름 조합 체크 (치명적 감점)
-    if (AWKWARD_NAMES[nameOnly]) {
-      return 0.5; // 단어와 겹치면 매우 낮은 점수
-    }
-
-    // 1. 첫글자 초성 트렌드 (중요!)
+    // 1. 이름 첫글자 초성 트렌드
     var firstChoPrefs = FIRST_CHO_PREFERENCE[gender] && FIRST_CHO_PREFERENCE[gender][era];
     if (firstChoPrefs && syls.length >= 2) {
       var firstCho = syls[1].cho;
-      if (firstChoPrefs[firstCho]) {
-        score += firstChoPrefs[firstCho] * 1.5; // 최대 +1.5
-      } else if (STRONG_CHO[firstCho]) {
-        // 해당 시대에 선호되지 않는 강한 초성 → 감점
-        score -= 0.8;
-      }
+      if (firstChoPrefs[firstCho]) score += firstChoPrefs[firstCho] * 1.5;
+      else if (STRONG_CHO[firstCho]) score -= 0.8;
     }
 
-    // 2. 성과 이름 첫글자 연결
+    // 2. 성+이름 전체 — 받침·연음 (성↔이름 첫글자, 이름 첫↔둘째)
     if (syls.length >= 2) {
       var surname = syls[0];
       var first = syls[1];
-      
-      if (surname.jong > 0 && first.cho === 11) {
-        score += 0.3; // 연음
-      }
-      if (HARD_JONG[surname.jong] && STRONG_CHO[first.cho]) {
-        score -= 0.3;
-      }
+      if (surname.jong > 0 && first.cho === 11) score += 0.3;
+      if (HARD_JONG[surname.jong] && STRONG_CHO[first.cho]) score -= 0.3;
     }
-
-    // 3. 이름 첫글자-둘째글자 연결
     if (syls.length >= 3) {
       var name1Syl = syls[1];
       var name2Syl = syls[2];
-
-      if (name1Syl.jong > 0 && name2Syl.cho === 11) {
-        score += 0.2;
-      }
-      if (name1Syl.jong === 0 && SOFT_CHO[name2Syl.cho]) {
-        score += 0.2;
-      }
-      if (name1Syl.jung === name2Syl.jung) {
-        score -= 0.2;
-      }
-      if (HARD_JONG[name1Syl.jong] && STRONG_CHO[name2Syl.cho]) {
-        score -= 0.8;
-      }
+      if (name1Syl.jong > 0 && name2Syl.cho === 11) score += 0.2;
+      if (name1Syl.jong === 0 && SOFT_CHO[name2Syl.cho]) score += 0.2;
+      if (name1Syl.jung === name2Syl.jung) score -= 0.2;
+      if (HARD_JONG[name1Syl.jong] && STRONG_CHO[name2Syl.cho]) score -= 0.8;
     }
 
-    // 4. 같은 초성 연속 감점
-    for (var i = 1; i < syls.length; i++) {
-      if (syls[i].cho === syls[i-1].cho && syls[i].cho !== 11) {
-        score -= 0.3;
+    // 3. 성+이름 전체 — 받침 연속 (두 음절 연속 받침 있으면 감점)
+    var batchimCnt = 0;
+    var batchimRun = 0;
+    var maxBatchimRun = 0;
+    for (var i = 0; i < syls.length; i++) {
+      if (syls[i].jong > 0) {
+        batchimCnt++;
+        batchimRun++;
+        if (batchimRun > maxBatchimRun) maxBatchimRun = batchimRun;
+      } else {
+        batchimRun = 0;
       }
     }
-
-    // 5. 전체적인 발음 무게감 (받침 많으면 무거움)
-    var batchimCnt = syls.filter(function(s) { return s.jong > 0; }).length;
-    if (batchimCnt >= 2) score -= 0.3;
+    if (maxBatchimRun >= 2) score -= 0.4; // 연속 받침 (예: 김민준 → ㄴ,ㄴ)
+    if (batchimCnt >= 2) score -= 0.2;
     if (batchimCnt >= 3) score -= 0.3;
+
+    // 4. 성+이름 전체 — 자음(초성) 반복
+    for (var j = 1; j < syls.length; j++) {
+      if (syls[j].cho === syls[j - 1].cho && syls[j].cho !== 11) {
+        score -= 0.4; // 성-이름, 이름-이름 모두 포함
+      }
+    }
+
+    // 5. 성+이름 전체 — 모음(중성) 반복
+    for (var k = 1; k < syls.length; k++) {
+      if (syls[k].jung === syls[k - 1].jung) {
+        score -= 0.25;
+      }
+    }
 
     return Math.min(5, Math.max(0, Math.round(score * 100) / 100));
   }
