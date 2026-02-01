@@ -260,18 +260,16 @@
   }
 
   /**
-   * 한자 유행 세대가 출생년도와 맞는지 점수 반환 (한자당 최대 +5점)
+   * 한자 유행 세대가 출생년도와 맞는지 여부
    * @param {Object} hanja - 한자 객체 { era }
    * @param {number} birthYear - 출생년도
-   * @returns {number} 0 또는 5
+   * @returns {boolean}
    */
-  function getEraScore(hanja, birthYear) {
+  function getEraMatch(hanja, birthYear) {
     var userEra = getEraFromBirthYear(birthYear);
-    if (!userEra) return 0;
+    if (!userEra) return false;
     var e = (hanja && hanja.era) || '전체';
-    if (e === '전체') return 0;
-    if (e === userEra) return 5;
-    return 0;
+    return e !== '전체' && e === userEra;
   }
 
   /**
@@ -404,126 +402,211 @@
     return unique.slice(0, 2).join(', ');
   }
 
-  /**
-   * 한자 성별이 사용자 성별과 맞는지 점수 반환 (한자당 최대 +7점)
-   * @param {Object} hanja - 한자 객체 { gender }
-   * @param {string} userGender - 'male' | 'female'
-   * @returns {number} 0 또는 7
-   */
-  function getGenderScore(hanja, userGender) {
-    var g = (hanja && hanja.gender) || '양';
-    if (g === '양') return 0;
-    if (userGender === 'male' && g === '남') return 7;
-    if (userGender === 'female' && g === '여') return 7;
-    return 0;
-  }
-
   /** 첫째 자녀에 적합한 한자 (dgsaju 참고) */
   var FIRST_BORN_CHARS = ['元', '高', '先', '太', '東', '一', '長', '始', '孟', '伯', '甲', '天'];
   /** 둘째 이하 자녀에 적합한 한자 (dgsaju 참고) */
   var LATER_BORN_CHARS = ['小', '少', '弟', '下', '後', '中', '季', '仲', '次', '再'];
 
   /**
-   * 서열 점수 (0~2) - 자녀 서열에 맞는 한자일수록 높은 점수
-   * @param {Object} hanja - 한자 객체 { char }
-   * @param {string} birthOrder - '1'(첫째), '2'(둘째), '3'(셋째 이상)
-   * @returns {number} 0 또는 1 (한자당)
+   * 평점 항목 설정 (항목 추가/가중치 변경이 쉽도록 설계)
+   * @typedef {{ id: string, label: string, weight: number, maxScore: number }}
    */
-  function getBirthOrderScore(hanja, birthOrder) {
-    if (!birthOrder || !hanja || !hanja.char) return 0;
-    var c = hanja.char;
-    if (birthOrder === '1') {
-      return FIRST_BORN_CHARS.indexOf(c) !== -1 ? 1 : 0;
+  var RATING_CATEGORIES = [
+    { id: 'era', label: '세대 적합도', weight: 1.0, maxScore: 5 },
+    { id: 'gender', label: '성별 어감 적합도', weight: 1.0, maxScore: 5 },
+    { id: 'ohang', label: '오행 보완 효과', weight: 1.0, maxScore: 5 },
+    { id: 'placement', label: '배치(음절 순서)', weight: 0.8, maxScore: 5 },
+    { id: 'pronunciation', label: '발음 흐름', weight: 0.8, maxScore: 5 },
+    { id: 'stroke', label: '획수 조화', weight: 0.3, maxScore: 5 },
+    { id: 'birthOrder', label: '서열/돌림자 적합도', weight: 0.3, maxScore: 5 },
+    { id: 'meaning', label: '의미 조화', weight: 0.3, maxScore: 5 },
+    { id: 'balance', label: '흔함/유니크 밸런스', weight: 0.3, maxScore: 5 },
+    { id: 'sensory', label: '이름 자연스러움', weight: 0.4, maxScore: 5, altLabel: '기타 감성' }
+  ];
+
+  function getWeightTotal() {
+    return RATING_CATEGORIES.reduce(function(s, c) { return s + c.weight; }, 0);
+  }
+
+  function rateEra(h1, h2, ctx) {
+    if (!ctx.birthYear) return 3;
+    var m1 = getEraMatch(h1, ctx.birthYear) ? 5 : 1;
+    var m2 = getEraMatch(h2, ctx.birthYear) ? 5 : 1;
+    return Math.round((m1 + m2) / 2);
+  }
+
+  function rateGender(h1, h2, ctx) {
+    var ug = ctx.userGender;
+    if (!ug || (ug !== 'male' && ug !== 'female')) return 3;
+    function single(h) {
+      var g = (h && h.gender) || '양';
+      if (g === '양') return 4;
+      if (ug === 'male') return g === '남' ? 5 : (g === '여' ? 0 : 4);
+      return g === '여' ? 5 : (g === '남' ? 0 : 4);
     }
-    if (birthOrder === '2' || birthOrder === '3') {
-      return LATER_BORN_CHARS.indexOf(c) !== -1 ? 1 : 0;
+    return Math.round((single(h1) + single(h2)) / 2);
+  }
+
+  function rateOhang(h1, h2, ctx) {
+    var nameElements = [h1.element, h2.element];
+    var match = 0;
+    var seen = {};
+    for (var i = 0; i < (ctx.deficientElements || []).length; i++) {
+      var el = ctx.deficientElements[i];
+      if (nameElements.indexOf(el) !== -1 && !seen[el]) { match++; seen[el] = 1; }
     }
+    var base = match === 0 ? 1 : (match === 1 ? 3 : 5);
+    var nameYang = (h1.yinYang === '양' ? 1 : 0) + (h2.yinYang === '양' ? 1 : 0);
+    var nameYin = (h1.yinYang === '음' ? 1 : 0) + (h2.yinYang === '음' ? 1 : 0);
+    var bonus = 0;
+    if (nameYang === 1 && nameYin === 1) bonus = 0.5;
+    else if (nameYang === 2 && ctx.yinYang && ctx.yinYang.yin > ctx.yinYang.yang) bonus = 0.3;
+    else if (nameYin === 2 && ctx.yinYang && ctx.yinYang.yang > ctx.yinYang.yin) bonus = 0.3;
+    return Math.min(5, Math.round((base + bonus) * 10) / 10);
+  }
+
+  function ratePlacement(h1, h2, ctx) {
+    var full = (ctx.surname || '') + (h1.reading || '') + (h2.reading || '');
+    var syllables = decomposeHangul(full);
+    if (syllables.length < 2) return 4;
+    var pron = calculatePronunciationScore(full);
+    if (pron.normalizedScore >= 8) return 5;
+    if (pron.normalizedScore >= 6) return 4;
+    if (pron.normalizedScore >= 4) return 3;
+    return Math.max(1, Math.round(pron.normalizedScore / 2));
+  }
+
+  function ratePronunciation(h1, h2, ctx) {
+    var full = (ctx.surname || '') + (h1.reading || '') + (h2.reading || '');
+    var p = calculatePronunciationScore(full);
+    return Math.round(p.normalizedScore / 2 * 10) / 10;
+  }
+
+  function rateStroke(h1, h2, ctx) {
+    var total = (h1.strokes || 0) + (h2.strokes || 0);
+    if (total >= 20 && total <= 30) return 5;
+    if (total >= 15 && total <= 35) return 4;
+    if (total >= 12 && total <= 40) return 3;
+    if (total >= 10 && total <= 45) return 1;
     return 0;
   }
 
-  /**
-   * 획수 조화 점수 (0~5)
-   * @param {number} totalStrokes - 이름 두 한자 획수 합
-   * @returns {{ score: number, strokeBonus: number }} strokeBonus는 동점 시 2차 정렬용
-   */
-  function getStrokeScore(totalStrokes) {
-    if (totalStrokes >= 20 && totalStrokes <= 30) return { score: 5, strokeBonus: 30 - Math.abs(totalStrokes - 25) };
-    if (totalStrokes >= 15 && totalStrokes <= 35) return { score: 4, strokeBonus: 20 - Math.abs(totalStrokes - 25) };
-    if (totalStrokes >= 12 && totalStrokes <= 40) return { score: 3, strokeBonus: 10 };
-    if (totalStrokes >= 10 && totalStrokes <= 45) return { score: 1, strokeBonus: 5 };
-    return { score: 0, strokeBonus: 0 };
+  function rateBirthOrder(h1, h2, ctx) {
+    if (!ctx.birthOrder) return 3;
+    function single(h) {
+      if (!h || !h.char) return 0;
+      var c = h.char;
+      if (ctx.birthOrder === '1') return FIRST_BORN_CHARS.indexOf(c) !== -1 ? 1 : 0;
+      if (ctx.birthOrder === '2' || ctx.birthOrder === '3') return LATER_BORN_CHARS.indexOf(c) !== -1 ? 1 : 0;
+      return 0;
+    }
+    var cnt = single(h1) + single(h2);
+    return cnt === 0 ? 1 : (cnt === 1 ? 3 : 5);
+  }
+
+  function rateMeaning(h1, h2, ctx) {
+    var m1 = (h1.meaning || '').trim();
+    var m2 = (h2.meaning || '').trim();
+    if (!m1 || !m2) return 4;
+    if (m1 === m2) return 2;
+    return 4;
+  }
+
+  function rateBalance(h1, h2, ctx) {
+    return 4;
   }
 
   /**
-   * 이름(한자 2개) 점수 계산 - 비율 20:15:10:7:5:2
-   * - 세대: 0~20 (한자당 10)
-   * - 성별: 0~15 (한자당 7~8)
-   * - 발음: 0~10
-   * - 오행: 0~7 (보완+음양)
-   * - 획수: 0~5
-   * - 서열: 0~2 (한자당 1)
+   * 부정적 연상어 사전 (한자에 실제로 있는 음만)
+   * - STRONG: 강한 부정 연상 → 1점 (현재 한자 음 중 해당 없음)
+   * - WEAK: 약한 부정 연상 → 2점
+   * ※ 계(닭·계계), 욱(욱씬 등 강한 느낌), 곤(곤란)
    */
-  function scoreNamePair(h1, h2, deficientElements, yinYang, userGender, birthYear, surname, birthOrder) {
-    let score = 0;
-    let deficientMatch = 0;
-    let strokeBonus = 0;
+  var NEGATIVE_ASSOCIATION_STRONG = [];
+  var NEGATIVE_ASSOCIATION_WEAK = ['계', '욱', '곤'];
 
-    // 1. 세대/유행 (0~20)
-    if (birthYear) {
-      score += (getEraScore(h1, birthYear) ? 10 : 0) + (getEraScore(h2, birthYear) ? 10 : 0);
+  function hasNegativeAssociation(name) {
+    var str = (name || '').trim();
+    if (!str) return { strong: false, weak: false };
+    var strong = false;
+    var weak = false;
+    for (var i = 0; i < NEGATIVE_ASSOCIATION_STRONG.length; i++) {
+      if (str.indexOf(NEGATIVE_ASSOCIATION_STRONG[i]) !== -1) { strong = true; break; }
+    }
+    for (var j = 0; j < NEGATIVE_ASSOCIATION_WEAK.length; j++) {
+      if (str.indexOf(NEGATIVE_ASSOCIATION_WEAK[j]) !== -1) { weak = true; break; }
+    }
+    return { strong: strong, weak: weak };
+  }
+
+  /**
+   * 기타 감성/연상 보정 평가
+   * - 부정적 연상 필터링, 사회적 사용성, 종합 감성 반영
+   * - 기본 3점, 강한 부정 1점, 약한 부정 2점, 매우 자연스러우면 +1
+   */
+  function rateSensory(h1, h2, ctx) {
+    var full = (ctx.surname || '').trim() + (h1.reading || '').trim() + (h2.reading || '').trim();
+    var assoc = hasNegativeAssociation(full);
+    var score;
+    if (assoc.strong) score = 1;
+    else if (assoc.weak) score = 2;
+    else score = 3;
+    var pron = calculatePronunciationScore(full);
+    if (score >= 2 && pron.normalizedScore >= 8) score += 1;
+    return Math.min(5, Math.max(0, score));
+  }
+
+  var RATING_SCORERS = {
+    era: rateEra,
+    gender: rateGender,
+    ohang: rateOhang,
+    placement: ratePlacement,
+    pronunciation: ratePronunciation,
+    stroke: rateStroke,
+    birthOrder: rateBirthOrder,
+    meaning: rateMeaning,
+    balance: rateBalance,
+    sensory: rateSensory
+  };
+
+  /**
+   * 이름(한자 2개) 평점 계산 - 가중 평균 방식
+   * @returns {{ ratings: Object, finalScore: number, pronunciationReason: string, deficientMatch: number, sortKey: number }}
+   */
+  function rateNamePair(h1, h2, ctx) {
+    var ratings = {};
+    var weightedSum = 0;
+    var weightTotal = 0;
+    var deficientMatch = 0;
+    var nameElements = [h1.element, h2.element];
+    var seenEl = {};
+    for (var i = 0; i < (ctx.deficientElements || []).length; i++) {
+      var el = ctx.deficientElements[i];
+      if (nameElements.indexOf(el) !== -1 && !seenEl[el]) { deficientMatch++; seenEl[el] = 1; }
     }
 
-    // 2. 성별 적합 (0~15)
-    if (userGender === 'male' || userGender === 'female') {
-      score += (getGenderScore(h1, userGender) ? 8 : 0) + (getGenderScore(h2, userGender) ? 7 : 0);
+    for (var j = 0; j < RATING_CATEGORIES.length; j++) {
+      var cat = RATING_CATEGORIES[j];
+      var scorer = RATING_SCORERS[cat.id];
+      var score = scorer ? Math.min(cat.maxScore, Math.max(0, scorer(h1, h2, ctx))) : 3;
+      ratings[cat.id] = Math.round(score * 10) / 10;
+      weightedSum += score * cat.weight;
+      weightTotal += cat.weight;
     }
 
-    // 3. 발음 (0~10)
-    var pron = getPronunciationScore(surname || '', h1.reading || '', h2.reading || '');
-    score += pron.score;
-
-    // 4. 오행 보완 + 음양 (0~7)
-    const nameElements = [h1.element, h2.element];
-    const matchedElements = [];
-    for (let i = 0; i < deficientElements.length; i++) {
-      const el = deficientElements[i];
-      if (nameElements.indexOf(el) !== -1 && matchedElements.indexOf(el) === -1) {
-        deficientMatch++;
-        matchedElements.push(el);
-      }
-    }
-    if (deficientMatch >= 1) score += 2;
-    if (deficientMatch >= 2) score += 3;
-    const nameYang = (h1.yinYang === '양' ? 1 : 0) + (h2.yinYang === '양' ? 1 : 0);
-    const nameYin = (h1.yinYang === '음' ? 1 : 0) + (h2.yinYang === '음' ? 1 : 0);
-    if (nameYang === 1 && nameYin === 1) score += 2;
-    else if (nameYang === 2 && yinYang.yin > yinYang.yang) score += 1;
-    else if (nameYin === 2 && yinYang.yang > yinYang.yin) score += 1;
-
-    // 5. 획수 조화 (0~5)
-    const totalStrokes = (h1.strokes || 0) + (h2.strokes || 0);
-    const strokeResult = getStrokeScore(totalStrokes);
-    score += strokeResult.score;
-    strokeBonus = strokeResult.strokeBonus;
-
-    // 6. 서열 적합 (0~2)
-    if (birthOrder) {
-      score += getBirthOrderScore(h1, birthOrder) + getBirthOrderScore(h2, birthOrder);
-    }
-
-    // 2차 정렬용: deficientMatch, strokeBonus, 오행 우선순위
-    var sortKey = (deficientMatch * 1000) + strokeBonus;
-
-    // 비율 유지하여 만점 100점으로 스케일 (원래 만점 59)
-    var totalScaled = Math.round(score * 100 / 59);
+    var finalScore = weightTotal > 0 ? Math.round(weightedSum / weightTotal * 100) / 100 : 0;
+    var pron = getPronunciationScore(ctx.surname || '', h1.reading || '', h2.reading || '');
+    var strokeTotal = (h1.strokes || 0) + (h2.strokes || 0);
+    var strokeBonus = strokeTotal >= 20 && strokeTotal <= 30 ? 30 - Math.abs(strokeTotal - 25) : 0;
+    var sortKey = deficientMatch * 1000 + strokeBonus;
 
     return {
-      total: totalScaled,
-      pronunciation: pron.score,
+      ratings: ratings,
+      finalScore: finalScore,
       pronunciationReason: pron.reason || '',
       deficientMatch: deficientMatch,
-      strokeBonus: strokeBonus,
-      sortKey: sortKey
+      sortKey: sortKey,
+      pronunciationRaw: pron.score
     };
   }
 
@@ -608,17 +691,26 @@
         if (seen[key]) continue;
         seen[key] = true;
 
-        const scoreResult = scoreNamePair(h1, h2, deficientElements, yinYang, userGender, birthYear, surnameNorm, birthOrder);
-        const explanation = buildExplanation(h1, h2, deficientElements, scoreResult.total);
+        var ctx = {
+          surname: surnameNorm,
+          deficientElements: deficientElements || [],
+          yinYang: yinYang,
+          userGender: userGender,
+          birthYear: birthYear,
+          birthOrder: birthOrder
+        };
+        const rateResult = rateNamePair(h1, h2, ctx);
+        const explanation = buildExplanation(h1, h2, deficientElements, rateResult.finalScore);
         scored.push({
           fullName: fullName,
           hanja1: h1,
           hanja2: h2,
-          score: scoreResult.total,
-          sortKey: scoreResult.sortKey || 0,
-          deficientMatch: scoreResult.deficientMatch || 0,
-          pronunciationScore: scoreResult.pronunciation,
-          pronunciationReason: scoreResult.pronunciationReason,
+          score: Math.round(rateResult.finalScore * 100) / 100,
+          ratings: rateResult.ratings || {},
+          sortKey: rateResult.sortKey || 0,
+          deficientMatch: rateResult.deficientMatch || 0,
+          pronunciationScore: rateResult.pronunciationRaw,
+          pronunciationReason: rateResult.pronunciationReason || '',
           explanation: explanation
         });
       }
@@ -759,6 +851,7 @@
     getHanjaByReading: getHanjaByReading,
     parseParams: parseParams,
     calculatePronunciationScore: calculatePronunciationScore,
+    RATING_CATEGORIES: RATING_CATEGORIES,
     OHANG_COLORS: OHANG_COLORS
   };
 })(typeof window !== 'undefined' ? window : this);

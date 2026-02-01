@@ -492,6 +492,72 @@
   color: #1a1a1a;
 }
 
+.score-breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.score-breakdown-table th,
+.score-breakdown-table td {
+  padding: 8px 12px;
+  border: 1px solid #eee;
+  text-align: left;
+}
+
+.score-breakdown-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.score-breakdown-value {
+  text-align: right;
+}
+
+.score-breakdown-table .score-breakdown-total {
+  border-top: 2px solid #ddd;
+  font-weight: 500;
+}
+
+.score-breakdown-table .score-breakdown-scaled {
+  background: #f9f9f9;
+  font-weight: 600;
+}
+
+.score-breakdown-stars {
+  white-space: nowrap;
+}
+
+.star {
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.star-full { color: #f5a623; }
+.star-half { color: #f5a623; opacity: 0.7; }
+.star-empty { color: #ddd; }
+
+.recommendation-card .rec-score .rec-score-info-btn {
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.rec-ratings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.rec-rating-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
 /* ===== 결과 페이지 ===== */
 .loading-area {
   text-align: center;
