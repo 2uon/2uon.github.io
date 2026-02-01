@@ -1,8 +1,8 @@
 /**
- * 작명소 - 사주 기반 이름 추천 로직 (v2.0)
+ * 작명소 - 사주 기반 이름 추천 로직 (v3.0)
  * - 시대별 음운 패턴 기반 평가
+ * - 말음(이름 끝소리) 패턴 반영
  * - 사주 오행 보완 필수
- * - hanja_*.xml (5개 파일) 로드
  */
 (function(global) {
   'use strict';
@@ -19,44 +19,68 @@
   const HANJA_FILES = ['hanja_mok.xml', 'hanja_hwa.xml', 'hanja_to.xml', 'hanja_geum.xml', 'hanja_su.xml'];
 
   // 초성 인덱스(0~18): ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ
-  const SOFT_CHO = { 2: 1, 5: 1, 6: 1, 11: 1, 9: 1, 12: 1, 18: 1 }; // ㄴㄹㅁㅇㅅㅈㅎ
-  const STRONG_CHO = { 0: 1, 1: 1, 3: 1, 4: 1, 7: 1, 8: 1, 10: 1, 13: 1, 14: 1, 15: 1, 16: 1, 17: 1 }; // ㄱㄲㄷㄸㅂㅃㅆㅉㅊㅋㅌㅍ
-  
-  // 종성 인덱스: 0=없음, 1=ㄱ, 4=ㄴ, 8=ㄹ, 16=ㅁ, 21=ㅇ
-  const HARD_JONG = { 1: 1, 2: 1, 3: 1, 7: 1, 17: 1, 23: 1, 24: 1, 25: 1, 26: 1 }; // ㄱㄲㄳㄷㅂㅊㅋㅌㅍ
-  const SOFT_JONG = { 0: 1, 4: 1, 8: 1, 16: 1, 21: 1 }; // 없음, ㄴ, ㄹ, ㅁ, ㅇ
+  const CHO_LIST = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+  const JUNG_LIST = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+  const JONG_LIST = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
 
-  // 열린 모음 vs 닫힌 모음 (중성 인덱스)
-  // ㅏ(0) ㅐ(1) ㅑ(2) ㅒ(3) ㅓ(4) ㅔ(5) ㅕ(6) ㅖ(7) ㅗ(8) ㅘ(9) ㅙ(10) ㅚ(11) ㅛ(12) ㅜ(13) ㅝ(14) ㅞ(15) ㅟ(16) ㅠ(17) ㅡ(18) ㅢ(19) ㅣ(20)
-  const OPEN_VOWEL = { 0: 1, 2: 1, 4: 1, 6: 1, 8: 1, 12: 1, 13: 1, 17: 1, 20: 1 }; // ㅏㅑㅓㅕㅗㅛㅜㅠㅣ (밝고 열린)
-  const CLOSED_VOWEL = { 18: 1, 19: 1 }; // ㅡㅢ (닫힌/중립)
+  const SOFT_CHO = { 2: 1, 5: 1, 6: 1, 11: 1, 9: 1, 12: 1, 18: 1 }; // ㄴㄹㅁㅇㅅㅈㅎ
+  const STRONG_CHO = { 0: 1, 1: 1, 3: 1, 4: 1, 7: 1, 8: 1, 10: 1, 13: 1, 14: 1, 15: 1, 16: 1, 17: 1 };
+  const HARD_JONG = { 1: 1, 2: 1, 3: 1, 7: 1, 17: 1, 23: 1, 24: 1, 25: 1, 26: 1 };
+  const SOFT_JONG = { 0: 1, 4: 1, 8: 1, 16: 1, 21: 1 }; // 없음, ㄴ, ㄹ, ㅁ, ㅇ
+  const OPEN_VOWEL = { 0: 1, 2: 1, 4: 1, 6: 1, 8: 1, 12: 1, 13: 1, 17: 1, 20: 1 };
 
   // ═══════════════════════════════════════════════════════════════════
-  // 시대별 음운 프로필 (트렌드에서 도출)
+  // 시대별/성별 말음(이름 끝소리) 선호 패턴
+  // 트렌드에서 도출: 이름 끝 음절의 모음+받침 조합
   // ═══════════════════════════════════════════════════════════════════
   
   /**
-   * 시대별 목표 음운 프로필
-   * - batchim: 받침 비율 (1950s 높음 → 2020s 낮음)
-   * - strong: 강한 초성 비율 (1950s 높음 → 2020s 낮음)
-   * - soft: 부드러운 초성 비율 (1950s 낮음 → 2020s 높음)
-   * - open: 열린 모음 비율 (점점 증가)
-   * - softJong: 부드러운 받침(ㄴㄹㅁㅇ) 선호도 (점점 증가)
-   * - maleStrength: 남성 이름의 강도 (점점 감소)
-   * - femaleOpenness: 여성 이름의 열림 정도 (점점 증가)
+   * 말음 패턴 (모음 인덱스 + 받침 인덱스 조합)
+   * - 각 시대별로 선호되는 말음 패턴에 점수 부여
+   * - 높을수록 해당 시대에 잘 맞는 말음
    */
-  const ERA_PROFILES = {
-    '1950s': { batchim: 0.65, strong: 0.50, soft: 0.30, open: 0.45, softJong: 0.25, maleStrength: 0.7, femaleOpenness: 0.3 },
-    '1960s': { batchim: 0.60, strong: 0.45, soft: 0.35, open: 0.48, softJong: 0.30, maleStrength: 0.65, femaleOpenness: 0.35 },
-    '1970s': { batchim: 0.50, strong: 0.40, soft: 0.42, open: 0.52, softJong: 0.40, maleStrength: 0.55, femaleOpenness: 0.45 },
-    '1980s': { batchim: 0.45, strong: 0.32, soft: 0.50, open: 0.58, softJong: 0.50, maleStrength: 0.45, femaleOpenness: 0.55 },
-    '1990s': { batchim: 0.38, strong: 0.25, soft: 0.55, open: 0.62, softJong: 0.55, maleStrength: 0.40, femaleOpenness: 0.60 },
-    '2000s': { batchim: 0.32, strong: 0.20, soft: 0.60, open: 0.68, softJong: 0.62, maleStrength: 0.35, femaleOpenness: 0.68 },
-    '2010s': { batchim: 0.22, strong: 0.15, soft: 0.68, open: 0.75, softJong: 0.72, maleStrength: 0.28, femaleOpenness: 0.78 },
-    '2020s': { batchim: 0.15, strong: 0.10, soft: 0.75, open: 0.82, softJong: 0.80, maleStrength: 0.22, femaleOpenness: 0.85 }
+  const MALEUM_PATTERNS = {
+    // 남성 말음 패턴 (시대별)
+    male: {
+      // 1950s~1960s: 철, 수, 식, 호, 구, 영, 훈, 호 → 받침 있는 강한 말음
+      '1950s': { 'ㅓㄹ': 1.0, 'ㅜ': 0.9, 'ㅣㄱ': 0.9, 'ㅗ': 0.8, 'ㅜ': 0.8, 'ㅕㅇ': 0.9, 'ㅜㄴ': 0.8, 'ㅗ': 0.7 },
+      '1960s': { 'ㅓㄹ': 1.0, 'ㅕㅇ': 0.9, 'ㅣㄱ': 0.9, 'ㅗ': 0.8, 'ㅜ': 0.8 },
+      // 1970s~1980s: 현, 훈, 민, 석, 호, 수, 준 → 받침 섞임
+      '1970s': { 'ㅕㄴ': 1.0, 'ㅜㄴ': 0.95, 'ㅣㄴ': 0.9, 'ㅓㄱ': 0.85, 'ㅗ': 0.8, 'ㅜ': 0.8 },
+      '1980s': { 'ㅜ': 1.0, 'ㅗ': 0.95, 'ㅜㄴ': 0.95, 'ㅣㄴ': 0.9, 'ㅓㄱ': 0.85, 'ㅕㄴ': 0.9 },
+      // 1990s: 훈, 우, 준, 석, 현 → 부드러운 받침 또는 열린 모음
+      '1990s': { 'ㅜㄴ': 1.0, 'ㅜ': 0.95, 'ㅕㄴ': 0.95, 'ㅓㄱ': 0.8, 'ㅗ': 0.85 },
+      // 2000s: 서, 재, 현, 훈, 현 → 열린 모음 증가
+      '2000s': { 'ㅓ': 1.0, 'ㅐ': 0.95, 'ㅕㄴ': 0.95, 'ㅜㄴ': 0.9, 'ㅗ': 0.85 },
+      // 2010s: 준, 윤, 우, 아 → 열린 모음, ㄴ 받침
+      '2010s': { 'ㅜㄴ': 1.0, 'ㅠㄴ': 1.0, 'ㅜ': 0.95, 'ㅏ': 0.9, 'ㅗ': 0.85, 'ㅓ': 0.85 },
+      // 2020s: 안, 온, 운, 준 → 열린 모음 + ㄴ 받침
+      '2020s': { 'ㅏㄴ': 1.0, 'ㅗㄴ': 1.0, 'ㅜㄴ': 1.0, 'ㅜ': 0.9, 'ㅏ': 0.85 }
+    },
+    // 여성 말음 패턴
+    female: {
+      '1950s': { 'ㅏ': 1.0, 'ㅜㄱ': 0.9, 'ㅜㄴ': 0.85 },
+      '1960s': { 'ㅏ': 1.0, 'ㅗㄱ': 0.9, 'ㅜㄱ': 0.85 },
+      '1970s': { 'ㅕㅇ': 1.0, 'ㅜ': 0.95, 'ㅡㅣ': 0.9, 'ㅣㄴ': 0.9, 'ㅜㄱ': 0.85 },
+      '1980s': { 'ㅕㄴ': 1.0, 'ㅣㄴ': 0.95, 'ㅓㅇ': 0.95, 'ㅕㄴ': 0.9, 'ㅣㄴ': 0.9 },
+      '1990s': { 'ㅣㄴ': 1.0, 'ㅡㄴ': 0.95, 'ㅝㄴ': 0.95, 'ㅕㄴ': 0.9 },
+      '2000s': { 'ㅕㄴ': 1.0, 'ㅡㄴ': 0.95, 'ㅣㄴ': 0.95, 'ㅕㅇ': 0.9, 'ㅕㄴ': 0.9 },
+      '2010s': { 'ㅏ': 1.0, 'ㅠㄴ': 0.95, 'ㅝㄴ': 0.95, 'ㅕㄴ': 0.9 },
+      '2020s': { 'ㅏ': 1.0, 'ㅣㄴ': 0.95, 'ㅏ': 0.95 }
+    }
   };
 
-  const ERA_KEYS = Object.keys(ERA_PROFILES);
+  // 시대별 음운 프로필
+  const ERA_PROFILES = {
+    '1950s': { batchim: 0.65, strong: 0.50, soft: 0.30, open: 0.45, softJong: 0.25 },
+    '1960s': { batchim: 0.60, strong: 0.45, soft: 0.35, open: 0.48, softJong: 0.30 },
+    '1970s': { batchim: 0.50, strong: 0.40, soft: 0.42, open: 0.52, softJong: 0.40 },
+    '1980s': { batchim: 0.45, strong: 0.32, soft: 0.50, open: 0.58, softJong: 0.50 },
+    '1990s': { batchim: 0.38, strong: 0.25, soft: 0.55, open: 0.62, softJong: 0.55 },
+    '2000s': { batchim: 0.32, strong: 0.20, soft: 0.60, open: 0.68, softJong: 0.62 },
+    '2010s': { batchim: 0.22, strong: 0.15, soft: 0.68, open: 0.75, softJong: 0.72 },
+    '2020s': { batchim: 0.15, strong: 0.10, soft: 0.75, open: 0.82, softJong: 0.80 }
+  };
 
   // ═══════════════════════════════════════════════════════════════════
   // 한글 분해 및 음운 분석
@@ -78,10 +102,13 @@
     return result;
   }
 
-  /**
-   * 이름(한글)의 음운 특성 분석
-   * @returns {{ batchim, strong, soft, open, softJong, syllables }}
-   */
+  function syllableToMaleum(syl) {
+    // 음절을 말음 패턴 문자열로 변환 (모음 + 받침)
+    var jung = JUNG_LIST[syl.jung] || '';
+    var jong = JONG_LIST[syl.jong] || '';
+    return jung + jong;
+  }
+
   function analyzePhonetics(name) {
     var syls = decomposeHangul(name || '');
     var n = syls.length;
@@ -158,7 +185,10 @@
 
   function loadHanjaXml() {
     var promises = HANJA_FILES.map(function(f) {
-      return fetch(f).then(function(res) { return res.text(); });
+      return fetch(f).then(function(res) {
+        if (!res.ok) throw new Error('Failed to load ' + f);
+        return res.text();
+      });
     });
     return Promise.all(promises).then(function(texts) {
       var all = [];
@@ -169,7 +199,10 @@
 
   function loadSurnameXml() {
     return fetch('surname.xml')
-      .then(function(res) { return res.text(); })
+      .then(function(res) {
+        if (!res.ok) throw new Error('Failed to load surname.xml');
+        return res.text();
+      })
       .then(function(xml) {
         var parser = new DOMParser();
         var doc = parser.parseFromString(xml, 'text/xml');
@@ -177,9 +210,12 @@
         var map = {};
         for (var i = 0; i < entries.length; i++) {
           var n = entries[i];
-          var reading = n.querySelector('reading')?.textContent || '';
-          var charVal = n.querySelector('char')?.textContent || '';
-          var meaning = n.querySelector('meaning')?.textContent || '';
+          var readingEl = n.querySelector('reading');
+          var charEl = n.querySelector('char');
+          var meaningEl = n.querySelector('meaning');
+          var reading = readingEl ? readingEl.textContent : '';
+          var charVal = charEl ? charEl.textContent : '';
+          var meaning = meaningEl ? meaningEl.textContent : '';
           if (!reading) continue;
           if (!map[reading]) map[reading] = [];
           map[reading].push({ char: charVal, meaning: meaning });
@@ -197,7 +233,6 @@
   // ═══════════════════════════════════════════════════════════════════
 
   const JIJI = ['자', '축', '인', '묘', '진', '사', '오', '미', '신', '유', '술', '해'];
-  const JIJI_OHANG = ['수', '토', '목', '목', '토', '화', '화', '토', '금', '금', '토', '수'];
   const CHUNG_PAIRS = [[0,6],[1,7],[2,8],[3,9],[4,10],[5,11]];
   const PA_PAIRS = [[0,9],[2,11],[4,1],[6,3],[8,5],[10,7]];
   const HAE_PAIRS = [[0,7],[1,6],[2,5],[3,4],[8,11],[9,10]];
@@ -214,7 +249,7 @@
       '금': { 목: '재', 화: '관살', 토: '인', 금: '비겁', 수: '식상' },
       '수': { 목: '식상', 화: '재', 토: '관살', 금: '인', 수: '비겁' }
     };
-    return map[dayStemOhang]?.[pillarOhang] || '';
+    return (map[dayStemOhang] && map[dayStemOhang][pillarOhang]) || '';
   }
 
   function analyzeHapChungPahaeHyeong(pillars) {
@@ -344,21 +379,20 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════
-  // 핵심 평가 시스템 (5개 카테고리)
+  // 핵심 평가 시스템 (6개 카테고리)
   // ═══════════════════════════════════════════════════════════════════
 
   const RATING_CATEGORIES = [
-    { id: 'ohang', label: '오행 보완', weight: 2, maxScore: 5 },
-    { id: 'era', label: '세대 적합도', weight: 1.5, maxScore: 5 },
-    { id: 'gender', label: '성별 적합도', weight: 1.5, maxScore: 5 },
-    { id: 'pronunciation', label: '발음 흐름', weight: 1, maxScore: 5 },
-    { id: 'harmony', label: '의미/획수 조화', weight: 1, maxScore: 5 }
+    { id: 'ohang', label: '오행 보완', weight: 2.0, maxScore: 5 },
+    { id: 'maleum', label: '말음 트렌드', weight: 1.8, maxScore: 5 },
+    { id: 'flow', label: '음절 흐름', weight: 1.5, maxScore: 5 },
+    { id: 'era', label: '세대 음운', weight: 1.2, maxScore: 5 },
+    { id: 'gender', label: '성별 적합', weight: 1.0, maxScore: 5 },
+    { id: 'harmony', label: '의미/획수', weight: 0.5, maxScore: 5 }
   ];
 
   /**
    * 1. 오행 보완 점수 (0~5)
-   * - 부족한 오행을 보완하는지 평가
-   * - 주 오행: +2점, 부 오행: +1점
    */
   function scoreOhang(h1, h2, ctx) {
     var defs = ctx.deficientElements || [];
@@ -383,14 +417,131 @@
 
     // 음양 밸런스 보너스
     var yang = (h1.yinYang === '양' ? 1 : 0) + (h2.yinYang === '양' ? 1 : 0);
-    if (yang === 1) score += 0.5; // 음양 균형
+    if (yang === 1) score += 0.5;
 
     return Math.min(5, Math.max(0, score));
   }
 
   /**
-   * 2. 세대 적합도 점수 (0~5)
-   * - 이름의 음운 특성이 해당 세대 프로필과 얼마나 일치하는지
+   * 2. 말음 트렌드 점수 (0~5) - 이름 끝소리가 시대/성별에 맞는지
+   */
+  function scoreMaleum(h1, h2, ctx) {
+    var era = getEraFromBirthYear(ctx.birthYear);
+    var gender = ctx.userGender === 'female' ? 'female' : 'male';
+    var patterns = MALEUM_PATTERNS[gender] && MALEUM_PATTERNS[gender][era];
+    
+    if (!patterns) return 2.5; // 패턴 없으면 중립 점수
+
+    var fullName = (ctx.surname || '') + (h1.reading || '') + (h2.reading || '');
+    var syls = decomposeHangul(fullName);
+    if (syls.length < 2) return 2.5;
+
+    // 이름 끝 음절 (h2의 음)
+    var lastSyl = syls[syls.length - 1];
+    var maleum = syllableToMaleum(lastSyl);
+
+    // 패턴 매칭 (정확한 매칭 또는 부분 매칭)
+    var score = 0;
+    if (patterns[maleum]) {
+      score = patterns[maleum] * 5;
+    } else {
+      // 모음만 매칭
+      var vowelOnly = JUNG_LIST[lastSyl.jung] || '';
+      if (patterns[vowelOnly]) {
+        score = patterns[vowelOnly] * 4;
+      } else {
+        // 받침 유형으로 판단
+        if (SOFT_JONG[lastSyl.jong]) {
+          score = 2.0; // 부드러운 받침은 기본 점수
+        } else if (lastSyl.jong === 0) {
+          score = 2.5; // 받침 없음은 약간 더
+        } else {
+          score = 1.5; // 강한 받침은 낮은 점수
+        }
+      }
+    }
+
+    // 이름 끝 글자가 ㄹ/ㅁ/ㅗ/ㅣ로 끝나면 감점 (특히 남성)
+    if (gender === 'male') {
+      var cho2 = h2.reading ? decomposeHangul(h2.reading)[0] : null;
+      if (cho2) {
+        // "로", "리", "모", "미" 같은 말음은 남성에게 부자연스러움
+        if ((cho2.cho === 5 || cho2.cho === 6) && cho2.jong === 0) { // ㄹ, ㅁ 초성 + 받침 없음
+          score -= 1.5;
+        }
+      }
+    }
+
+    return Math.min(5, Math.max(0, score));
+  }
+
+  /**
+   * 3. 음절 흐름 점수 (0~5) - 첫글자-둘째글자 연결 자연스러움
+   */
+  function scoreFlow(h1, h2, ctx) {
+    var name1 = h1.reading || '';
+    var name2 = h2.reading || '';
+    var fullName = (ctx.surname || '') + name1 + name2;
+    var syls = decomposeHangul(fullName);
+    if (syls.length < 2) return 3;
+
+    var score = 4; // 기본 점수
+
+    // 1. 성과 이름 첫글자 연결
+    if (syls.length >= 2) {
+      var surname = syls[0];
+      var first = syls[1];
+      
+      // 성에 받침 있고 이름 첫글자가 ㅇ 초성이면 연음으로 자연스러움
+      if (surname.jong > 0 && first.cho === 11) {
+        score += 0.5;
+      }
+      // 강한 받침 + 강한 초성은 부자연스러움
+      if (HARD_JONG[surname.jong] && STRONG_CHO[first.cho]) {
+        score -= 0.5;
+      }
+    }
+
+    // 2. 이름 첫글자-둘째글자 연결
+    if (syls.length >= 3) {
+      var name1Syl = syls[1];
+      var name2Syl = syls[2];
+
+      // 첫글자에 받침 있고 둘째글자 초성이 ㅇ이면 연음
+      if (name1Syl.jong > 0 && name2Syl.cho === 11) {
+        score += 0.3;
+      }
+      // 첫글자 받침 없으면 둘째글자와 자연스럽게 연결
+      if (name1Syl.jong === 0 && SOFT_CHO[name2Syl.cho]) {
+        score += 0.3;
+      }
+      // 같은 모음 연속은 약간 단조로움
+      if (name1Syl.jung === name2Syl.jung) {
+        score -= 0.3;
+      }
+      // 첫글자 받침이 강하고 둘째글자 초성이 강하면 발음 어려움
+      if (HARD_JONG[name1Syl.jong] && STRONG_CHO[name2Syl.cho]) {
+        score -= 0.8;
+      }
+    }
+
+    // 3. 같은 초성 연속 감점
+    for (var i = 1; i < syls.length; i++) {
+      if (syls[i].cho === syls[i-1].cho && syls[i].cho !== 11) {
+        score -= 0.4;
+      }
+    }
+
+    // 4. 전체적인 발음 무게감 (받침 많으면 무거움)
+    var batchimCnt = syls.filter(function(s) { return s.jong > 0; }).length;
+    if (batchimCnt >= 2) score -= 0.3;
+    if (batchimCnt >= 3) score -= 0.3;
+
+    return Math.min(5, Math.max(0, Math.round(score * 100) / 100));
+  }
+
+  /**
+   * 4. 세대 음운 점수 (0~5)
    */
   function scoreEra(h1, h2, ctx) {
     var era = getEraFromBirthYear(ctx.birthYear);
@@ -400,7 +551,6 @@
     var fullName = (ctx.surname || '') + (h1.reading || '') + (h2.reading || '');
     var phonetics = analyzePhonetics(fullName);
 
-    // 각 특성별 차이 계산 (0에 가까울수록 좋음)
     var diffs = [
       Math.abs(phonetics.batchim - profile.batchim),
       Math.abs(phonetics.strong - profile.strong),
@@ -410,160 +560,75 @@
     ];
 
     var avgDiff = diffs.reduce(function(a, b) { return a + b; }, 0) / diffs.length;
-    
-    // 차이가 0이면 5점, 차이가 0.5 이상이면 0점
     var score = Math.max(0, 5 * (1 - avgDiff * 2));
     
-    return Math.round(score * 10) / 10;
+    return Math.round(score * 100) / 100;
   }
 
   /**
-   * 3. 성별 적합도 점수 (0~5)
-   * - 성별에 맞는 음운 특성인지 평가
+   * 5. 성별 적합도 점수 (0~5)
    */
   function scoreGender(h1, h2, ctx) {
-    var era = getEraFromBirthYear(ctx.birthYear);
-    var profile = ERA_PROFILES[era];
     var gender = ctx.userGender;
-    if (!profile || !gender) return 3;
+    if (!gender) return 3;
 
-    var fullName = (ctx.surname || '') + (h1.reading || '') + (h2.reading || '');
-    var phonetics = analyzePhonetics(fullName);
-
-    // 한자의 성별 속성도 고려
+    // 한자의 성별 속성
     var g1 = h1.gender || '양';
     var g2 = h2.gender || '양';
     var maleCnt = (g1 === '남' ? 1 : 0) + (g2 === '남' ? 1 : 0);
     var femaleCnt = (g1 === '여' ? 1 : 0) + (g2 === '여' ? 1 : 0);
 
-    var score = 3; // 기본 점수
+    var score = 3;
 
     if (gender === 'male') {
-      // 남성: 적절한 강도 + 남성적 한자
-      var targetStrength = profile.maleStrength;
-      var actualStrength = phonetics.strong * 0.6 + phonetics.batchim * 0.4;
-      var strengthDiff = Math.abs(actualStrength - targetStrength);
-      
-      score = 5 * (1 - strengthDiff);
-      
-      // 한자 성별 보정
-      if (maleCnt === 2) score += 0.5;
-      else if (maleCnt === 1 && femaleCnt === 0) score += 0.3;
-      else if (femaleCnt === 2) score -= 1.5;
-      else if (femaleCnt === 1 && maleCnt === 0) score -= 0.8;
+      if (maleCnt === 2) score = 5;
+      else if (maleCnt === 1 && femaleCnt === 0) score = 4;
+      else if (maleCnt === 0 && femaleCnt === 0) score = 3; // 중성
+      else if (femaleCnt === 1) score = 2;
+      else if (femaleCnt === 2) score = 0.5;
     } else {
-      // 여성: 열린 느낌 + 부드러움 + 여성적 한자
-      var targetOpenness = profile.femaleOpenness;
-      var actualOpenness = phonetics.open * 0.5 + phonetics.soft * 0.3 + (1 - phonetics.batchim) * 0.2;
-      var openDiff = Math.abs(actualOpenness - targetOpenness);
-      
-      score = 5 * (1 - openDiff);
-      
-      // 한자 성별 보정
-      if (femaleCnt === 2) score += 0.5;
-      else if (femaleCnt === 1 && maleCnt === 0) score += 0.3;
-      else if (maleCnt === 2) score -= 1.0;
-      else if (maleCnt === 1 && femaleCnt === 0) score -= 0.5;
+      if (femaleCnt === 2) score = 5;
+      else if (femaleCnt === 1 && maleCnt === 0) score = 4;
+      else if (femaleCnt === 0 && maleCnt === 0) score = 3;
+      else if (maleCnt === 1) score = 2;
+      else if (maleCnt === 2) score = 1;
     }
 
-    return Math.min(5, Math.max(0, Math.round(score * 10) / 10));
+    return score;
   }
 
   /**
-   * 4. 발음 흐름 점수 (0~5)
-   * - 자연스러운 발음 흐름 평가
-   */
-  function scorePronunciation(h1, h2, ctx) {
-    var fullName = (ctx.surname || '') + (h1.reading || '') + (h2.reading || '');
-    var syls = decomposeHangul(fullName);
-    if (syls.length < 2) return 3;
-
-    var score = 5; // 기본 만점
-
-    // 1. 음절 연결 평가
-    for (var i = 0; i < syls.length - 1; i++) {
-      var curr = syls[i];
-      var next = syls[i + 1];
-      
-      if (curr.jong > 0) { // 받침이 있을 때
-        if (next.cho === 11) { // 다음 초성이 ㅇ이면 자연스러운 연음
-          score += 0.3;
-        } else if (STRONG_CHO[next.cho] && HARD_JONG[curr.jong]) {
-          // 강한 받침 + 강한 초성 = 발음 충돌
-          score -= 1.0;
-        } else if (SOFT_CHO[next.cho]) {
-          // 부드러운 초성과 연결
-          score += 0.1;
-        }
-      }
-    }
-
-    // 2. 이름 첫글자 받침 평가 (성 다음 글자)
-    if (syls.length >= 2) {
-      var firstNameSyl = syls[1];
-      if (HARD_JONG[firstNameSyl.jong]) {
-        score -= 0.8; // 강한 받침으로 흐름 끊김
-      }
-    }
-
-    // 3. 강한 초성 연속 감점
-    var strongRun = 0;
-    for (var j = 0; j < syls.length; j++) {
-      if (STRONG_CHO[syls[j].cho]) {
-        strongRun++;
-        if (strongRun >= 2) {
-          score -= 0.5;
-          break;
-        }
-      } else {
-        strongRun = 0;
-      }
-    }
-
-    // 4. 같은 모음 연속은 리듬감 감소
-    for (var k = 1; k < syls.length; k++) {
-      if (syls[k].jung === syls[k-1].jung) {
-        score -= 0.3;
-      }
-    }
-
-    return Math.min(5, Math.max(0, Math.round(score * 10) / 10));
-  }
-
-  /**
-   * 5. 의미/획수 조화 점수 (0~5)
+   * 6. 의미/획수 조화 점수 (0~5)
    */
   function scoreHarmony(h1, h2, ctx) {
     var score = 3;
 
-    // 획수 조화 (25획 전후가 이상적)
+    // 획수 조화
     var totalStrokes = (h1.strokes || 0) + (h2.strokes || 0);
-    if (totalStrokes >= 18 && totalStrokes <= 32) {
+    if (totalStrokes >= 18 && totalStrokes <= 28) {
       score += 1;
-      if (totalStrokes >= 22 && totalStrokes <= 28) score += 0.5;
-    } else if (totalStrokes < 12 || totalStrokes > 40) {
-      score -= 1;
+    } else if (totalStrokes < 14 || totalStrokes > 35) {
+      score -= 0.5;
     }
 
     // 의미 중복 감점
     var m1 = (h1.meaning || '').trim();
     var m2 = (h2.meaning || '').trim();
-    if (m1 && m2 && m1 === m2) {
-      score -= 1;
-    }
+    if (m1 && m2 && m1 === m2) score -= 1;
 
-    // 음양 균형 가점
+    // 음양 균형
     var yang = (h1.yinYang === '양' ? 1 : 0) + (h2.yinYang === '양' ? 1 : 0);
     if (yang === 1) score += 0.5;
 
-    return Math.min(5, Math.max(0, Math.round(score * 10) / 10));
+    return Math.min(5, Math.max(0, score));
   }
 
   const RATING_SCORERS = {
     ohang: scoreOhang,
+    maleum: scoreMaleum,
+    flow: scoreFlow,
     era: scoreEra,
     gender: scoreGender,
-    pronunciation: scorePronunciation,
     harmony: scoreHarmony
   };
 
@@ -578,13 +643,13 @@
     RATING_CATEGORIES.forEach(function(cat) {
       var scorer = RATING_SCORERS[cat.id];
       var score = scorer ? Math.min(cat.maxScore, Math.max(0, scorer(h1, h2, ctx))) : 3;
-      ratings[cat.id] = Math.round(score * 10) / 10;
+      ratings[cat.id] = Math.round(score * 100) / 100; // 소수점 2자리
       weightedSum += score * cat.weight;
       weightTotal += cat.weight;
     });
 
     var finalScore = weightTotal > 0 ? weightedSum / weightTotal : 0;
-    finalScore = Math.min(5, Math.max(0, Math.round(finalScore * 100) / 100));
+    finalScore = Math.round(finalScore * 1000) / 1000; // 소수점 3자리
 
     // 오행 매칭 계산 (정렬용)
     var deficientMatch = 0;
@@ -606,8 +671,7 @@
     return {
       ratings: ratings,
       finalScore: finalScore,
-      deficientMatch: deficientMatch,
-      sortKey: deficientMatch * 1000 + (ratings.era || 0) * 100 + (ratings.pronunciation || 0) * 10
+      deficientMatch: deficientMatch
     };
   }
 
@@ -616,8 +680,8 @@
   // ═══════════════════════════════════════════════════════════════════
 
   function hasOverlappingReading(hanja, surname, otherNameChar) {
-    var reading = hanja?.reading;
-    var charVal = hanja?.char;
+    var reading = hanja && hanja.reading;
+    var charVal = hanja && hanja.char;
     if (!reading && !charVal) return false;
     if (surname && (reading === surname || charVal === surname)) return true;
     if (otherNameChar && (reading === otherNameChar || charVal === otherNameChar)) return true;
@@ -684,16 +748,34 @@
           hanja2: h2,
           score: result.finalScore,
           ratings: result.ratings,
-          sortKey: result.sortKey,
           deficientMatch: result.deficientMatch,
           explanation: buildExplanation(h1, h2, deficientElements || [])
         });
       }
     }
 
+    // 정렬: 점수 > 오행매칭 > 말음점수 > 흐름점수
     scored.sort(function(a, b) {
-      if (b.score !== a.score) return b.score - a.score;
-      return (b.sortKey || 0) - (a.sortKey || 0);
+      // 1. 최종 점수 (소수점 3자리까지 비교)
+      var scoreDiff = Math.round((b.score - a.score) * 1000);
+      if (scoreDiff !== 0) return scoreDiff;
+      
+      // 2. 오행 매칭
+      if (b.deficientMatch !== a.deficientMatch) return b.deficientMatch - a.deficientMatch;
+      
+      // 3. 말음 트렌드 점수
+      var maleumDiff = (b.ratings.maleum || 0) - (a.ratings.maleum || 0);
+      if (Math.abs(maleumDiff) > 0.01) return maleumDiff > 0 ? 1 : -1;
+      
+      // 4. 음절 흐름 점수
+      var flowDiff = (b.ratings.flow || 0) - (a.ratings.flow || 0);
+      if (Math.abs(flowDiff) > 0.01) return flowDiff > 0 ? 1 : -1;
+      
+      // 5. 획수로 정렬 (적당한 획수 우선)
+      var strokeA = (a.hanja1.strokes || 0) + (a.hanja2.strokes || 0);
+      var strokeB = (b.hanja1.strokes || 0) + (b.hanja2.strokes || 0);
+      var idealStroke = 23;
+      return Math.abs(strokeA - idealStroke) - Math.abs(strokeB - idealStroke);
     });
 
     return scored.slice(0, 8);
