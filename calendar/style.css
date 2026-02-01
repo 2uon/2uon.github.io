@@ -1,6 +1,7 @@
 /**
  * 캘린더 위젯 페이지 (calendar/index.html)
  * 허브(../css/main.css) 변수·스타일을 사용해 디자인 통일
+ * 최소한의 디자인 요소: 부드러운 그림자·그라데이션·여백
  */
 
 /* ============================================
@@ -9,43 +10,70 @@
 .cal-hero__back {
   display: inline-block;
   margin-bottom: var(--hub-space-md);
+  padding: var(--hub-space-xs) 0;
   font-size: 0.9rem;
   color: var(--hub-accent);
   text-decoration: none;
-  transition: color 0.2s;
+  border-radius: var(--hub-radius);
+  transition: color 0.2s, background 0.2s;
+}
+
+/* 홈으로: 버튼 스타일 */
+.cal-hero__back--btn {
+  padding: var(--hub-space-xs) var(--hub-space-sm);
+  font-weight: 500;
+  color: var(--hub-accent);
+  background: var(--hub-surface);
+  border: 1px solid var(--hub-border);
+  border-radius: var(--hub-radius);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.cal-hero__back--btn:hover {
+  color: var(--hub-accent-hover);
+  background: var(--hub-featured-bg);
+  border-color: var(--hub-featured-border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .cal-hero__back:hover {
   color: var(--hub-accent-hover);
+  background: rgba(37, 99, 235, 0.06);
 }
 
 .cal-hero__icon {
   display: block;
   margin: 0 auto var(--hub-space-sm);
   border-radius: var(--hub-radius);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 /* ============================================
    다운로드 섹션
    ============================================ */
 .cal-download__box {
-  background: var(--hub-featured-bg);
+  background: linear-gradient(180deg, #fafbfd 0%, var(--hub-featured-bg) 100%);
   border: 1px solid var(--hub-featured-border);
   border-radius: var(--hub-radius-card);
   padding: var(--hub-space-lg);
   text-align: center;
+  box-shadow: var(--hub-shadow), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
 }
 
 .cal-download__icon {
   display: block;
   margin: 0 auto var(--hub-space-md);
   border-radius: var(--hub-radius);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .cal-download__text {
   margin: 0 0 var(--hub-space-md);
   font-size: 1rem;
   color: var(--hub-text);
+  line-height: 1.5;
 }
 
 .cal-download__btn {
@@ -56,20 +84,24 @@
   color: var(--hub-surface);
   background: var(--hub-accent);
   border: 1px solid var(--hub-accent);
-  border-radius: var(--hub-radius);
+  border-radius: 12px;
   text-decoration: none;
-  transition: background 0.2s, border-color 0.2s;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .cal-download__btn:hover {
   background: var(--hub-accent-hover);
   border-color: var(--hub-accent-hover);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  transform: translateY(-1px);
 }
 
 .cal-download__note {
   margin: var(--hub-space-md) 0 0;
   font-size: 0.85rem;
   color: var(--hub-text-muted);
+  line-height: 1.5;
 }
 
 /* ============================================
@@ -87,14 +119,15 @@
   margin: 0 0 var(--hub-space-sm);
   font-size: 1rem;
   color: var(--hub-text-muted);
-  line-height: 1.6;
+  line-height: 1.65;
+  max-width: 52em;
 }
 
 .cal-section__p:last-child {
   margin-bottom: 0;
 }
 
-/* 주요 기능 카드 그리드 */
+/* 주요 기능 카드 그리드 (hub-card 스타일 + 캘린더 페이지 여백) */
 .cal-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));

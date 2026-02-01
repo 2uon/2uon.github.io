@@ -8,19 +8,20 @@
    CSS 변수: 색·간격 통일 (필요 시 여기만 수정)
    ============================================ */
 :root {
-  --hub-bg: #f8f9fa;
+  --hub-bg: #f4f5f7;
   --hub-surface: #ffffff;
-  --hub-text: #1a1a1a;
-  --hub-text-muted: #5a5a5a;
+  --hub-text: #1a1d21;
+  --hub-text-muted: #5c6370;
   --hub-accent: #2563eb;
   --hub-accent-hover: #1d4ed8;
   --hub-featured-bg: #eff6ff;
-  --hub-featured-border: #93c5fd;
-  --hub-border: #e5e7eb;
+  --hub-featured-border: #bfdbfe;
+  --hub-border: #e2e6eb;
   --hub-radius: 10px;
-  --hub-radius-card: 12px;
-  --hub-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --hub-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --hub-radius-card: 14px;
+  --hub-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --hub-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.06), 0 12px 24px rgba(0, 0, 0, 0.08);
+  --hub-shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.04);
   --hub-space-xs: 0.5rem;
   --hub-space-sm: 1rem;
   --hub-space-md: 1.5rem;
@@ -42,6 +43,9 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  /* 최소한의 깊이감: 아주 은은한 그라데이션 */
+  background-image: linear-gradient(180deg, #f7f8fa 0%, var(--hub-bg) 12rem);
+  background-attachment: local;
 }
 
 .hub-main {
@@ -57,9 +61,10 @@
    Hero 영역
    ============================================ */
 .hub-hero {
-  background: var(--hub-surface);
+  background: linear-gradient(180deg, #fcfcfd 0%, var(--hub-surface) 100%);
   border-bottom: 1px solid var(--hub-border);
   padding: var(--hub-space-xl) var(--hub-space-md);
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.8) inset, 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .hub-hero__inner {
@@ -73,6 +78,7 @@
   font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 700;
   color: var(--hub-text);
+  letter-spacing: -0.02em;
 }
 
 .hub-hero__desc {
@@ -82,6 +88,7 @@
   max-width: 36em;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.65;
 }
 
 /* ============================================
@@ -108,7 +115,7 @@
   background: var(--hub-surface);
   color: var(--hub-text);
   box-sizing: border-box;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--hub-shadow-soft), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   transition: box-shadow 0.2s, border-color 0.2s;
 }
 
@@ -117,13 +124,13 @@
 }
 
 .hub-search__input:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
 }
 
 .hub-search__input:focus {
   outline: none;
   border-color: var(--hub-accent);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12), 0 0 0 1px var(--hub-accent);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .hub-search-empty {
@@ -196,8 +203,12 @@
   font-weight: 600;
   color: var(--hub-text);
   padding-bottom: var(--hub-space-xs);
-  border-bottom: 2px solid var(--hub-accent);
+  padding-left: var(--hub-space-sm);
+  border-bottom: 2px solid var(--hub-border);
+  border-left: 3px solid var(--hub-accent);
+  border-radius: 0 0 0 2px;
   display: inline-block;
+  letter-spacing: -0.01em;
 }
 
 .hub-section__note {
@@ -223,14 +234,15 @@
   border-radius: var(--hub-radius-card);
   padding: var(--hub-space-md);
   box-shadow: var(--hub-shadow);
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition: box-shadow 0.25s ease, border-color 0.2s, transform 0.2s ease;
   display: flex;
   flex-direction: column;
 }
 
 .hub-card:hover {
   box-shadow: var(--hub-shadow-hover);
-  border-color: var(--hub-accent);
+  border-color: var(--hub-featured-border);
+  transform: translateY(-2px);
 }
 
 .hub-card__title {
@@ -300,8 +312,9 @@
 
 /* 대표 기능 강조 (예: 사주풀이) */
 .hub-card--featured {
-  background: var(--hub-featured-bg);
+  background: linear-gradient(180deg, #f8fafc 0%, var(--hub-featured-bg) 100%);
   border-color: var(--hub-featured-border);
+  box-shadow: var(--hub-shadow), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
 }
 
 .hub-card--featured .hub-card__link {
@@ -331,10 +344,11 @@
    푸터
    ============================================ */
 .hub-footer {
-  padding: var(--hub-space-md);
+  padding: var(--hub-space-lg) var(--hub-space-md);
   text-align: center;
   border-top: 1px solid var(--hub-border);
-  background: var(--hub-surface);
+  background: linear-gradient(180deg, #fafbfc 0%, #f5f6f8 100%);
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .hub-footer__text {
