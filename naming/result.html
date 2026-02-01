@@ -35,14 +35,32 @@
           </h2>
           <p class="section-desc">부족한 기운을 이름으로 보완할 수 있습니다.</p>
           <div class="ohang-chart" id="ohang-chart"></div>
+          <div class="ohang-need-table-wrap" id="ohang-need-table-wrap">
+            <table class="ohang-need-table" id="ohang-need-table" aria-label="필요한 기운 요약">
+              <thead>
+                <tr>
+                  <th scope="col">필요한 기운</th>
+                  <th scope="col">보강하면 좋은 기운</th>
+                  <th scope="col">없어야 좋은 기운</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td id="cell-needed"></td>
+                  <td id="cell-supplement"></td>
+                  <td id="cell-excess"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <p class="deficient-desc" id="deficient-desc"></p>
-          <div class="ohang-detail-toggle-wrap">
+          <div class="ohang-detail-toggle-wrap" id="ohang-detail-toggle-wrap">
             <button type="button" class="toggle-btn" id="toggle-detail-btn" aria-expanded="false">
-              <span class="toggle-label">상세 분석 보기</span>
+              <span class="toggle-label">상세 분석 보기 (오행 비율 · 합충형파해 · 십성)</span>
               <span class="toggle-icon" aria-hidden="true">▼</span>
             </button>
             <div class="ohang-detail-content" id="ohang-detail-content" hidden>
-              <p class="deficient-reasons" id="deficient-reasons"></p>
+              <div id="ohang-detail-body"></div>
             </div>
           </div>
         </section>
@@ -103,7 +121,7 @@
 
       var INFO_TEXTS = {
         ohang: { what: '오행 (五行)', desc: '목·화·토·금·수 다섯 원소. 사주에 부족한 오행을 이름에 담아 보완하는 것이 작명의 핵심입니다.', criteria: '오행 비율·합·충·형·파·해·십성을 종합하여 필요한 오행을 계산합니다. 沖에서 손상된 오행, 일주 강약·관살 균형에 따른 식상·인비 오행, 충돌 시 土 조화 등을 반영합니다. 추천 이름에는 필요한 오행 한자를 우선 배치합니다.' },
-        namingUsage: { what: '부족한 기운 보완', desc: '사주에 부족한 오행이 있으면, 그 오행을 가진 한자를 이름에 넣어 기운을 보완합니다.', criteria: '점수 비중: 성별 > 나이(유행) > 발음 > 오행 > 획수 > 서열 순으로 반영합니다. 서열(몇 째)은 첫째/둘째에 맞는 한자에 점수를 더합니다.' }
+        namingUsage: { what: '부족한 기운 보완', desc: '사주에 부족한 오행이 있으면, 그 오행을 가진 한자를 이름에 넣어 기운을 보완합니다.', criteria: '점수 비율: 세대 20 : 성별 15 : 발음 10 : 오행 7 : 획수 5 : 서열 2 (비율 기준, 만점 100점)' }
       };
 
       function showInfoModal(key) {
@@ -156,6 +174,9 @@
         var deficientResult = NamingService.getDeficientElements(saju);
         var deficientElements = deficientResult.elements || [];
         var deficientReasons = deficientResult.reasons || [];
+        var supplementGood = deficientResult.supplementGood || [];
+        var excess = deficientResult.excess || [];
+        var ohangDetail = deficientResult.detail || { ratio: [], hapChung: [], sipseong: [] };
         var pillars = [saju.year, saju.month, saju.day, saju.hour];
         var yinYang = { yang: 0, yin: 0 };
         pillars.forEach(function(p) {
@@ -180,34 +201,60 @@
         // 오행 그래프 렌더링
         renderOhangChart(saju.ohangCount, deficientElements);
 
-        // 부족한 오행 설명 (심플: 필요한 기운만)
+        // 오행 요약 표: 필요한 기운 · 보강하면 좋은 기운 · 없어야 좋은 기운
+        var cellNeeded = document.getElementById('cell-needed');
+        var cellSupplement = document.getElementById('cell-supplement');
+        var cellExcess = document.getElementById('cell-excess');
+        var OHANG_COLORS = NamingService.OHANG_COLORS || {};
+        function fmtOhangList(arr) {
+          if (!arr || arr.length === 0) return '—';
+          return arr.map(function(e) {
+            var cls = OHANG_COLORS[e] || '';
+            return '<span class="ohang-tag ' + cls + '">' + escapeHtml(e) + '</span>';
+          }).join(' ');
+        }
+        if (cellNeeded) cellNeeded.innerHTML = fmtOhangList(deficientElements);
+        if (cellSupplement) cellSupplement.innerHTML = fmtOhangList(supplementGood);
+        if (cellExcess) cellExcess.innerHTML = fmtOhangList(excess);
+
+        // 부족한 오행 설명 (요약)
         var deficientDescEl = document.getElementById('deficient-desc');
         if (deficientElements.length > 0) {
-          deficientDescEl.textContent = '필요한 기운: ' + deficientElements.join(', ') + '. 아래 추천 이름이 이 기운을 보완해 드립니다.';
+          deficientDescEl.textContent = '아래 추천 이름은 필요한 기운을 보완하도록 선정했습니다.';
         } else {
           deficientDescEl.textContent = '오행이 고르게 분포되어 있습니다. 균형 잡힌 이름을 추천합니다.';
         }
 
-        // 상세 분석(합충·십성) 토글
-        if (deficientReasons.length > 0) {
-          var reasonsEl = document.getElementById('deficient-reasons');
-          var detailWrap = document.querySelector('.ohang-detail-toggle-wrap');
-          var toggleBtn = document.getElementById('toggle-detail-btn');
-          var detailContent = document.getElementById('ohang-detail-content');
-          if (reasonsEl && toggleBtn && detailContent) {
-            reasonsEl.textContent = '분석 근거: ' + deficientReasons.join(', ') + '를 반영했습니다.';
-            detailWrap.style.display = '';
-            toggleBtn.addEventListener('click', function() {
-              var expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-              toggleBtn.setAttribute('aria-expanded', !expanded);
-              toggleBtn.querySelector('.toggle-label').textContent = expanded ? '상세 분석 보기' : '상세 분석 접기';
-              toggleBtn.querySelector('.toggle-icon').textContent = expanded ? '▼' : '▲';
-              detailContent.hidden = expanded;
-            });
+        // 상세 분석(오행 비율 · 합충형파해 · 십성) 토글 — 항상 표시
+        var detailWrap = document.getElementById('ohang-detail-toggle-wrap');
+        var toggleBtn = document.getElementById('toggle-detail-btn');
+        var detailContent = document.getElementById('ohang-detail-content');
+        var detailBody = document.getElementById('ohang-detail-body');
+        if (detailWrap) detailWrap.style.display = '';
+        if (detailBody) {
+          var parts = [];
+          if (ohangDetail.ratio && ohangDetail.ratio.length > 0) {
+            parts.push('<p class="detail-row"><strong>오행 비율</strong>: 사주에서 가장 적은 기운 → ' + escapeHtml(ohangDetail.ratio.join(', ')) + '</p>');
           }
-        } else {
-          var wrap = document.querySelector('.ohang-detail-toggle-wrap');
-          if (wrap) wrap.style.display = 'none';
+          if (ohangDetail.hapChung && ohangDetail.hapChung.length > 0) {
+            parts.push('<p class="detail-row"><strong>합·충·형·파·해</strong>: 沖·刑·破·害로 손상된 기운 보완 → ' + escapeHtml(ohangDetail.hapChung.join(', ')) + '</p>');
+          }
+          if (ohangDetail.sipseong && ohangDetail.sipseong.length > 0) {
+            parts.push('<p class="detail-row"><strong>십성</strong>: 일주 강약·관살·식상 균형에 따른 보완 → ' + escapeHtml(ohangDetail.sipseong.join(', ')) + '</p>');
+          }
+          if (parts.length === 0) {
+            parts.push('<p class="detail-row">분석 근거: ' + escapeHtml(deficientReasons.join(', ')) + '를 반영했습니다.</p>');
+          }
+          detailBody.innerHTML = parts.join('');
+        }
+        if (toggleBtn && detailContent) {
+          toggleBtn.addEventListener('click', function() {
+            var expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+            toggleBtn.setAttribute('aria-expanded', !expanded);
+            toggleBtn.querySelector('.toggle-label').textContent = expanded ? '상세 분석 보기 (오행 비율 · 합충형파해 · 십성)' : '상세 분석 접기';
+            toggleBtn.querySelector('.toggle-icon').textContent = expanded ? '▼' : '▲';
+            detailContent.hidden = expanded;
+          });
         }
 
         // 추천 이름 렌더링

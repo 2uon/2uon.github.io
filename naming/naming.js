@@ -149,21 +149,31 @@
   }
 
   /**
-   * 사주 종합 분석으로 부족한 오행 추출
+   * 사주 종합 분석으로 부족/과다 오행 추출
    * - 오행 비율 (기본)
    * - 합충형파해 (손상된 오행, 土 조화)
    * - 십성 (일주 강약, 관살·식상 균형)
    * @param {Object} saju - SajuCalculator.calculate() 결과
-   * @returns {{ elements: Array<string>, reasons: Array<string> }}
+   * @returns {{ elements: Array<string>, supplementGood: Array<string>, excess: Array<string>, reasons: Array<string>, detail: Object }}
    */
   function getDeficientElements(saju) {
-    if (!saju) return { elements: ['목', '화', '토', '금', '수'], reasons: [] };
+    if (!saju) {
+      return {
+        elements: ['목', '화', '토', '금', '수'],
+        supplementGood: [],
+        excess: [],
+        reasons: [],
+        detail: { ratio: [], hapChung: [], sipseong: [] }
+      };
+    }
     var ohangCount = saju.ohangCount || {};
     var pillars = saju.pillars || [saju.year, saju.month, saju.day, saju.hour].filter(Boolean);
     var elements = ['목', '화', '토', '금', '수'];
     var resultSet = {};
     var reasons = [];
+    var detail = { ratio: [], hapChung: [], sipseong: [] };
 
+    // 오행 비율: 가장 적은 것 → 필요한 기운
     var counts = elements.map(function(e) {
       return { element: e, count: ohangCount[e] || 0 };
     });
@@ -171,30 +181,49 @@
     var minCount = counts[0].count;
     counts.filter(function(c) { return c.count === minCount; }).forEach(function(c) {
       resultSet[c.element] = true;
+      detail.ratio.push(c.element);
     });
-    if (Object.keys(resultSet).length > 0) {
-      reasons.push('오행 비율');
-    }
+    if (detail.ratio.length > 0) reasons.push('오행 비율');
 
+    // 합충형파해: 손상된 오행
     var hapChungElements = analyzeHapChungPahaeHyeong(pillars);
     hapChungElements.forEach(function(e) {
       resultSet[e] = true;
+      if (detail.hapChung.indexOf(e) === -1) detail.hapChung.push(e);
     });
-    if (hapChungElements.length > 0) {
-      reasons.push('합·충·형·파·해');
-    }
+    if (hapChungElements.length > 0) reasons.push('합·충·형·파·해');
 
+    // 십성: 일주 강약·관살·식상 균형
     var sipseongElements = analyzeSipseong(saju);
     sipseongElements.forEach(function(e) {
       resultSet[e] = true;
+      if (detail.sipseong.indexOf(e) === -1) detail.sipseong.push(e);
     });
-    if (sipseongElements.length > 0) {
-      reasons.push('십성');
-    }
+    if (sipseongElements.length > 0) reasons.push('십성');
 
     var final = Object.keys(resultSet).filter(function(e) { return elements.indexOf(e) !== -1; });
     if (final.length === 0) final = elements;
-    return { elements: final, reasons: reasons };
+
+    // 보강하면 좋은 기운: 두 번째로 적은 오행(이미 필요한 기운에 없을 때)
+    var secondMinCount = counts.find(function(c) { return c.count > minCount; });
+    secondMinCount = secondMinCount ? secondMinCount.count : minCount;
+    var supplementGood = counts
+      .filter(function(c) { return c.count === secondMinCount && final.indexOf(c.element) === -1; })
+      .map(function(c) { return c.element; });
+
+    // 없어야 좋은 기운: 가장 많은 오행(과다)
+    var maxCount = counts[counts.length - 1].count;
+    var excess = maxCount > minCount
+      ? counts.filter(function(c) { return c.count === maxCount; }).map(function(c) { return c.element; })
+      : [];
+
+    return {
+      elements: final,
+      supplementGood: supplementGood,
+      excess: excess,
+      reasons: reasons,
+      detail: detail
+    };
   }
 
 
@@ -334,66 +363,65 @@
   var LATER_BORN_CHARS = ['小', '少', '弟', '下', '後', '中', '季', '仲', '次', '再'];
 
   /**
-   * 서열 점수 (0~10) - 자녀 서열에 맞는 한자일수록 높은 점수
+   * 서열 점수 (0~2) - 자녀 서열에 맞는 한자일수록 높은 점수
    * @param {Object} hanja - 한자 객체 { char }
    * @param {string} birthOrder - '1'(첫째), '2'(둘째), '3'(셋째 이상)
-   * @returns {number} 0 또는 5 (한자당)
+   * @returns {number} 0 또는 1 (한자당)
    */
   function getBirthOrderScore(hanja, birthOrder) {
     if (!birthOrder || !hanja || !hanja.char) return 0;
     var c = hanja.char;
     if (birthOrder === '1') {
-      return FIRST_BORN_CHARS.indexOf(c) !== -1 ? 5 : 0;
+      return FIRST_BORN_CHARS.indexOf(c) !== -1 ? 1 : 0;
     }
     if (birthOrder === '2' || birthOrder === '3') {
-      return LATER_BORN_CHARS.indexOf(c) !== -1 ? 5 : 0;
+      return LATER_BORN_CHARS.indexOf(c) !== -1 ? 1 : 0;
     }
     return 0;
   }
 
   /**
-   * 획수 조화 점수 (0~15) - 비중 최하위
+   * 획수 조화 점수 (0~5)
    * @param {number} totalStrokes - 이름 두 한자 획수 합
    * @returns {{ score: number, strokeBonus: number }} strokeBonus는 동점 시 2차 정렬용
    */
   function getStrokeScore(totalStrokes) {
-    if (totalStrokes >= 20 && totalStrokes <= 30) return { score: 15, strokeBonus: 30 - Math.abs(totalStrokes - 25) };
-    if (totalStrokes >= 15 && totalStrokes <= 35) return { score: 12, strokeBonus: 20 - Math.abs(totalStrokes - 25) };
-    if (totalStrokes >= 12 && totalStrokes <= 40) return { score: 8, strokeBonus: 10 };
-    if (totalStrokes >= 10 && totalStrokes <= 45) return { score: 4, strokeBonus: 5 };
+    if (totalStrokes >= 20 && totalStrokes <= 30) return { score: 5, strokeBonus: 30 - Math.abs(totalStrokes - 25) };
+    if (totalStrokes >= 15 && totalStrokes <= 35) return { score: 4, strokeBonus: 20 - Math.abs(totalStrokes - 25) };
+    if (totalStrokes >= 12 && totalStrokes <= 40) return { score: 3, strokeBonus: 10 };
+    if (totalStrokes >= 10 && totalStrokes <= 45) return { score: 1, strokeBonus: 5 };
     return { score: 0, strokeBonus: 0 };
   }
 
   /**
-   * 이름(한자 2개) 점수 계산 - 비중: 성별 > 나이 > 발음 > 오행 > 획수 > 서열
-   * - 성별 적합: 0~40 (한자당 20)
-   * - 유행/나이: 0~30 (한자당 15)
-   * - 발음: 0~25
-   * - 오행 보완: 0~20 (1자 8, 2자 20)
-   * - 음양 균형: 0~10
-   * - 획수 조화: 0~15
-   * - 서열 적합: 0~10 (한자당 5, 최하위 비중)
+   * 이름(한자 2개) 점수 계산 - 비율 20:15:10:7:5:2
+   * - 세대: 0~20 (한자당 10)
+   * - 성별: 0~15 (한자당 7~8)
+   * - 발음: 0~10
+   * - 오행: 0~7 (보완+음양)
+   * - 획수: 0~5
+   * - 서열: 0~2 (한자당 1)
    */
   function scoreNamePair(h1, h2, deficientElements, yinYang, userGender, birthYear, surname, birthOrder) {
     let score = 0;
     let deficientMatch = 0;
     let strokeBonus = 0;
 
-    // 1. 성별 적합 (0~40) - 최상위 비중
-    if (userGender === 'male' || userGender === 'female') {
-      score += (getGenderScore(h1, userGender) ? 20 : 0) + (getGenderScore(h2, userGender) ? 20 : 0);
-    }
-
-    // 2. 유행/나이 (0~30) - 두 번째 비중
+    // 1. 세대/유행 (0~20)
     if (birthYear) {
-      score += (getEraScore(h1, birthYear) ? 15 : 0) + (getEraScore(h2, birthYear) ? 15 : 0);
+      score += (getEraScore(h1, birthYear) ? 10 : 0) + (getEraScore(h2, birthYear) ? 10 : 0);
     }
 
-    // 3. 발음 (0~25) - 세 번째 비중
-    var pron = getPronunciationScore(surname || '', h1.reading || '', h2.reading || '');
-    score += Math.round(pron.score * 2.5);
+    // 2. 성별 적합 (0~15)
+    if (userGender === 'male' || userGender === 'female') {
+      score += (getGenderScore(h1, userGender) ? 8 : 0) + (getGenderScore(h2, userGender) ? 7 : 0);
+    }
 
-    // 4. 오행 보완 (0~20) - 네 번째 비중
+    // 3. 발음 (0~10)
+    var pron = getPronunciationScore(surname || '', h1.reading || '', h2.reading || '');
+    score += pron.score;
+
+    // 4. 오행 보완 + 음양 (0~7)
     const nameElements = [h1.element, h2.element];
     const matchedElements = [];
     for (let i = 0; i < deficientElements.length; i++) {
@@ -403,23 +431,21 @@
         matchedElements.push(el);
       }
     }
-    if (deficientMatch >= 1) score += 8;
-    if (deficientMatch >= 2) score += 12;
-
-    // 음양 균형 (0~10)
+    if (deficientMatch >= 1) score += 2;
+    if (deficientMatch >= 2) score += 3;
     const nameYang = (h1.yinYang === '양' ? 1 : 0) + (h2.yinYang === '양' ? 1 : 0);
     const nameYin = (h1.yinYang === '음' ? 1 : 0) + (h2.yinYang === '음' ? 1 : 0);
-    if (nameYang === 1 && nameYin === 1) score += 10;
-    else if (nameYang === 2 && yinYang.yin > yinYang.yang) score += 6;
-    else if (nameYin === 2 && yinYang.yang > yinYang.yin) score += 6;
+    if (nameYang === 1 && nameYin === 1) score += 2;
+    else if (nameYang === 2 && yinYang.yin > yinYang.yang) score += 1;
+    else if (nameYin === 2 && yinYang.yang > yinYang.yin) score += 1;
 
-    // 5. 획수 조화 (0~15)
+    // 5. 획수 조화 (0~5)
     const totalStrokes = (h1.strokes || 0) + (h2.strokes || 0);
     const strokeResult = getStrokeScore(totalStrokes);
     score += strokeResult.score;
     strokeBonus = strokeResult.strokeBonus;
 
-    // 6. 서열 적합 (0~10) - 최하위 비중
+    // 6. 서열 적합 (0~2)
     if (birthOrder) {
       score += getBirthOrderScore(h1, birthOrder) + getBirthOrderScore(h2, birthOrder);
     }
@@ -427,8 +453,11 @@
     // 2차 정렬용: deficientMatch, strokeBonus, 오행 우선순위
     var sortKey = (deficientMatch * 1000) + strokeBonus;
 
+    // 비율 유지하여 만점 100점으로 스케일 (원래 만점 59)
+    var totalScaled = Math.round(score * 100 / 59);
+
     return {
-      total: score,
+      total: totalScaled,
       pronunciation: pron.score,
       pronunciationReason: pron.reason || '',
       deficientMatch: deficientMatch,
