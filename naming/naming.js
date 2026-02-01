@@ -438,16 +438,35 @@
     return Math.round((m1 + m2) / 2);
   }
 
+  /**
+   * 성별 어감 평가: 지배적 글자 기준
+   * - 윤(중성) + 혁(남성) → 남성적 (혁이 지배)
+   * - 윤(중성) + 주(여성) → 여성적 (주가 지배)
+   * - 중성(양)은 지배력 없음, 남/여가 있으면 그쪽이 전체 느낌을 결정
+   * @returns {number} 0~5
+   */
   function rateGender(h1, h2, ctx) {
     var ug = ctx.userGender;
     if (!ug || (ug !== 'male' && ug !== 'female')) return 3;
-    function single(h) {
-      var g = (h && h.gender) || '양';
-      if (g === '양') return 4;
-      if (ug === 'male') return g === '남' ? 5 : (g === '여' ? 0 : 4);
-      return g === '여' ? 5 : (g === '남' ? 0 : 4);
+    var g1 = (h1 && h1.gender) || '양';
+    var g2 = (h2 && h2.gender) || '양';
+    var maleCnt = (g1 === '남' ? 1 : 0) + (g2 === '남' ? 1 : 0);
+    var femaleCnt = (g1 === '여' ? 1 : 0) + (g2 === '여' ? 1 : 0);
+    var nameImpression;
+    if (maleCnt > 0 && femaleCnt > 0) nameImpression = 'mixed';
+    else if (maleCnt > 0) nameImpression = 'male';
+    else if (femaleCnt > 0) nameImpression = 'female';
+    else nameImpression = 'neutral';
+    if (ug === 'male') {
+      if (nameImpression === 'male') return 5;
+      if (nameImpression === 'neutral') return 4;
+      if (nameImpression === 'mixed') return 2;
+      return 1;
     }
-    return Math.round((single(h1) + single(h2)) / 2);
+    if (nameImpression === 'female') return 5;
+    if (nameImpression === 'neutral') return 4;
+    if (nameImpression === 'mixed') return 2;
+    return 1;
   }
 
   function rateOhang(h1, h2, ctx) {
