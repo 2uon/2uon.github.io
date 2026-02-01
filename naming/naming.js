@@ -1,6 +1,6 @@
 /**
  * 작명소 - 사주 기반 이름 추천 로직
- * - hanja.xml 로드 및 파싱
+ * - hanja_*.xml (main_element별 5개 파일) 로드 및 파싱
  * - 사주 오행/음양 분석 (SajuCalculator 활용)
  * - 이름 점수화 및 추천 알고리즘
  */
@@ -16,39 +16,54 @@
     '수': 'ohang-su'
   };
 
+  /** 오행별 한자 XML 파일 (main_element 기준 분리) */
+  const HANJA_FILES = ['hanja_mok.xml', 'hanja_hwa.xml', 'hanja_to.xml', 'hanja_geum.xml', 'hanja_su.xml'];
+
   /**
-   * hanja.xml을 fetch로 로드 후 DOMParser로 파싱하여 배열로 변환
+   * 한 XML 텍스트를 파싱하여 한자 객체 배열로 변환
+   */
+  function parseHanjaXml(xmlText) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlText, 'text/xml');
+    const hanjaNodes = doc.querySelectorAll('hanja');
+    const result = [];
+    for (let i = 0; i < hanjaNodes.length; i++) {
+      const n = hanjaNodes[i];
+      var mainEl = (n.querySelector('main_element') && n.querySelector('main_element').textContent) ||
+        (n.querySelector('element') && n.querySelector('element').textContent) || '';
+      var subEl = (n.querySelector('sub_element') && n.querySelector('sub_element').textContent) || '';
+      if (subEl === '없음') subEl = '';
+      result.push({
+        char: (n.querySelector('char') && n.querySelector('char').textContent) || '',
+        reading: (n.querySelector('reading') && n.querySelector('reading').textContent) || '',
+        element: mainEl,
+        mainElement: mainEl,
+        subElement: subEl,
+        strokes: parseInt((n.querySelector('strokes') && n.querySelector('strokes').textContent) || '0', 10) || 0,
+        yinYang: (n.querySelector('yinYang') && n.querySelector('yinYang').textContent) || '',
+        meaning: (n.querySelector('meaning') && n.querySelector('meaning').textContent) || '',
+        gender: (n.querySelector('gender') && n.querySelector('gender').textContent) || '양',
+        era: (n.querySelector('era') && n.querySelector('era').textContent) || '전체'
+      });
+    }
+    return result;
+  }
+
+  /**
+   * hanja_*.xml 5개 파일을 병렬로 로드 후 병합하여 배열로 반환
    * @returns {Promise<Array>} 한자 객체 배열
    */
   function loadHanjaXml() {
-    return fetch('hanja.xml')
-      .then(function(res) { return res.text(); })
-      .then(function(xmlText) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(xmlText, 'text/xml');
-        const hanjaNodes = doc.querySelectorAll('hanja');
-        const result = [];
-        for (let i = 0; i < hanjaNodes.length; i++) {
-          const n = hanjaNodes[i];
-          var mainEl = (n.querySelector('main_element') && n.querySelector('main_element').textContent) ||
-            (n.querySelector('element') && n.querySelector('element').textContent) || '';
-          var subEl = (n.querySelector('sub_element') && n.querySelector('sub_element').textContent) || '';
-          if (subEl === '없음') subEl = '';
-          result.push({
-            char: (n.querySelector('char') && n.querySelector('char').textContent) || '',
-            reading: (n.querySelector('reading') && n.querySelector('reading').textContent) || '',
-            element: mainEl,
-            mainElement: mainEl,
-            subElement: subEl,
-            strokes: parseInt((n.querySelector('strokes') && n.querySelector('strokes').textContent) || '0', 10) || 0,
-            yinYang: (n.querySelector('yinYang') && n.querySelector('yinYang').textContent) || '',
-            meaning: (n.querySelector('meaning') && n.querySelector('meaning').textContent) || '',
-            gender: (n.querySelector('gender') && n.querySelector('gender').textContent) || '양',
-            era: (n.querySelector('era') && n.querySelector('era').textContent) || '전체'
-          });
-        }
-        return result;
+    const promises = HANJA_FILES.map(function(f) {
+      return fetch(f).then(function(res) { return res.text(); });
+    });
+    return Promise.all(promises).then(function(texts) {
+      var all = [];
+      texts.forEach(function(xmlText) {
+        all = all.concat(parseHanjaXml(xmlText));
       });
+      return all;
+    });
   }
 
   // 지지·천간 상수 (합충형파해·십성 분석용)
