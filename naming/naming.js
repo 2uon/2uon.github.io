@@ -269,15 +269,16 @@
   /**
    * 출생년도로 유행 세대 반환
    * @param {number} birthYear - 출생년도 (예: 1970)
-   * @returns {string} '전통'|'중세대'|'신세대'|'최신'
+   * @returns {string} '전통'|'중세대'|'현대'|'신세대'|'최신'
    */
   function getEraFromBirthYear(birthYear) {
     var y = parseInt(birthYear, 10);
     if (isNaN(y)) return null;
-    if (y < 1975) return '전통';   // 50대 이상
-    if (y < 1990) return '중세대'; // 35~50대
-    if (y < 2005) return '신세대'; // 20~35대
-    return '최신';                 // 20대 이하
+    if (y < 1975) return '전통';
+    if (y < 1985) return '중세대';
+    if (y < 1995) return '현대';
+    if (y < 2005) return '신세대';
+    return '최신';
   }
 
   /**
@@ -291,6 +292,98 @@
     if (!userEra) return false;
     var e = (hanja && hanja.era) || '전체';
     return e !== '전체' && e === userEra;
+  }
+
+  /**
+   * 세대 적합도 - 규칙 기반 평가 요소 계산 (0~1)
+   * @param {string} fullName - 성+이름 (한글)
+   * @param {Object} h1 - 한자1
+   * @param {Object} h2 - 한자2
+   * @returns {Object} feature vector
+   */
+  function computeEraFeatures(fullName, h1, h2) {
+    var str = (fullName || '').trim();
+    var syls = decomposeHangul(str);
+    var n = syls.length;
+    if (n === 0) {
+      return { syllableCount: 0.5, strongConsonantRatio: 0.3, softConsonantRatio: 0.4, openVowelRatio: 0.5, closedVowelRatio: 0.2, batchimRatio: 0.3, smoothness: 0.5, neutrality: 0.5, hanjaTraditionScore: 0.5 };
+    }
+    var strongCnt = 0, softCnt = 0, batchimCnt = 0, openCnt = 0, closedCnt = 0, neutralCnt = 0;
+    var CLOSED_VOWEL = { 18: 1, 19: 1, 20: 1 };
+    for (var i = 0; i < n; i++) {
+      var s = syls[i];
+      if (STRONG_CHO[s.cho]) strongCnt++;
+      if (SOFT_CHO[s.cho]) softCnt++;
+      if (s.jong > 0) batchimCnt++;
+      if (CLOSED_VOWEL[s.jung]) closedCnt++;
+      else openCnt++;
+      if (s.cho === 11) neutralCnt++;
+    }
+    var syllableCount = Math.min(1, (n - 1) / 4);
+    var strongConsonantRatio = strongCnt / n;
+    var softConsonantRatio = softCnt / n;
+    var openVowelRatio = openCnt / n;
+    var closedVowelRatio = closedCnt / n;
+    var batchimRatio = batchimCnt / n;
+    var pron = calculatePronunciationScore(str);
+    var smoothness = Math.max(0, Math.min(1, pron.normalizedScore / 10));
+    var neutrality = (neutralCnt / n) * 0.5 + (1 - strongConsonantRatio) * 0.5;
+    var eraToScore = { '전통': 1, '중세대': 0.75, '현대': 0.5, '신세대': 0.25, '최신': 0, '전체': 0.5 };
+    var e1 = eraToScore[(h1 && h1.era) || '전체'] || 0.5;
+    var e2 = eraToScore[(h2 && h2.era) || '전체'] || 0.5;
+    var hanjaTraditionScore = (e1 + e2) / 2;
+    return { syllableCount: syllableCount, strongConsonantRatio: strongConsonantRatio, softConsonantRatio: softConsonantRatio, openVowelRatio: openVowelRatio, closedVowelRatio: closedVowelRatio, batchimRatio: batchimRatio, smoothness: smoothness, neutrality: neutrality, hanjaTraditionScore: hanjaTraditionScore };
+  }
+
+  var ERA_PROFILES = {
+    '전통': { syllableCount: 0.6, strongConsonantRatio: 0.5, softConsonantRatio: 0.25, openVowelRatio: 0.35, closedVowelRatio: 0.35, batchimRatio: 0.6, smoothness: 0.3, neutrality: 0.2, hanjaTraditionScore: 0.9 },
+    '중세대': { syllableCount: 0.5, strongConsonantRatio: 0.4, softConsonantRatio: 0.4, openVowelRatio: 0.45, closedVowelRatio: 0.25, batchimRatio: 0.45, smoothness: 0.45, neutrality: 0.3, hanjaTraditionScore: 0.7 },
+    '현대': { syllableCount: 0.5, strongConsonantRatio: 0.25, softConsonantRatio: 0.55, openVowelRatio: 0.5, closedVowelRatio: 0.2, batchimRatio: 0.35, smoothness: 0.55, neutrality: 0.45, hanjaTraditionScore: 0.5 },
+    '신세대': { syllableCount: 0.45, strongConsonantRatio: 0.15, softConsonantRatio: 0.6, openVowelRatio: 0.65, closedVowelRatio: 0.1, batchimRatio: 0.2, smoothness: 0.7, neutrality: 0.5, hanjaTraditionScore: 0.25 },
+    '최신': { syllableCount: 0.35, strongConsonantRatio: 0.1, softConsonantRatio: 0.5, openVowelRatio: 0.5, closedVowelRatio: 0.15, batchimRatio: 0.15, smoothness: 0.75, neutrality: 0.7, hanjaTraditionScore: 0.1 }
+  };
+
+  var ERA_KEYS = ['syllableCount', 'strongConsonantRatio', 'softConsonantRatio', 'openVowelRatio', 'closedVowelRatio', 'batchimRatio', 'smoothness', 'neutrality', 'hanjaTraditionScore'];
+
+  /**
+   * 사용자 세대에 대한 이름의 세대 적합도 점수 (0~1)
+   */
+  function computeEraFitScore(features, targetEra) {
+    var profile = ERA_PROFILES[targetEra];
+    if (!profile) return 0.5;
+    var sum = 0;
+    for (var i = 0; i < ERA_KEYS.length; i++) {
+      var k = ERA_KEYS[i];
+      sum += Math.abs((features[k] || 0) - (profile[k] || 0));
+    }
+    var meanDiff = sum / ERA_KEYS.length;
+    return Math.max(0, Math.min(1, 1 - meanDiff));
+  }
+
+  /**
+   * 세대 혼합 감점: 상위 두 세대 점수 차이가 작으면 감점
+   */
+  function getEraMixedPenalty(scores, threshold) {
+    var arr = Object.keys(scores).map(function(e) { return { era: e, s: scores[e] }; });
+    arr.sort(function(a, b) { return b.s - a.s; });
+    if (arr.length < 2) return 0;
+    var diff = arr[0].s - arr[1].s;
+    if (diff < (threshold || 0.15)) return (threshold - diff) * 0.5;
+    return 0;
+  }
+
+  /**
+   * 세대 일관성 가점: 모든 특성이 하나의 프로필과 강하게 일치
+   */
+  function getEraConsistencyBonus(features, targetEra, bonusThreshold) {
+    var profile = ERA_PROFILES[targetEra];
+    if (!profile) return 0;
+    var allClose = true;
+    for (var j = 0; j < ERA_KEYS.length; j++) {
+      var k = ERA_KEYS[j];
+      if (Math.abs((features[k] || 0) - (profile[k] || 0)) > (bonusThreshold || 0.2)) { allClose = false; break; }
+    }
+    return allClose ? 0.1 : 0;
   }
 
   /**
@@ -454,9 +547,18 @@
 
   function rateEra(h1, h2, ctx) {
     if (!ctx.birthYear) return 3;
-    var m1 = getEraMatch(h1, ctx.birthYear) ? 5 : 1;
-    var m2 = getEraMatch(h2, ctx.birthYear) ? 5 : 1;
-    return Math.round((m1 + m2) / 2);
+    var fullName = (ctx.surname || '') + (h1.reading || '') + (h2.reading || '');
+    var features = computeEraFeatures(fullName, h1, h2);
+    var userEra = getEraFromBirthYear(ctx.birthYear);
+    var targetScore = computeEraFitScore(features, userEra);
+    var allScores = {};
+    ['전통', '중세대', '현대', '신세대', '최신'].forEach(function(e) {
+      allScores[e] = computeEraFitScore(features, e);
+    });
+    var penalty = getEraMixedPenalty(allScores, 0.15);
+    var bonus = getEraConsistencyBonus(features, userEra, 0.2);
+    var raw = Math.max(0, Math.min(1, targetScore - penalty + bonus));
+    return Math.round(raw * 5);
   }
 
   /**
@@ -479,10 +581,10 @@
     else if (femaleCnt > 0) nameImpression = 'female';
     else nameImpression = 'neutral';
     if (ug === 'male') {
-      if (nameImpression === 'male') return 5;
-      if (nameImpression === 'neutral') return 4;
-      if (nameImpression === 'mixed') return 2;
-      return 1;
+      if (maleCnt === 0) return 0;
+      if (nameImpression === 'mixed') return 3;
+      if (maleCnt === 2) return 5;
+      return 4;
     }
     if (nameImpression === 'female') return 5;
     if (nameImpression === 'neutral') return 4;
