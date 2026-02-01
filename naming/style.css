@@ -622,15 +622,19 @@
   color: #666;
 }
 
-.deficient-desc {
-  font-size: 0.8rem;
-  color: #666;
-  margin-top: 10px;
-}
-
 .ohang-need-table-wrap {
   margin-top: 14px;
   overflow-x: auto;
+}
+
+.ohang-need-table-caption {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
 }
 
 .ohang-need-table {
@@ -673,41 +677,47 @@
 .ohang-tag.ohang-su { background: #e3f2fd; color: #1565c0; }
 
 .ohang-detail-toggle-wrap {
-  margin-top: 10px;
+  margin-top: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
 }
 
 .ohang-detail-toggle-wrap .toggle-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  font-size: 0.8rem;
-  color: #666;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: #444;
+  background: #fafafa;
+  border: none;
+  border-radius: 0;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
+  transition: background 0.2s, color 0.2s;
+  text-align: left;
 }
 
 .ohang-detail-toggle-wrap .toggle-btn:hover {
-  color: #333;
-  border-color: #999;
+  background: #f0f0f0;
+  color: #222;
 }
 
 .ohang-detail-toggle-wrap .toggle-icon {
   font-size: 0.65rem;
   opacity: 0.8;
+  flex-shrink: 0;
 }
 
 .ohang-detail-content {
-  margin-top: 10px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   font-size: 0.8rem;
   color: #666;
   background: #f9f9f9;
-  border-radius: 6px;
-  border: 1px solid #eee;
+  border-top: 1px solid #eee;
 }
 
 .ohang-detail-content .deficient-reasons {
@@ -722,6 +732,31 @@
 
 .ohang-detail-content .detail-row:last-child {
   margin-bottom: 0;
+}
+
+.ohang-detail-content .ohang-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.ohang-detail-content .ohang-detail-table th,
+.ohang-detail-content .ohang-detail-table td {
+  padding: 8px 10px;
+  border: 1px solid #eee;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.ohang-detail-content .ohang-detail-table th {
+  background: #f0f0f0;
+  font-weight: 600;
+  color: #333;
+}
+
+.ohang-detail-content .ohang-detail-table td {
+  background: #fff;
 }
 
 /* 음별 한자 찾기 */
