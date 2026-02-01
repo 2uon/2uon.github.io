@@ -594,7 +594,8 @@
       weightTotal += cat.weight;
     }
 
-    var finalScore = weightTotal > 0 ? Math.round(weightedSum / weightTotal * 100) / 100 : 0;
+    var raw = weightTotal > 0 ? weightedSum / weightTotal : 0;
+    var finalScore = Math.min(5, Math.max(0, Math.round(raw * 100) / 100));
     var pron = getPronunciationScore(ctx.surname || '', h1.reading || '', h2.reading || '');
     var strokeTotal = (h1.strokes || 0) + (h2.strokes || 0);
     var strokeBonus = strokeTotal >= 20 && strokeTotal <= 30 ? 30 - Math.abs(strokeTotal - 25) : 0;
@@ -705,7 +706,7 @@
           fullName: fullName,
           hanja1: h1,
           hanja2: h2,
-          score: Math.round(rateResult.finalScore * 100) / 100,
+          score: Math.min(5, Math.max(0, Math.round(rateResult.finalScore * 100) / 100)),
           ratings: rateResult.ratings || {},
           sortKey: rateResult.sortKey || 0,
           deficientMatch: rateResult.deficientMatch || 0,

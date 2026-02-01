@@ -189,14 +189,6 @@
               '<span class="surname-hanja-meaning">(' + escapeHtml(item.meaning) + ')</span>' +
               '</button>';
           }).join('');
-          listEl.querySelectorAll('.surname-hanja-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-              var char = btn.getAttribute('data-char');
-              var wasSelected = surnameHanjaSelectedInput.value === char;
-              surnameHanjaSelectedInput.value = wasSelected ? '' : char;
-              updateSurnameHanja();
-            });
-          });
         }
         surnameHanjaEl.hidden = false;
       }
@@ -307,6 +299,19 @@
         if (birthOrder) params.set('birthOrder', birthOrder);
 
         window.location.href = 'result.html?' + params.toString();
+      }
+
+      // 성 한자 클릭: 이벤트 위임 (한 번만 등록, 동적 버튼에 대응)
+      var listEl = surnameHanjaEl ? surnameHanjaEl.querySelector('[data-list]') : null;
+      if (listEl) {
+        listEl.addEventListener('click', function(e) {
+          var btn = e.target.closest('.surname-hanja-btn');
+          if (!btn) return;
+          var char = btn.getAttribute('data-char');
+          var wasSelected = surnameHanjaSelectedInput.value === char;
+          surnameHanjaSelectedInput.value = wasSelected ? '' : char;
+          updateSurnameHanja();
+        });
       }
 
       surnameInput.addEventListener('blur', validateSurname);

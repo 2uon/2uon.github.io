@@ -177,23 +177,41 @@
       function showScoreBreakdownModal(ratings, fullName, finalScore) {
         var r = ratings || {};
         var categories = NamingService.RATING_CATEGORIES || [];
+        var weightTotal = categories.reduce(function(s, c) { return s + c.weight; }, 0);
+        var weightedSum = 0;
         var tableBody = categories.map(function(c) {
-          var val = r[c.id];
-          var disp = typeof val === 'number' ? val + ' / ' + c.maxScore : '-';
-          var stars = starDisplay(val, c.maxScore || 5);
-          return '<tr><td>' + escapeHtml(c.label) + '</td><td class="score-breakdown-value">' + disp + '</td><td class="score-breakdown-stars">' + stars + '</td></tr>';
+          var val = typeof r[c.id] === 'number' ? r[c.id] : 0;
+          var maxScore = c.maxScore || 5;
+          var weight = c.weight || 0;
+          var contrib = val * weight;
+          weightedSum += contrib;
+          var disp = val.toFixed(1) + ' / ' + maxScore;
+          var stars = starDisplay(val, maxScore);
+          return '<tr>' +
+            '<td>' + escapeHtml(c.label) + '</td>' +
+            '<td class="score-breakdown-value">' + disp + '</td>' +
+            '<td class="score-breakdown-value">' + weight.toFixed(1) + '</td>' +
+            '<td class="score-breakdown-value">' + contrib.toFixed(2) + '</td>' +
+            '<td class="score-breakdown-stars">' + stars + '</td>' +
+            '</tr>';
         }).join('');
         var finalVal = typeof finalScore === 'number' ? finalScore.toFixed(2) : '-';
-        tableBody += '<tr class="score-breakdown-scaled"><td>가중 평균 평점</td><td colspan="2" class="score-breakdown-value"><strong>' + finalVal + ' / 5</strong></td></tr>';
+        tableBody += '<tr class="score-breakdown-scaled">' +
+          '<td colspan="2"><strong>가중 평균</strong> (Σ 점수×가중치 ÷ Σ 가중치)</td>' +
+          '<td class="score-breakdown-value">' + weightTotal.toFixed(1) + '</td>' +
+          '<td class="score-breakdown-value"><strong>' + (typeof finalScore === 'number' ? weightedSum.toFixed(2) : '-') + '</strong></td>' +
+          '<td class="score-breakdown-value"><strong>' + finalVal + ' / 5</strong></td>' +
+          '</tr>';
         var overlay = document.createElement('div');
         overlay.className = 'info-modal-overlay';
-        overlay.innerHTML = '<div class="info-modal" role="dialog" aria-labelledby="score-breakdown-title">' +
+        overlay.innerHTML = '<div class="info-modal info-modal-wide" role="dialog" aria-labelledby="score-breakdown-title">' +
           '<div class="info-modal-header">' +
-          '<h4 id="score-breakdown-title">' + escapeHtml(fullName || '') + ' 점수 분배</h4>' +
+          '<h4 id="score-breakdown-title">' + escapeHtml(fullName || '') + ' 점수 상세</h4>' +
           '<button type="button" class="info-modal-close" aria-label="닫기">&times;</button>' +
           '</div>' +
           '<div class="info-modal-body">' +
-          '<table class="score-breakdown-table"><thead><tr><th>항목</th><th>점수</th><th>평가</th></tr></thead><tbody>' + tableBody + '</tbody></table>' +
+          '<table class="score-breakdown-table"><thead><tr><th>항목</th><th>받은 점수</th><th>가중치</th><th>기여 점수</th><th>평가</th></tr></thead><tbody>' + tableBody + '</tbody></table>' +
+          '<p class="score-breakdown-note">기여 점수 = 받은 점수 × 가중치. 가중 평균 = 총 기여 점수 ÷ 총 가중치.</p>' +
           '</div></div>';
         function closeModal() {
           overlay.remove();
@@ -422,7 +440,9 @@
           html += '<div class="rec-hanja-item"><span class="rec-char ' + color2 + '">' + escapeHtml(h2.char) + '</span><span class="rec-reading">' + escapeHtml(h2.reading) + '</span><span class="rec-meaning">' + escapeHtml(h2.meaning) + '</span></div>';
           html += '</div>';
           html += '<p class="rec-explanation">' + escapeHtml(r.explanation) + '</p>';
-          var scoreVal = typeof r.score === 'number' ? r.score.toFixed(2) : r.score;
+          var rawScore = typeof r.score === 'number' ? r.score : 0;
+          var displayScore = rawScore > 5 ? rawScore / 10 : rawScore;
+          var scoreVal = Math.min(5, Math.max(0, displayScore)).toFixed(2);
           html += '<p class="rec-score">평균 평점: <strong>' + scoreVal + '</strong> / 5 <button type="button" class="info-btn rec-score-info-btn" aria-label="항목별 평점 보기" title="항목별 평점">ⓘ</button></p>';
           if (r.ratings && Object.keys(r.ratings).length > 0) {
             var cats = NamingService.RATING_CATEGORIES || [];
@@ -454,7 +474,9 @@
           var idx = parseInt(card.getAttribute('data-rec-index'), 10);
           if (isNaN(idx) || !lastRecommendations[idx]) return;
           var rec = lastRecommendations[idx];
-          showScoreBreakdownModal(rec.ratings, rec.fullName, rec.score);
+          var s = typeof rec.score === 'number' ? rec.score : 0;
+          var modalScore = s > 5 ? s / 10 : Math.min(5, Math.max(0, s));
+          showScoreBreakdownModal(rec.ratings, rec.fullName, modalScore);
         });
       }
 

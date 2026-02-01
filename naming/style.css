@@ -158,6 +158,8 @@
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .surname-hanja-btn:hover {
@@ -434,6 +436,10 @@
   overflow: hidden;
 }
 
+.info-modal.info-modal-wide {
+  max-width: 560px;
+}
+
 .info-modal-header {
   display: flex;
   align-items: center;
@@ -536,6 +542,12 @@
 .star-full { color: #f5a623; }
 .star-half { color: #f5a623; opacity: 0.7; }
 .star-empty { color: #ddd; }
+
+.score-breakdown-note {
+  margin-top: 12px !important;
+  font-size: 0.8rem !important;
+  color: #777 !important;
+}
 
 .recommendation-card .rec-score .rec-score-info-btn {
   margin-left: 4px;
