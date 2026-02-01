@@ -103,7 +103,7 @@
 
       var INFO_TEXTS = {
         ohang: { what: '오행 (五行)', desc: '목·화·토·금·수 다섯 원소. 사주에 부족한 오행을 이름에 담아 보완하는 것이 작명의 핵심입니다.', criteria: '오행 비율·합·충·형·파·해·십성을 종합하여 필요한 오행을 계산합니다. 沖에서 손상된 오행, 일주 강약·관살 균형에 따른 식상·인비 오행, 충돌 시 土 조화 등을 반영합니다. 추천 이름에는 필요한 오행 한자를 우선 배치합니다.' },
-        namingUsage: { what: '부족한 기운 보완', desc: '사주에 부족한 오행이 있으면, 그 오행을 가진 한자를 이름에 넣어 기운을 보완합니다.', criteria: '부족한 오행 포함 시 +50점, 음양 균형 +20점, 획수 조화 +10점 기준으로 추천합니다.' }
+        namingUsage: { what: '부족한 기운 보완', desc: '사주에 부족한 오행이 있으면, 그 오행을 가진 한자를 이름에 넣어 기운을 보완합니다.', criteria: '점수 비중: 성별 > 나이(유행) > 발음 > 오행 > 획수 > 서열 순으로 반영합니다. 서열(몇 째)은 첫째/둘째에 맞는 한자에 점수를 더합니다.' }
       };
 
       function showInfoModal(key) {
@@ -164,6 +164,7 @@
         });
 
         var birthYear = params.birth ? parseInt(params.birth.split('-')[0], 10) : null;
+        var birthOrder = params.birthOrder || undefined;
         var recommendations = NamingService.getRecommendations(
           hanjaArray,
           params.surname,
@@ -172,7 +173,8 @@
           params.name1 || undefined,
           params.name2 || undefined,
           params.gender || undefined,
-          birthYear || undefined
+          birthYear || undefined,
+          birthOrder
         );
 
         // 오행 그래프 렌더링

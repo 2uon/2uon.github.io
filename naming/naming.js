@@ -328,65 +328,113 @@
     return 0;
   }
 
-  /**
-   * 이름(한자 2개) 점수 계산
-   * - 부족한 오행 포함: +50점
-   * - 음양 균형: +20점
-   * - 획수 조화 (합이 15~35 정도): +10점
-   * - 성별 적합: 한자당 +7점 (최대 +14점)
-   * - 유행 세대 적합: 한자당 +5점 (최대 +10점)
-   * - 발음 점수: 0~10점
-   * @param {Object} h1 - 한자1
-   * @param {Object} h2 - 한자2
-   * @param {Array} deficientElements - 부족한 오행
-   * @param {Object} yinYang - { yang, yin }
-   * @param {string} [userGender] - 'male' | 'female'
-   * @param {number} [birthYear] - 출생년도 (유행 세대 반영용)
-   * @returns {number} 점수
-   */
-  function scoreNamePair(h1, h2, deficientElements, yinYang, userGender, birthYear, surname) {
-    let score = 0;
+  /** 첫째 자녀에 적합한 한자 (dgsaju 참고) */
+  var FIRST_BORN_CHARS = ['元', '高', '先', '太', '東', '一', '長', '始', '孟', '伯', '甲', '天'];
+  /** 둘째 이하 자녀에 적합한 한자 (dgsaju 참고) */
+  var LATER_BORN_CHARS = ['小', '少', '弟', '下', '後', '中', '季', '仲', '次', '再'];
 
-    // 부족한 오행 보완: 한자 중 부족한 오행이 있으면 +50 (각 오행당 25점)
-    const nameElements = [h1.element, h2.element];
+  /**
+   * 서열 점수 (0~10) - 자녀 서열에 맞는 한자일수록 높은 점수
+   * @param {Object} hanja - 한자 객체 { char }
+   * @param {string} birthOrder - '1'(첫째), '2'(둘째), '3'(셋째 이상)
+   * @returns {number} 0 또는 5 (한자당)
+   */
+  function getBirthOrderScore(hanja, birthOrder) {
+    if (!birthOrder || !hanja || !hanja.char) return 0;
+    var c = hanja.char;
+    if (birthOrder === '1') {
+      return FIRST_BORN_CHARS.indexOf(c) !== -1 ? 5 : 0;
+    }
+    if (birthOrder === '2' || birthOrder === '3') {
+      return LATER_BORN_CHARS.indexOf(c) !== -1 ? 5 : 0;
+    }
+    return 0;
+  }
+
+  /**
+   * 획수 조화 점수 (0~15) - 비중 최하위
+   * @param {number} totalStrokes - 이름 두 한자 획수 합
+   * @returns {{ score: number, strokeBonus: number }} strokeBonus는 동점 시 2차 정렬용
+   */
+  function getStrokeScore(totalStrokes) {
+    if (totalStrokes >= 20 && totalStrokes <= 30) return { score: 15, strokeBonus: 30 - Math.abs(totalStrokes - 25) };
+    if (totalStrokes >= 15 && totalStrokes <= 35) return { score: 12, strokeBonus: 20 - Math.abs(totalStrokes - 25) };
+    if (totalStrokes >= 12 && totalStrokes <= 40) return { score: 8, strokeBonus: 10 };
+    if (totalStrokes >= 10 && totalStrokes <= 45) return { score: 4, strokeBonus: 5 };
+    return { score: 0, strokeBonus: 0 };
+  }
+
+  /**
+   * 이름(한자 2개) 점수 계산 - 비중: 성별 > 나이 > 발음 > 오행 > 획수 > 서열
+   * - 성별 적합: 0~40 (한자당 20)
+   * - 유행/나이: 0~30 (한자당 15)
+   * - 발음: 0~25
+   * - 오행 보완: 0~20 (1자 8, 2자 20)
+   * - 음양 균형: 0~10
+   * - 획수 조화: 0~15
+   * - 서열 적합: 0~10 (한자당 5, 최하위 비중)
+   */
+  function scoreNamePair(h1, h2, deficientElements, yinYang, userGender, birthYear, surname, birthOrder) {
+    let score = 0;
     let deficientMatch = 0;
+    let strokeBonus = 0;
+
+    // 1. 성별 적합 (0~40) - 최상위 비중
+    if (userGender === 'male' || userGender === 'female') {
+      score += (getGenderScore(h1, userGender) ? 20 : 0) + (getGenderScore(h2, userGender) ? 20 : 0);
+    }
+
+    // 2. 유행/나이 (0~30) - 두 번째 비중
+    if (birthYear) {
+      score += (getEraScore(h1, birthYear) ? 15 : 0) + (getEraScore(h2, birthYear) ? 15 : 0);
+    }
+
+    // 3. 발음 (0~25) - 세 번째 비중
+    var pron = getPronunciationScore(surname || '', h1.reading || '', h2.reading || '');
+    score += Math.round(pron.score * 2.5);
+
+    // 4. 오행 보완 (0~20) - 네 번째 비중
+    const nameElements = [h1.element, h2.element];
+    const matchedElements = [];
     for (let i = 0; i < deficientElements.length; i++) {
-      if (nameElements.indexOf(deficientElements[i]) !== -1) {
+      const el = deficientElements[i];
+      if (nameElements.indexOf(el) !== -1 && matchedElements.indexOf(el) === -1) {
         deficientMatch++;
+        matchedElements.push(el);
       }
     }
-    if (deficientMatch >= 1) score += 50;
-    if (deficientMatch >= 2) score += 25;
+    if (deficientMatch >= 1) score += 8;
+    if (deficientMatch >= 2) score += 12;
 
-    // 음양 균형: 이름 한자 2개의 음양이 균형적이면 +20
+    // 음양 균형 (0~10)
     const nameYang = (h1.yinYang === '양' ? 1 : 0) + (h2.yinYang === '양' ? 1 : 0);
     const nameYin = (h1.yinYang === '음' ? 1 : 0) + (h2.yinYang === '음' ? 1 : 0);
-    if (nameYang === 1 && nameYin === 1) score += 20;
-    else if (nameYang === 2 && yinYang.yin > yinYang.yang) score += 15;
-    else if (nameYin === 2 && yinYang.yang > yinYang.yin) score += 15;
+    if (nameYang === 1 && nameYin === 1) score += 10;
+    else if (nameYang === 2 && yinYang.yin > yinYang.yang) score += 6;
+    else if (nameYin === 2 && yinYang.yang > yinYang.yin) score += 6;
 
-    // 획수 조화: 합이 15~35 사이면 +10
+    // 5. 획수 조화 (0~15)
     const totalStrokes = (h1.strokes || 0) + (h2.strokes || 0);
-    if (totalStrokes >= 15 && totalStrokes <= 35) score += 10;
-    else if (totalStrokes >= 12 && totalStrokes <= 40) score += 5;
+    const strokeResult = getStrokeScore(totalStrokes);
+    score += strokeResult.score;
+    strokeBonus = strokeResult.strokeBonus;
 
-    // 성별 적합: 한자당 +7점 (남/여 한자는 해당 성별에, 양성은 보너스 없음)
-    if (userGender === 'male' || userGender === 'female') {
-      score += getGenderScore(h1, userGender);
-      score += getGenderScore(h2, userGender);
+    // 6. 서열 적합 (0~10) - 최하위 비중
+    if (birthOrder) {
+      score += getBirthOrderScore(h1, birthOrder) + getBirthOrderScore(h2, birthOrder);
     }
 
-    // 유행 세대 적합: 출생년도에 맞는 한자 한자당 +5점 (전통/최신 등)
-    if (birthYear) {
-      score += getEraScore(h1, birthYear);
-      score += getEraScore(h2, birthYear);
-    }
+    // 2차 정렬용: deficientMatch, strokeBonus, 오행 우선순위
+    var sortKey = (deficientMatch * 1000) + strokeBonus;
 
-    // 발음 점수: 0~10점 (성+이름1+이름2 흐름)
-    var pron = getPronunciationScore(surname || '', h1.reading || '', h2.reading || '');
-    score += pron.score;
-
-    return { total: score, pronunciation: pron.score, pronunciationReason: pron.reason || '' };
+    return {
+      total: score,
+      pronunciation: pron.score,
+      pronunciationReason: pron.reason || '',
+      deficientMatch: deficientMatch,
+      strokeBonus: strokeBonus,
+      sortKey: sortKey
+    };
   }
 
   /**
@@ -422,7 +470,7 @@
    * @param {string} [userGender] - 'male' | 'female'
    * @returns {Array} 추천 결과 배열 [{ fullName, hanja1, hanja2, score, explanation }]
    */
-  function getRecommendations(hanjaArray, surname, deficientElements, yinYang, name1, name2, userGender, birthYear) {
+  function getRecommendations(hanjaArray, surname, deficientElements, yinYang, name1, name2, userGender, birthYear, birthOrder) {
     const scored = [];
     const seen = {}; // 중복 이름 제거용
     const surnameNorm = (surname || '').trim();
@@ -470,13 +518,15 @@
         if (seen[key]) continue;
         seen[key] = true;
 
-        const scoreResult = scoreNamePair(h1, h2, deficientElements, yinYang, userGender, birthYear, surnameNorm);
+        const scoreResult = scoreNamePair(h1, h2, deficientElements, yinYang, userGender, birthYear, surnameNorm, birthOrder);
         const explanation = buildExplanation(h1, h2, deficientElements, scoreResult.total);
         scored.push({
           fullName: fullName,
           hanja1: h1,
           hanja2: h2,
           score: scoreResult.total,
+          sortKey: scoreResult.sortKey || 0,
+          deficientMatch: scoreResult.deficientMatch || 0,
           pronunciationScore: scoreResult.pronunciation,
           pronunciationReason: scoreResult.pronunciationReason,
           explanation: explanation
@@ -484,7 +534,16 @@
       }
     }
 
-    scored.sort(function(a, b) { return b.score - a.score; });
+    scored.sort(function(a, b) {
+      if (b.score !== a.score) return b.score - a.score;
+      if ((b.sortKey || 0) !== (a.sortKey || 0)) return (b.sortKey || 0) - (a.sortKey || 0);
+      var an1 = (a.hanja1 && a.hanja1.element) || '';
+      var bn1 = (b.hanja1 && b.hanja1.element) || '';
+      if (an1 !== bn1) return (an1 > bn1 ? 1 : -1);
+      var an2 = (a.hanja2 && a.hanja2.element) || '';
+      var bn2 = (b.hanja2 && b.hanja2.element) || '';
+      return (an2 > bn2 ? 1 : an2 < bn2 ? -1 : 0);
+    });
     return scored.slice(0, 8);
   }
 
@@ -587,6 +646,7 @@
     return {
       surname: params.get('surname') || '',
       surnameHanja: params.get('surnameHanja') || '',
+      birthOrder: params.get('birthOrder') || '',
       name1: params.get('name1') || '',
       name2: params.get('name2') || '',
       birth: params.get('birth') || '',

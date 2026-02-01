@@ -25,6 +25,7 @@
                  aria-describedby="surname-hint surname-error surname-hanja">
           <span class="form-hint" id="surname-hint">한 글자만 입력해 주세요 (예: 김, 이, 박)</span>
           <div class="surname-hanja-area" id="surname-hanja" aria-live="polite" hidden>
+            <p class="surname-hanja-feedback" id="surname-hanja-feedback" hidden></p>
             <span class="surname-hanja-label" data-label></span>
             <div class="surname-hanja-list" data-list></div>
           </div>
@@ -105,6 +106,18 @@
           </div>
         </div>
 
+        <!-- 몇 째 (서열) -->
+        <div class="form-group">
+          <label for="birthOrder">몇 째</label>
+          <select id="birthOrder" name="birthOrder" aria-describedby="birth-order-hint">
+            <option value="">선택 안 함</option>
+            <option value="1">첫째</option>
+            <option value="2">둘째</option>
+            <option value="3">셋째 이상</option>
+          </select>
+          <span class="form-hint" id="birth-order-hint">자녀 서열에 맞는 한자 추천에 반영됩니다.</span>
+        </div>
+
         <button type="submit" class="btn-submit">이름 추천 받기</button>
       </form>
     </main>
@@ -150,14 +163,25 @@
           if (surnameHanjaSelectedInput) surnameHanjaSelectedInput.value = '';
           return;
         }
+        var selectedChar = (surnameHanjaSelectedInput && surnameHanjaSelectedInput.value) || '';
+        var validSelected = list.some(function(item) { return item.char === selectedChar; });
+        if (!validSelected && surnameHanjaSelectedInput) {
+          selectedChar = '';
+          surnameHanjaSelectedInput.value = '';
+        }
+        var feedbackEl = document.getElementById('surname-hanja-feedback');
+        var selectedItem = list.filter(function(item) { return item.char === selectedChar; })[0];
+        if (feedbackEl) {
+          if (selectedItem) {
+            feedbackEl.textContent = '선택한 성 한자: ' + selectedItem.char + ' (' + selectedItem.meaning + ')';
+            feedbackEl.hidden = false;
+          } else {
+            feedbackEl.textContent = '';
+            feedbackEl.hidden = true;
+          }
+        }
         if (labelEl) labelEl.textContent = val + '씨 성 한자 (클릭하여 선택): ';
         if (listEl) {
-          var selectedChar = (surnameHanjaSelectedInput && surnameHanjaSelectedInput.value) || '';
-          var validSelected = list.some(function(item) { return item.char === selectedChar; });
-          if (!validSelected && surnameHanjaSelectedInput) {
-            selectedChar = '';
-            surnameHanjaSelectedInput.value = '';
-          }
           listEl.innerHTML = list.map(function(item) {
             var isSelected = selectedChar === item.char;
             return '<button type="button" class="surname-hanja-btn' + (isSelected ? ' selected' : '') + '" data-char="' + escapeHtml(item.char) + '" data-meaning="' + escapeHtml(item.meaning) + '" title="' + escapeHtml(item.meaning) + '">' +
@@ -168,12 +192,9 @@
           listEl.querySelectorAll('.surname-hanja-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
               var char = btn.getAttribute('data-char');
-              var meaning = btn.getAttribute('data-meaning');
               var wasSelected = surnameHanjaSelectedInput.value === char;
               surnameHanjaSelectedInput.value = wasSelected ? '' : char;
-              listEl.querySelectorAll('.surname-hanja-btn').forEach(function(b) {
-                b.classList.toggle('selected', b.getAttribute('data-char') === char && !wasSelected);
-              });
+              updateSurnameHanja();
             });
           });
         }
@@ -268,6 +289,8 @@
         const min = minVal === '' ? 0 : Math.min(59, Math.max(0, parseInt(minVal, 10) || 0));
         const gender = form.querySelector('input[name="gender"]:checked').value;
         const calendar = form.querySelector('input[name="calendar"]:checked').value;
+        const birthOrderEl = document.getElementById('birthOrder');
+        const birthOrder = birthOrderEl ? (birthOrderEl.value || '').trim() : '';
 
         const params = new URLSearchParams({
           surname: surname,
@@ -281,6 +304,7 @@
         if (name2) params.set('name2', name2);
         var surnameHanja = (surnameHanjaSelectedInput && surnameHanjaSelectedInput.value) || '';
         if (surnameHanja) params.set('surnameHanja', surnameHanja);
+        if (birthOrder) params.set('birthOrder', birthOrder);
 
         window.location.href = 'result.html?' + params.toString();
       }
