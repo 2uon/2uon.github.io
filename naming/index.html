@@ -12,7 +12,7 @@
     <!-- 헤더: 서비스 소개 -->
     <header class="naming-header">
       <h1>작명소</h1>
-      <p>사주에 맞는 이름 추천 · 결과 공유 가능 · <a href="./dict.html" class="dict-link-inline">용어 사전</a></p>
+      <p>사주에 맞는 이름 추천 · 결과 공유 가능</p>
     </header>
 
     <main class="naming-main">
@@ -24,7 +24,11 @@
                  placeholder="예: 김, 이, 박" autocomplete="off"
                  aria-describedby="surname-hint surname-error surname-hanja">
           <span class="form-hint" id="surname-hint">한 글자만 입력해 주세요 (예: 김, 이, 박)</span>
-          <div class="surname-hanja-area" id="surname-hanja" aria-live="polite" hidden></div>
+          <div class="surname-hanja-area" id="surname-hanja" aria-live="polite" hidden>
+            <span class="surname-hanja-label" data-label></span>
+            <div class="surname-hanja-list" data-list></div>
+          </div>
+          <input type="hidden" id="surname-hanja-selected" name="surnameHanja" value="">
           <span class="form-error" id="surname-error" role="alert"></span>
         </div>
 
@@ -128,23 +132,51 @@
         if (surnameInput.value && surnameInput.value.trim()) updateSurnameHanja();
       }).catch(function() {});
 
+      const surnameHanjaSelectedInput = document.getElementById('surname-hanja-selected');
+
       function updateSurnameHanja() {
         if (!surnameHanjaEl) return;
         var val = (surnameInput.value || '').trim();
+        var labelEl = surnameHanjaEl.querySelector('[data-label]');
+        var listEl = surnameHanjaEl.querySelector('[data-list]');
         if (!val || !surnameMap) {
           surnameHanjaEl.hidden = true;
+          if (surnameHanjaSelectedInput) surnameHanjaSelectedInput.value = '';
           return;
         }
         var list = NamingService.getSurnameHanja(surnameMap, val);
         if (list.length === 0) {
           surnameHanjaEl.hidden = true;
+          if (surnameHanjaSelectedInput) surnameHanjaSelectedInput.value = '';
           return;
         }
-        var html = '<span class="surname-hanja-label">' + val + '씨 성 한자: </span>';
-        html += list.map(function(item) {
-          return '<span class="surname-hanja-item"><span class="surname-hanja-char">' + escapeHtml(item.char) + '</span><span class="surname-hanja-meaning">(' + escapeHtml(item.meaning) + ')</span></span>';
-        }).join(', ');
-        surnameHanjaEl.innerHTML = html;
+        if (labelEl) labelEl.textContent = val + '씨 성 한자 (클릭하여 선택): ';
+        if (listEl) {
+          var selectedChar = (surnameHanjaSelectedInput && surnameHanjaSelectedInput.value) || '';
+          var validSelected = list.some(function(item) { return item.char === selectedChar; });
+          if (!validSelected && surnameHanjaSelectedInput) {
+            selectedChar = '';
+            surnameHanjaSelectedInput.value = '';
+          }
+          listEl.innerHTML = list.map(function(item) {
+            var isSelected = selectedChar === item.char;
+            return '<button type="button" class="surname-hanja-btn' + (isSelected ? ' selected' : '') + '" data-char="' + escapeHtml(item.char) + '" data-meaning="' + escapeHtml(item.meaning) + '" title="' + escapeHtml(item.meaning) + '">' +
+              '<span class="surname-hanja-char">' + escapeHtml(item.char) + '</span>' +
+              '<span class="surname-hanja-meaning">(' + escapeHtml(item.meaning) + ')</span>' +
+              '</button>';
+          }).join('');
+          listEl.querySelectorAll('.surname-hanja-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var char = btn.getAttribute('data-char');
+              var meaning = btn.getAttribute('data-meaning');
+              var wasSelected = surnameHanjaSelectedInput.value === char;
+              surnameHanjaSelectedInput.value = wasSelected ? '' : char;
+              listEl.querySelectorAll('.surname-hanja-btn').forEach(function(b) {
+                b.classList.toggle('selected', b.getAttribute('data-char') === char && !wasSelected);
+              });
+            });
+          });
+        }
         surnameHanjaEl.hidden = false;
       }
 
@@ -247,6 +279,8 @@
         });
         if (name1) params.set('name1', name1);
         if (name2) params.set('name2', name2);
+        var surnameHanja = (surnameHanjaSelectedInput && surnameHanjaSelectedInput.value) || '';
+        if (surnameHanja) params.set('surnameHanja', surnameHanja);
 
         window.location.href = 'result.html?' + params.toString();
       }

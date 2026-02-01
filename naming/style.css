@@ -118,6 +118,51 @@
 .surname-hanja-label {
   font-weight: 500;
   color: #333;
+  display: inline;
+}
+
+.surname-hanja-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.surname-hanja-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  font-size: 0.875rem;
+  color: #555;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.surname-hanja-btn:hover {
+  background: #f0f0f0;
+  border-color: #bbb;
+}
+
+.surname-hanja-btn.selected {
+  background: #e8f5e9;
+  border-color: #4caf50;
+  color: #1b5e20;
+}
+
+.surname-hanja-btn .surname-hanja-char {
+  font-weight: 600;
+  font-size: 1rem;
+  color: inherit;
+}
+
+.surname-hanja-btn .surname-hanja-meaning {
+  font-size: 0.8rem;
+  color: inherit;
+  opacity: 0.9;
 }
 
 .surname-hanja-item {
@@ -144,6 +189,23 @@
   border: 1px solid #eee;
   font-size: 0.9rem;
   color: #555;
+}
+
+.surname-hanja-result .surname-hanja-selected {
+  margin: 0 0 8px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.surname-hanja-result .surname-hanja-all {
+  margin: 0;
+}
+
+.surname-hanja-result .surname-hanja-item.selected {
+  background: #e8f5e9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 2px;
 }
 
 .form-row {
@@ -255,6 +317,26 @@
   background: #333;
 }
 
+.btn-footer.btn-share {
+  color: #333;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-footer.btn-share:hover {
+  background: #f5f5f5;
+}
+
+.naming-footer .footer-disclaimer {
+  font-size: 0.75rem;
+  color: #999;
+  text-align: center;
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
 /* 공유 버튼 */
 .share-bar {
   display: flex;
@@ -304,6 +386,85 @@
   border-color: #22c55e;
 }
 
+/* info-btn 클릭 시 표시되는 모달 (사주 detail.html 패턴) */
+.info-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.info-modal {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.info-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #eee;
+}
+
+.info-modal-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #1a1a1a;
+}
+
+.info-modal-close {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #888;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.info-modal-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1a1a1a;
+}
+
+.info-modal-body {
+  padding: 20px;
+}
+
+.info-modal-body p {
+  margin: 0 0 14px;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.info-modal-body p:last-child {
+  margin-bottom: 0;
+}
+
+.info-modal-body .dict-link-inline {
+  font-size: 0.85rem;
+  color: #666;
+  text-decoration: underline;
+}
+
+.info-modal-body .dict-link-inline:hover {
+  color: #1a1a1a;
+}
+
 /* ===== 결과 페이지 ===== */
 .loading-area {
   text-align: center;
@@ -336,6 +497,44 @@
   font-weight: 600;
   color: #1a1a1a;
   margin-bottom: 10px;
+}
+
+.result-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.result-section-title .dict-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.result-section-title .dict-link:hover {
+  color: #666;
+  text-decoration: underline;
+}
+
+.result-section-title .info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.result-section-title .info-btn:hover {
+  background: #1a1a1a;
+  color: #fff;
 }
 
 .section-desc {
@@ -403,6 +602,48 @@
   padding: 10px 12px;
   border-radius: 6px;
   border: 1px solid #eee;
+}
+
+.ohang-detail-toggle-wrap {
+  margin-top: 10px;
+}
+
+.ohang-detail-toggle-wrap .toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  color: #666;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.ohang-detail-toggle-wrap .toggle-btn:hover {
+  color: #333;
+  border-color: #999;
+}
+
+.ohang-detail-toggle-wrap .toggle-icon {
+  font-size: 0.65rem;
+  opacity: 0.8;
+}
+
+.ohang-detail-content {
+  margin-top: 10px;
+  padding: 10px 12px;
+  font-size: 0.8rem;
+  color: #666;
+  background: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.ohang-detail-content .deficient-reasons {
+  margin: 0;
 }
 
 /* 음별 한자 찾기 */

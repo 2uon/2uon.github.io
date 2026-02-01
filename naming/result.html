@@ -15,7 +15,7 @@
   <div class="naming-container">
     <header class="naming-header">
       <h1>이름 추천 결과</h1>
-      <p>아래 추천을 참고하고 결과를 공유해 보세요. <a href="./dict.html" class="dict-link-inline">용어 사전</a></p>
+      <p>아래 추천을 참고하고 결과를 공유해 보세요.</p>
     </header>
 
     <main class="naming-main">
@@ -27,21 +27,24 @@
         <!-- 성 한자 추천 -->
         <div class="surname-hanja-result" id="surname-hanja-result" hidden></div>
 
-        <!-- 공유 바 -->
-        <div class="share-bar">
-          <span class="share-bar__label">이 결과 공유하기</span>
-          <div class="share-btns">
-            <button type="button" class="btn-share" id="btn-copy-link" title="링크 복사">링크 복사</button>
-            <button type="button" class="btn-share" id="btn-native-share" title="공유" style="display:none">공유</button>
-          </div>
-        </div>
-
         <!-- 사주 오행 요약 -->
         <section class="result-section" id="ohang-section">
-          <h2><a href="./dict.html#ohang" class="dict-link-inline">오행</a> 분석</h2>
-          <p class="section-desc"><a href="./dict.html#naming-usage" class="dict-link-inline">부족한 기운</a>을 이름으로 보완할 수 있습니다.</p>
+          <h2 class="result-section-title">
+            <a href="./dict.html#ohang" class="dict-link">오행</a> 분석
+            <button type="button" class="info-btn" data-info-key="ohang" aria-label="오행 설명 보기" title="설명">ⓘ</button>
+          </h2>
+          <p class="section-desc">부족한 기운을 이름으로 보완할 수 있습니다.</p>
           <div class="ohang-chart" id="ohang-chart"></div>
           <p class="deficient-desc" id="deficient-desc"></p>
+          <div class="ohang-detail-toggle-wrap">
+            <button type="button" class="toggle-btn" id="toggle-detail-btn" aria-expanded="false">
+              <span class="toggle-label">상세 분석 보기</span>
+              <span class="toggle-icon" aria-hidden="true">▼</span>
+            </button>
+            <div class="ohang-detail-content" id="ohang-detail-content" hidden>
+              <p class="deficient-reasons" id="deficient-reasons"></p>
+            </div>
+          </div>
         </section>
 
         <!-- 음별 한자 찾기 (형제자매 공통 글자용) -->
@@ -61,9 +64,10 @@
 
     <footer class="naming-footer">
       <div class="footer-buttons">
-        <a href="../index.html" class="btn-footer btn-main">메인</a>
-        <a href="index.html" class="btn-footer btn-retry">다시 입력</a>
+        <a href="index.html" class="btn-footer btn-retry">다시하기</a>
+        <button type="button" class="btn-footer btn-share" id="btn-share-footer">공유하기</button>
       </div>
+      <p class="footer-disclaimer">결과 및 점수는 객관적인 기준이 아닌 알고리즘을 통한 주관적 계산입니다.</p>
     </footer>
   </div>
 
@@ -97,14 +101,42 @@
         return div.innerHTML;
       }
 
-      var ELEMENT_IDS = { '목': 'mok', '화': 'hwa', '토': 'to', '금': 'geum', '수': 'su' };
-      function makeDictLink(element) {
-        var id = ELEMENT_IDS[element] || 'to';
-        var colorClass = NamingService.OHANG_COLORS[element] || 'ohang-to';
-        return '<a href="./dict.html#ohang-' + id + '" class="dict-link ' + colorClass + '">' + element + '</a>';
+      var INFO_TEXTS = {
+        ohang: { what: '오행 (五行)', desc: '목·화·토·금·수 다섯 원소. 사주에 부족한 오행을 이름에 담아 보완하는 것이 작명의 핵심입니다.', criteria: '오행 비율·합·충·형·파·해·십성을 종합하여 필요한 오행을 계산합니다. 沖에서 손상된 오행, 일주 강약·관살 균형에 따른 식상·인비 오행, 충돌 시 土 조화 등을 반영합니다. 추천 이름에는 필요한 오행 한자를 우선 배치합니다.' },
+        namingUsage: { what: '부족한 기운 보완', desc: '사주에 부족한 오행이 있으면, 그 오행을 가진 한자를 이름에 넣어 기운을 보완합니다.', criteria: '부족한 오행 포함 시 +50점, 음양 균형 +20점, 획수 조화 +10점 기준으로 추천합니다.' }
+      };
+
+      function showInfoModal(key) {
+        var info = INFO_TEXTS[key];
+        if (!info) return;
+        var overlay = document.createElement('div');
+        overlay.className = 'info-modal-overlay';
+        overlay.innerHTML = '<div class="info-modal" role="dialog" aria-labelledby="info-modal-title">' +
+          '<div class="info-modal-header">' +
+          '<h4 id="info-modal-title">' + escapeHtml(info.what) + '</h4>' +
+          '<button type="button" class="info-modal-close" aria-label="닫기">&times;</button>' +
+          '</div>' +
+          '<div class="info-modal-body">' +
+          '<p><strong>이 항목은?</strong><br>' + escapeHtml(info.desc) + '</p>' +
+          '<p><strong>추천 기준</strong><br>' + escapeHtml(info.criteria) + '</p>' +
+          '<p><a href="./dict.html#ohang" class="dict-link-inline">용어 사전에서 자세히 보기</a></p>' +
+          '</div></div>';
+        function closeModal() {
+          overlay.remove();
+          document.removeEventListener('keydown', onKey);
+        }
+        function onKey(e) { if (e.key === 'Escape') closeModal(); }
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay || e.target.classList.contains('info-modal-close')) closeModal();
+        });
+        document.addEventListener('keydown', onKey);
+        document.body.appendChild(overlay);
       }
-      function wrapElementsWithDictLinks(text) {
-        return text.replace(/(목|화|토|금|수)/g, function(m) { return makeDictLink(m); });
+
+      function attachInfoButtons() {
+        document.querySelectorAll('.info-btn[data-info-key]').forEach(function(btn) {
+          btn.addEventListener('click', function() { showInfoModal(btn.getAttribute('data-info-key')); });
+        });
       }
 
       // 사주 계산
@@ -121,7 +153,9 @@
         loadingArea.style.display = 'none';
         resultArea.hidden = false;
 
-        var deficientElements = NamingService.getDeficientElements(saju.ohangCount);
+        var deficientResult = NamingService.getDeficientElements(saju);
+        var deficientElements = deficientResult.elements || [];
+        var deficientReasons = deficientResult.reasons || [];
         var pillars = [saju.year, saju.month, saju.day, saju.hour];
         var yinYang = { yang: 0, yin: 0 };
         pillars.forEach(function(p) {
@@ -129,25 +163,49 @@
           else yinYang.yin++;
         });
 
+        var birthYear = params.birth ? parseInt(params.birth.split('-')[0], 10) : null;
         var recommendations = NamingService.getRecommendations(
           hanjaArray,
           params.surname,
           deficientElements,
           yinYang,
           params.name1 || undefined,
-          params.name2 || undefined
+          params.name2 || undefined,
+          params.gender || undefined,
+          birthYear || undefined
         );
 
         // 오행 그래프 렌더링
         renderOhangChart(saju.ohangCount, deficientElements);
 
-        // 부족한 오행 설명 (용어 링크 포함)
+        // 부족한 오행 설명 (심플: 필요한 기운만)
         var deficientDescEl = document.getElementById('deficient-desc');
         if (deficientElements.length > 0) {
-          var deficientLinks = deficientElements.map(function(e) { return makeDictLink(e); }).join(', ');
-          deficientDescEl.innerHTML = '부족한 기운: ' + deficientLinks + '. 아래 추천 이름이 이 기운을 보완해 드립니다.';
+          deficientDescEl.textContent = '필요한 기운: ' + deficientElements.join(', ') + '. 아래 추천 이름이 이 기운을 보완해 드립니다.';
         } else {
-          deficientDescEl.innerHTML = '오행이 고르게 분포되어 있습니다. <a href="./dict.html#ohang" class="dict-link-inline">균형 잡힌 이름</a>을 추천합니다.';
+          deficientDescEl.textContent = '오행이 고르게 분포되어 있습니다. 균형 잡힌 이름을 추천합니다.';
+        }
+
+        // 상세 분석(합충·십성) 토글
+        if (deficientReasons.length > 0) {
+          var reasonsEl = document.getElementById('deficient-reasons');
+          var detailWrap = document.querySelector('.ohang-detail-toggle-wrap');
+          var toggleBtn = document.getElementById('toggle-detail-btn');
+          var detailContent = document.getElementById('ohang-detail-content');
+          if (reasonsEl && toggleBtn && detailContent) {
+            reasonsEl.textContent = '분석 근거: ' + deficientReasons.join(', ') + '를 반영했습니다.';
+            detailWrap.style.display = '';
+            toggleBtn.addEventListener('click', function() {
+              var expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+              toggleBtn.setAttribute('aria-expanded', !expanded);
+              toggleBtn.querySelector('.toggle-label').textContent = expanded ? '상세 분석 보기' : '상세 분석 접기';
+              toggleBtn.querySelector('.toggle-icon').textContent = expanded ? '▼' : '▲';
+              detailContent.hidden = expanded;
+            });
+          }
+        } else {
+          var wrap = document.querySelector('.ohang-detail-toggle-wrap');
+          if (wrap) wrap.style.display = 'none';
         }
 
         // 추천 이름 렌더링
@@ -159,8 +217,11 @@
         // 공유 기능 초기화
         initShareButtons(params);
 
-        // 성 한자 추천 표시
-        renderSurnameHanja(params.surname);
+        // 성 한자 추천 표시 (선택한 성 한자 있으면 강조)
+        renderSurnameHanja(params.surname, params.surnameHanja);
+
+        // info-btn 클릭 모달 연결
+        attachInfoButtons();
 
       }).catch(function(err) {
         showError('한자 데이터를 불러오는 데 실패했습니다. 잠시 후 다시 시도해 주세요.');
@@ -181,9 +242,8 @@
           var pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
           var isDeficient = deficientElements.indexOf(e) !== -1;
           var colorClass = NamingService.OHANG_COLORS[e] || 'ohang-to';
-          var id = ELEMENT_IDS[e] || 'to';
           html += '<div class="ohang-bar">';
-          html += '<label class="' + colorClass + '"><a href="./dict.html#ohang-' + id + '" class="dict-link">' + e + '</a></label>';
+          html += '<label class="' + colorClass + '">' + e + '</label>';
           html += '<div class="bar-track"><div class="bar-fill ' + colorClass + (isDeficient ? ' deficient' : '') + '" style="width:' + pct + '%"></div></div>';
           html += '<span class="bar-value">' + count + '</span>';
           html += '</div>';
@@ -221,7 +281,7 @@
             var colorClass = NamingService.OHANG_COLORS[h.element] || 'ohang-to';
             html += '<li class="hanja-reading-item">';
             html += '<span class="hanja-reading-char ' + colorClass + '">' + escapeHtml(h.char) + '</span>';
-            html += '<div class="hanja-reading-info"><span class="hanja-reading-reading">' + escapeHtml(h.reading) + '</span><span class="hanja-reading-meaning">' + escapeHtml(h.meaning) + '</span><em class="' + colorClass + '">' + wrapElementsWithDictLinks(escapeHtml(item.fitReason)) + '</em></div>';
+            html += '<div class="hanja-reading-info"><span class="hanja-reading-reading">' + escapeHtml(h.reading) + '</span><span class="hanja-reading-meaning">' + escapeHtml(h.meaning) + '</span><em class="' + colorClass + '">' + escapeHtml(item.fitReason) + '</em></div>';
             html += '</li>';
           });
           html += '</ul></div>';
@@ -257,8 +317,13 @@
           html += '<div class="rec-hanja-item"><span class="rec-char ' + color1 + '">' + escapeHtml(h1.char) + '</span><span class="rec-reading">' + escapeHtml(h1.reading) + '</span><span class="rec-meaning">' + escapeHtml(h1.meaning) + '</span></div>';
           html += '<div class="rec-hanja-item"><span class="rec-char ' + color2 + '">' + escapeHtml(h2.char) + '</span><span class="rec-reading">' + escapeHtml(h2.reading) + '</span><span class="rec-meaning">' + escapeHtml(h2.meaning) + '</span></div>';
           html += '</div>';
-          html += '<p class="rec-explanation">' + wrapElementsWithDictLinks(escapeHtml(r.explanation)) + '</p>';
-          html += '<p class="rec-score">점수: ' + r.score + '점</p>';
+          html += '<p class="rec-explanation">' + escapeHtml(r.explanation) + '</p>';
+          var scoreLine = '점수: ' + r.score + '점';
+          if (r.pronunciationScore !== undefined) {
+            scoreLine += ' (발음 ' + r.pronunciationScore + '/10)';
+            if (r.pronunciationReason) scoreLine += ' · ' + escapeHtml(r.pronunciationReason);
+          }
+          html += '<p class="rec-score">' + scoreLine + '</p>';
           html += '</article>';
         });
 
@@ -266,39 +331,29 @@
       }
 
       /**
-       * 공유 버튼: 링크 복사, Web Share API(모바일)
+       * 공유 버튼: Web Share API(모바일) 또는 링크 복사
        */
       function initShareButtons(params) {
         var shareUrl = location.href;
         var shareTitle = '작명소 - 이름 추천 결과';
         var shareText = params.surname + '씨의 사주에 맞는 이름을 추천받았어요.';
+        var btnShare = document.getElementById('btn-share-footer');
 
-        // 링크 복사
-        var btnCopy = document.getElementById('btn-copy-link');
-        if (btnCopy) {
-          btnCopy.addEventListener('click', function() {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-              navigator.clipboard.writeText(shareUrl).then(function() {
-                showCopiedFeedback(btnCopy);
-              }).catch(function() {
-                fallbackCopy(shareUrl, btnCopy);
-              });
-            } else {
-              fallbackCopy(shareUrl, btnCopy);
-            }
-          });
-        }
-
-        // Web Share API (모바일에서 네이티브 공유 시트)
-        var btnShare = document.getElementById('btn-native-share');
-        if (btnShare && navigator.share) {
-          btnShare.style.display = 'inline-flex';
+        if (btnShare) {
           btnShare.addEventListener('click', function() {
-            navigator.share({
-              title: shareTitle,
-              text: shareText,
-              url: shareUrl
-            }).catch(function() {});
+            if (navigator.share) {
+              navigator.share({ title: shareTitle, text: shareText, url: shareUrl }).catch(function() {});
+            } else {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(shareUrl).then(function() {
+                  showCopiedFeedback(btnShare);
+                }).catch(function() {
+                  fallbackCopy(shareUrl, btnShare);
+                });
+              } else {
+                fallbackCopy(shareUrl, btnShare);
+              }
+            }
           });
         }
       }
@@ -317,16 +372,25 @@
         document.body.removeChild(ta);
       }
 
-      function renderSurnameHanja(surname) {
+      function renderSurnameHanja(surname, surnameHanja) {
         var container = document.getElementById('surname-hanja-result');
         if (!container || !surname) return;
         NamingService.loadSurnameXml().then(function(map) {
           var list = NamingService.getSurnameHanja(map, surname.trim());
           if (!list || list.length === 0) return;
-          var html = '<span class="surname-hanja-label">' + escapeHtml(surname) + '씨 성 한자: </span>';
+          var selectedChar = (surnameHanja || '').trim();
+          var selectedItem = list.filter(function(item) { return item.char === selectedChar; })[0];
+          var html = '';
+          if (selectedItem) {
+            html += '<p class="surname-hanja-selected"><span class="surname-hanja-label">선택한 성 한자: </span>' +
+              '<span class="surname-hanja-item selected"><span class="surname-hanja-char">' + escapeHtml(selectedItem.char) + '</span>' +
+              '<span class="surname-hanja-meaning">(' + escapeHtml(selectedItem.meaning) + ')</span></span></p>';
+          }
+          html += '<p class="surname-hanja-all"><span class="surname-hanja-label">' + escapeHtml(surname) + '씨 성 한자: </span>';
           html += list.map(function(item) {
-            return '<span class="surname-hanja-item"><span class="surname-hanja-char">' + escapeHtml(item.char) + '</span><span class="surname-hanja-meaning">(' + escapeHtml(item.meaning) + ')</span></span>';
-          }).join(', ');
+            var isSelected = item.char === selectedChar;
+            return '<span class="surname-hanja-item' + (isSelected ? ' selected' : '') + '"><span class="surname-hanja-char">' + escapeHtml(item.char) + '</span><span class="surname-hanja-meaning">(' + escapeHtml(item.meaning) + ')</span></span>';
+          }).join(', ') + '</p>';
           container.innerHTML = html;
           container.hidden = false;
         }).catch(function() {});
