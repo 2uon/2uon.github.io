@@ -318,6 +318,7 @@
         var cellNeeded = document.getElementById('cell-needed');
         var cellSupplement = document.getElementById('cell-supplement');
         var cellExcess = document.getElementById('cell-excess');
+        var OHANG_COLORS = NamingService.OHANG_COLORS || {};
         function fmtOhangList(arr) {
           if (!arr || arr.length === 0) return '—';
           return arr.map(function(e) {
